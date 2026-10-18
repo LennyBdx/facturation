@@ -31,7 +31,7 @@ export const viewport: Viewport = {
   themeColor: "#1e3a5f",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}
       suppressHydrationWarning

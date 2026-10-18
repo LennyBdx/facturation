@@ -1,4 +1,4 @@
-# Plan V1 — prototype front-end (à valider)
+# Plan V1 — prototype front-end (validé le 18/10/2026, réalisé)
 
 Nom de travail du produit : **Situa** (de « situation de travaux »). Provisoire, modifiable en un seul endroit (`src/config/app.ts`).
 

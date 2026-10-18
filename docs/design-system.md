@@ -1,7 +1,7 @@
-# Design system — proposition V1
+# Design system — V1
 
-> Statut : **proposition à valider**. Une fois validée, ces valeurs deviennent les variables CSS de `src/app/globals.css`
-> (format shadcn/ui + Tailwind v4, `@theme inline`). Aucune couleur ni taille n'est codée en dur dans les composants.
+> Statut : **validé et implémenté**. Les valeurs ci-dessous sont les variables CSS de `src/app/globals.css`
+> (shadcn/ui + Tailwind v4, `@theme inline`). Aucune couleur ni taille n'est codée en dur dans les composants.
 
 ## Sources
 
@@ -167,3 +167,20 @@ Alternative du skill : Lexend + Source Sans 3 (« Corporate Trust », plus arron
 - Fond blanc, texte noir, couleur d'accent du client limitée à la bande de titre et aux en-têtes de tableau (contraste vérifié, repli sur marine sinon).
 - Feuille A4 via `@media print`, mentions légales en pied.
 - Aucun badge officiel : mention « Prêt pour la facture électronique » dans l'interface uniquement.
+
+## Mise en œuvre et écarts par rapport à la proposition
+
+| Sujet | Implémentation |
+|---|---|
+| Jetons | `src/app/globals.css` : `:root` (clair) et `.dark` (sombre, via next-themes). Couleurs d'état exposées en `text-success`, `bg-success-soft`, etc. |
+| Feuille imprimable | Jetons dédiés `--paper*`, toujours clairs, même en thème sombre. Impression A4 via `@media print`. |
+| Couleur d'accent des documents | Choisie par l'utilisateur ; refusée si le texte blanc n'atteint pas 4,5:1 (`src/lib/color.ts`). Repli sur le primaire. |
+| Composants shadcn | Style « radix-nova ». Ajustements : contrôles de 44 px sur mobile et 40 px sur ordinateur, cartes plates (bordure, rayon de 8 px), pastilles de 4 px. |
+| Pastilles de statut | `src/components/status/` : icône lucide + libellé + ton, avec le code du statut en info-bulle (cycle de vie). |
+| Listes longues | `ResponsiveList` : tableau sémantique à partir de 768 px, cartes à deux niveaux en dessous. |
+| Saisie des lignes de devis | Grille en mode tableau **quand le lot fait au moins 48 rem** (container query `@3xl`), car la colonne des totaux réduit la largeur disponible. Sinon, cartes avec libellés visibles. **Écart** : sur mobile, édition sur place plutôt que dans un panneau bas, pour garder la saisie rapide. |
+| Navigation mobile | Barre d'onglets basse : Accueil, Devis, Factures, Reçues, Menu (5 entrées) + barre latérale en panneau. |
+| États vides et chargement | `EmptyState` (icône + phrase + action), `loading.tsx` (squelettes), `error.tsx` (message + Réessayer), `not-found.tsx`. |
+| Accessibilité | Lien d'évitement « Aller au contenu », focus visible de 2 px, libellés associés, erreurs en `role="alert"` reliées par `aria-describedby`, respect de `prefers-reduced-motion`. |
+| Typographie | IBM Plex Sans et IBM Plex Mono via `next/font` (`display: swap`). Chiffres tabulaires via la classe `num`. |
+| Couleurs | Hexadécimal (et non OKLCH) pour garder le lien direct avec les rapports de contraste documentés ci-dessus. |

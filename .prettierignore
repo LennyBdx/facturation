@@ -1,0 +1,5 @@
+node_modules
+.next
+pnpm-lock.yaml
+docs/references/*.png
+src/components/ui

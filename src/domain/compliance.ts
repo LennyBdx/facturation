@@ -46,7 +46,7 @@ export interface ComplianceBuyer extends ComplianceParty {
 }
 
 export interface ComplianceInvoice {
-  kind: "deposit" | "progress" | "final" | "credit_note";
+  kind: "standard" | "deposit" | "progress" | "final" | "credit_note";
   issueDate?: string;
   dueDate?: string;
   paymentTerms?: string;

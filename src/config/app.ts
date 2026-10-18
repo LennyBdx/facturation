@@ -9,3 +9,6 @@ export const E_INVOICING_READY_LABEL = "Prêt pour la facture électronique";
  * sont construites autour de cette date. À supprimer au branchement du back-end.
  */
 export const DEMO_TODAY = "2026-10-18";
+
+/** Utilisateur fictif toujours « connecté » dans le prototype (voir `src/lib/session.ts`). */
+export const DEMO_USER_ID = "usr-julien";

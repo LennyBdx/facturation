@@ -50,6 +50,13 @@
   --color-neutral: var(--neutral);
   --color-neutral-soft: var(--neutral-soft);
 
+  /* Feuille de document imprimable : reste claire quel que soit le thème. */
+  --color-paper: var(--paper);
+  --color-paper-foreground: var(--paper-foreground);
+  --color-paper-muted: var(--paper-muted);
+  --color-paper-border: var(--paper-border);
+  --color-paper-on-accent: var(--paper-on-accent);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -114,6 +121,12 @@
   --neutral: #334155;
   --neutral-soft: #f1f5f9;
 
+  --paper: #ffffff;
+  --paper-foreground: #0f172a;
+  --paper-muted: #475569;
+  --paper-border: #cbd5e1;
+  --paper-on-accent: #ffffff;
+
   --chart-1: #1e3a5f;
   --chart-2: #c2410c;
   --chart-3: #047857;
@@ -166,6 +179,12 @@
   --pending-soft: #0d2730;
   --neutral: #cbd5e1;
   --neutral-soft: #1b2740;
+
+  --paper: #ffffff;
+  --paper-foreground: #0f172a;
+  --paper-muted: #475569;
+  --paper-border: #cbd5e1;
+  --paper-on-accent: #ffffff;
 
   --chart-1: #93c5fd;
   --chart-2: #fb923c;

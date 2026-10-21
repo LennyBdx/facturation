@@ -1,17 +1,68 @@
+# Dépendances et builds
 node_modules/
 .next/
 out/
+build/
 coverage/
 *.tsbuildinfo
 next-env.d.ts
-.env*.local
+.vercel/
+.turbo/
+
+# Tests
 test-results/
 playwright-report/
+blob-report/
+playwright/.cache/
 
-# Outils IA (configuration locale, régénérée par Next.js pour AGENTS.md)
+# Secrets : variables d'environnement, clés, certificats
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+secrets/
+credentials*.json
+service-account*.json
+.npmrc
+
+# Outils IA (configuration et mémoire locales)
 .claude/
-AGENTS.md
 CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+.gemini/
+.cursor/
+.cursorrules
+.cursorignore
+.windsurf/
+.windsurfrules
+.aider*
+.continue/
+.codeium/
+.copilot/
+.github/copilot-instructions.md
+.mcp.json
+.roo/
+.clinerules
+
+# Système et éditeurs
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.idea/
+.vscode/*
+!.vscode/extensions.json
 
 # Captures des sites de référence : usage interne uniquement (droits des éditeurs)
 docs/references/*.png

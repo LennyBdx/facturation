@@ -10,7 +10,7 @@ import { LifecycleStatusBadge, ToneBadge } from "@/components/status/status-badg
 import { RECEIVED_CATEGORY_LABELS } from "@/components/status/status-config";
 import type { ReceivedInvoice } from "@/data/types";
 import { formatDate } from "@/lib/format";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { receivedNeedsAction } from "@/services/dashboard";
 import { syncReceivedInvoices } from "@/services/received";
 
@@ -26,7 +26,7 @@ const FILTERS: { value: string; label: string; test: (r: ReceivedInvoice) => boo
 
 export default async function ReceivedInvoicesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
   const { q, filtre } = await searchParams;
-  const ctx = await getContext();
+  const ctx = await getRequestContext();
   const added = await syncReceivedInvoices(ctx);
   const [all, worksites] = await Promise.all([ctx.repos.receivedInvoices.list(ctx.orgId, { search: q }), ctx.repos.worksites.list(ctx.orgId)]);
   const worksiteName = new Map(worksites.map((w) => [w.id, w.name]));

@@ -27,6 +27,7 @@ import {
   Undo2,
   Upload,
 } from "lucide-react";
+import { INVOICE_KIND_RULES } from "@/domain/invoice-kinds";
 import { LIFECYCLE_STATUSES, type LifecycleStatus, PAYMENT_STATUS_LABELS, type PaymentStatus } from "@/domain/lifecycle";
 import type { ClientKind, InvoiceKind, QuoteStatus, ReceivedInvoiceCategory, WorksiteStatus } from "@/data/types";
 
@@ -94,13 +95,9 @@ export const CLIENT_KIND_LABELS: Record<ClientKind, string> = {
   public_buyer: "Acheteur public",
 };
 
-export const INVOICE_KIND_LABELS: Record<InvoiceKind, string> = {
-  standard: "Facture",
-  deposit: "Facture d'acompte",
-  progress: "Situation de travaux",
-  final: "Facture de solde",
-  credit_note: "Avoir",
-};
+export const INVOICE_KIND_LABELS = Object.fromEntries(
+  Object.entries(INVOICE_KIND_RULES).map(([k, r]) => [k, r.label]),
+) as Record<InvoiceKind, string>;
 
 export const RECEIVED_CATEGORY_LABELS: Record<ReceivedInvoiceCategory, string> = {
   materials: "Matériaux et fournitures",

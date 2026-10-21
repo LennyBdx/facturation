@@ -6,6 +6,7 @@
  * de la session (cookie signé / JWT) et rediriger vers /connexion si absente.
  * Toutes les pages passent par ce module.
  */
+import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { DEMO_USER_ID } from "@/config/app";

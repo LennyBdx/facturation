@@ -14,7 +14,7 @@ import type { QuoteStatus } from "@/data/types";
 import { effectiveQuoteStatus } from "@/features/quotes/form-values";
 import { formatDate } from "@/lib/format";
 import { quoteTotals } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Devis" };
 
@@ -23,7 +23,7 @@ const STATUSES = Object.keys(QUOTE_STATUS) as QuoteStatus[];
 export default async function QuotesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
   const { q, filtre } = await searchParams;
   const status = STATUSES.includes(filtre as QuoteStatus) ? (filtre as QuoteStatus) : undefined;
-  const { repos, orgId, today } = await getContext();
+  const { repos, orgId, today } = await getRequestContext();
   const [all, clients] = await Promise.all([repos.quotes.list(orgId, { search: q }), repos.clients.list(orgId)]);
   const clientName = new Map(clients.map((c) => [c.id, c.name]));
   const quotes = all

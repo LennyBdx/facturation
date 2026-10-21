@@ -6,7 +6,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { APP_NAME } from "@/config/app";
 import { initials } from "@/lib/format";
 import { listCurrentUserOrganizations } from "@/lib/session";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { getNavBadges } from "@/services/dashboard";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const ctx = await getContext();
+  const ctx = await getRequestContext();
   const [organizations, badges, cookieStore] = await Promise.all([
     listCurrentUserOrganizations(),
     getNavBadges(ctx),

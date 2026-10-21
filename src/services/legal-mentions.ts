@@ -4,6 +4,8 @@
  * annexe II du CGI, art. 283-2 nonies du CGI, art. L243-2 du Code des assurances,
  * loi n° 71-584 du 16 juillet 1971 (retenue de garantie).
  */
+import "server-only";
+import { kindRules } from "@/domain/invoice-kinds";
 import { formatSiren } from "@/domain/identifiers";
 import { REVERSE_CHARGE_MENTION } from "@/domain/vat";
 import type { BuyerSnapshot, Invoice, Organization, Quote, SellerSnapshot } from "@/data/types";
@@ -50,7 +52,7 @@ export function invoiceMentions(params: {
   if (invoice.totals.retention !== "0.00" && invoice.progress) {
     m.push(`Retenue de garantie de ${formatPercent(invoice.progress.retentionRate)} (loi n° 71-584 du 16 juillet 1971), restituée un an après la réception des travaux sauf réserves.`);
   }
-  if (invoice.kind !== "credit_note") {
+  if (kindRules(invoice.kind).isReceivable) {
     m.push(`Conditions de paiement : ${invoice.paymentTermsLabel} Échéance : ${formatDate(invoice.dueDate)}.`);
     m.push(
       pro

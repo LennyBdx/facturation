@@ -24,13 +24,13 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/componen
 import { Progress } from "@/components/ui/progress";
 import { formatDate, formatLongDate, formatPercent } from "@/lib/format";
 import { invoicePaymentStatus } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { getDashboard } from "@/services/dashboard";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
 export default async function DashboardPage() {
-  const ctx = await getContext();
+  const ctx = await getRequestContext();
   const d = await getDashboard(ctx);
   const k = d.kpis;
 

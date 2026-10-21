@@ -5,6 +5,7 @@
  * - une facture destinée à un acheteur public sans code service est rejetée (213) ;
  * - une nouvelle facture fournisseur « arrive » une minute après le démarrage.
  */
+import "server-only";
 import { addDays, LIFECYCLE_STATUSES, RECEIVED_INVOICE_ACTIONS, type LifecycleStatus } from "@/domain/lifecycle";
 import { groupByVat, totalsOfBreakdown } from "@/domain/vat";
 import { company } from "@/data/mock/helpers";

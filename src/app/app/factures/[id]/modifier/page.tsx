@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
 import { DraftForm } from "@/features/invoices/draft-form";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Modifier le brouillon" };
 
 export default async function EditDraftPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const invoice = await repos.invoices.get(orgId, id);
   if (!invoice) notFound();
   if (invoice.issuedAt) redirect(routes.invoices.show(id));

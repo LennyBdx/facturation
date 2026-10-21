@@ -1,5 +1,6 @@
 import { assignNextNumber } from "@/domain/numbering";
-import { NotFoundError, type Repositories } from "../repositories";
+import "server-only";
+import { NotFoundError, type Repositories, type UnitOfWork } from "../repositories";
 import type { Invoice, Quote } from "../types";
 import { clone, matches, type MemoryDb, newId, nowIso } from "./store";
 
@@ -244,6 +245,33 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
         db.receivedInvoices.set(id, updated);
         return clone(updated);
       },
+    },
+  };
+}
+
+/**
+ * Unité de travail en mémoire : les travaux sont sérialisés (un à la fois) et
+ * l'état de la base est restauré si le travail échoue.
+ */
+export function createMemoryUnitOfWork(db: MemoryDb, repos: Repositories): UnitOfWork {
+  let queue: Promise<unknown> = Promise.resolve();
+  return {
+    run<T>(work: (repos: Repositories) => Promise<T>): Promise<T> {
+      const next = queue.then(async () => {
+        const snapshot = Object.fromEntries(Object.entries(db).map(([k, map]) => [k, clone(map)])) as unknown as MemoryDb;
+        try {
+          return await work(repos);
+        } catch (error) {
+          for (const key of Object.keys(db) as (keyof MemoryDb)[]) {
+            const target = db[key] as Map<string, unknown>;
+            target.clear();
+            for (const [id, row] of snapshot[key] as Map<string, unknown>) target.set(id, row);
+          }
+          throw error;
+        }
+      });
+      queue = next.catch(() => undefined);
+      return next;
     },
   };
 }

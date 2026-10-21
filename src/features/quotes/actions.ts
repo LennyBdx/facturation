@@ -1,21 +1,13 @@
 "use server";
 
-import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
+import { runAction } from "@/composition/action";
+import { routes } from "@/config/routes";
 import type { QuoteInput, QuoteStatus } from "@/data/types";
 import { parseDecimalInput, toMoney } from "@/domain/money";
 import { defaultCategoryForRate } from "@/domain/vat";
-import { fieldErrors } from "@/lib/validation";
-import { type ActionResult, getContext } from "@/services/context";
-import {
-  BusinessError,
-  createQuote,
-  duplicateQuote,
-  quoteToInvoice,
-  quoteToWorksite,
-  setQuoteStatus,
-  updateQuote,
-} from "@/services/quotes";
+import type { ActionResult } from "@/lib/action-result";
+import { createQuote, duplicateQuote, quoteToInvoice, quoteToWorksite, setQuoteStatus, updateQuote } from "@/services/quotes";
 import { type QuoteFormOutput, quoteSchema, type QuoteFormValues } from "./schemas";
 
 function toEntity(v: QuoteFormOutput, status: QuoteStatus): QuoteInput {
@@ -53,59 +45,47 @@ function toEntity(v: QuoteFormOutput, status: QuoteStatus): QuoteInput {
   };
 }
 
-async function guard<T>(fn: () => Promise<ActionResult<T>>): Promise<ActionResult<T>> {
-  try {
-    return await fn();
-  } catch (e) {
-    if (e instanceof BusinessError) return { ok: false, error: e.message };
-    throw e;
-  }
-}
+const STATUS_MESSAGES: Partial<Record<QuoteStatus, string>> = {
+  sent: "Devis marqué comme envoyé.",
+  accepted: "Devis accepté : vous pouvez créer le chantier et facturer.",
+  refused: "Devis marqué comme refusé.",
+  draft: "Devis repassé en brouillon.",
+};
 
 export async function saveQuote(id: string | null, values: QuoteFormValues): Promise<ActionResult<{ id: string }>> {
-  const parsed = quoteSchema.safeParse(values);
-  if (!parsed.success) return { ok: false, error: "Le devis contient des erreurs.", fieldErrors: fieldErrors(parsed.error) };
-  return guard(async () => {
-    const ctx = await getContext();
-    if (!(await ctx.repos.clients.get(ctx.orgId, parsed.data.clientId))) return { ok: false, error: "Client introuvable." };
-    const quote = id ? await updateQuote(ctx, id, toEntity(parsed.data, "draft")) : await createQuote(ctx, toEntity(parsed.data, "draft"));
+  return runAction({ permission: "quote:write", schema: quoteSchema, invalidMessage: "Le devis contient des erreurs." }, values, async (ctx, data) => {
+    if (!(await ctx.repos.clients.get(ctx.orgId, data.clientId))) return { ok: false, error: "Client introuvable." };
+    const quote = id ? await updateQuote(ctx, id, toEntity(data, "draft")) : await createQuote(ctx, toEntity(data, "draft"));
     revalidatePath(routes.quotes.list());
     return { ok: true, data: { id: quote.id }, message: id ? "Devis enregistré." : `Devis ${quote.number} créé.` };
   });
 }
 
 export async function changeQuoteStatus(id: string, status: QuoteStatus, reason?: string): Promise<ActionResult> {
-  return guard(async () => {
-    const ctx = await getContext();
+  return runAction({ permission: "quote:write" }, undefined, async (ctx) => {
     await setQuoteStatus(ctx, id, status, reason);
     revalidatePath(routes.quotes.show(id));
-    const messages: Partial<Record<QuoteStatus, string>> = {
-      sent: "Devis marqué comme envoyé.",
-      accepted: "Devis accepté : vous pouvez créer le chantier et facturer.",
-      refused: "Devis marqué comme refusé.",
-      draft: "Devis repassé en brouillon.",
-    };
-    return { ok: true, message: messages[status] };
+    return { ok: true, message: STATUS_MESSAGES[status] };
   });
 }
 
 export async function duplicateQuoteAction(id: string): Promise<ActionResult<{ redirectTo: string }>> {
-  return guard(async () => {
-    const copy = await duplicateQuote(await getContext(), id);
+  return runAction({ permission: "quote:write" }, undefined, async (ctx) => {
+    const copy = await duplicateQuote(ctx, id);
     return { ok: true, data: { redirectTo: routes.quotes.edit(copy.id) }, message: `Copie créée : ${copy.number}.` };
   });
 }
 
 export async function quoteToWorksiteAction(id: string): Promise<ActionResult<{ redirectTo: string }>> {
-  return guard(async () => {
-    const w = await quoteToWorksite(await getContext(), id);
-    return { ok: true, data: { redirectTo: routes.worksites.show(w!.id) }, message: "Chantier créé à partir du devis." };
+  return runAction({ permission: "worksite:write" }, undefined, async (ctx) => {
+    const w = await quoteToWorksite(ctx, id);
+    return { ok: true, data: { redirectTo: routes.worksites.show(w.id) }, message: "Chantier créé à partir du devis." };
   });
 }
 
 export async function quoteToInvoiceAction(id: string, kind: "standard" | "deposit"): Promise<ActionResult<{ redirectTo: string }>> {
-  return guard(async () => {
-    const invoice = await quoteToInvoice(await getContext(), id, kind);
+  return runAction({ permission: "invoice:draft" }, undefined, async (ctx) => {
+    const invoice = await quoteToInvoice(ctx, id, kind);
     return {
       ok: true,
       data: { redirectTo: routes.invoices.show(invoice.id) },

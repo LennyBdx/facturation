@@ -1,8 +1,10 @@
+import "server-only";
+import { kindRules } from "@/domain/invoice-kinds";
 import { daysBetween, LIFECYCLE_NEEDS_ACTION } from "@/domain/lifecycle";
 import { compareMoney, sumMoney, ZERO } from "@/domain/money";
 import type { Invoice, Quote, ReceivedInvoice, Worksite } from "@/data/types";
 import { invoicePaymentStatus, invoiceRemaining, quoteTotals } from "./builders";
-import type { Context } from "./context";
+import type { ServiceContext } from "./context";
 
 /** Statuts de factures reçues demandant une action (à traiter). */
 export const RECEIVED_TO_PROCESS = ["received", "made_available", "in_hand"] as const;
@@ -23,7 +25,7 @@ export function retentionReleaseDate(w: Worksite): string | null {
   return d.toISOString().slice(0, 10);
 }
 
-export async function getNavBadges(ctx: Context) {
+export async function getNavBadges(ctx: ServiceContext<"receivedInvoices" | "invoices">) {
   const [received, invoices] = await Promise.all([
     ctx.repos.receivedInvoices.list(ctx.orgId),
     ctx.repos.invoices.list(ctx.orgId),
@@ -34,7 +36,7 @@ export async function getNavBadges(ctx: Context) {
   };
 }
 
-export async function getDashboard(ctx: Context) {
+export async function getDashboard(ctx: ServiceContext<"invoices" | "quotes" | "worksites" | "receivedInvoices" | "clients">) {
   const { repos, orgId, today } = ctx;
   const [invoices, quotes, worksites, received, clients] = await Promise.all([
     repos.invoices.list(orgId),
@@ -50,7 +52,7 @@ export async function getDashboard(ctx: Context) {
   const billedThisMonth = sumMoney(
     issued
       .filter((i) => i.issueDate.startsWith(month))
-      .map((i) => (i.kind === "credit_note" ? `-${i.totals.net}` : i.totals.net)),
+      .map((i) => (kindRules(i.kind).sign < 0 ? `-${i.totals.net}` : i.totals.net)),
   );
   const outstanding = issued.map((i) => ({ invoice: i, remaining: invoiceRemaining(i) })).filter((x) => compareMoney(x.remaining, ZERO) > 0);
   const overdue = outstanding.filter((x) => invoicePaymentStatus(x.invoice, today) === "overdue");
@@ -65,7 +67,7 @@ export async function getDashboard(ctx: Context) {
   const retentionByWorksite = worksites
     .filter((w) => !w.retentionReleased)
     .map((w) => {
-      const held = sumMoney(issued.filter((i) => i.worksiteId === w.id && i.kind !== "credit_note").map((i) => i.totals.retention));
+      const held = sumMoney(issued.filter((i) => i.worksiteId === w.id && kindRules(i.kind).isReceivable).map((i) => i.totals.retention));
       const releaseDate = retentionReleaseDate(w);
       return { worksite: w, held, releaseDate, releasable: releaseDate !== null && releaseDate <= today };
     })
@@ -107,7 +109,7 @@ function quoteNet(q: Quote) {
  */
 export function billedProgress(worksiteId: string, invoices: readonly Invoice[]): string {
   const relevant = invoices.filter(
-    (i) => i.worksiteId === worksiteId && i.issuedAt && !i.cancelledByCreditNoteId && i.kind !== "deposit" && i.kind !== "credit_note",
+    (i) => i.worksiteId === worksiteId && i.issuedAt && !i.cancelledByCreditNoteId && i.kind !== "deposit" && kindRules(i.kind).isReceivable,
   );
   if (relevant.some((i) => i.kind === "final" || (i.kind === "standard" && i.quoteId))) return "100.00";
   const last = relevant.filter((i) => i.progress).sort((a, b) => b.progress!.index - a.progress!.index)[0];

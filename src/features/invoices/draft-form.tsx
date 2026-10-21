@@ -6,7 +6,9 @@ import { useForm } from "react-hook-form";
 import { FormActions } from "@/components/forms/form-actions";
 import { TextareaField, TextField } from "@/components/forms/form-fields";
 import { applyActionResult } from "@/components/forms/submit";
-import { type DraftInput, updateDraftAction } from "./actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { updateDraftAction } from "./actions";
+import { draftSchema, type DraftInput } from "./schemas";
 
 /**
  * Modification d'un brouillon : en-tête, échéance et conditions.
@@ -14,7 +16,7 @@ import { type DraftInput, updateDraftAction } from "./actions";
  */
 export function DraftForm({ invoiceId, defaultValues }: { invoiceId: string; defaultValues: DraftInput }) {
   const router = useRouter();
-  const form = useForm<DraftInput>({ defaultValues });
+  const form = useForm<DraftInput>({ resolver: zodResolver(draftSchema), defaultValues, mode: "onBlur" });
   return (
     <form
       noValidate

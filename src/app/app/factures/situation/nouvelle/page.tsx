@@ -6,14 +6,14 @@ import { PageHeader } from "@/components/app/page-header";
 import { ProgressWizard } from "@/features/invoices/progress-wizard";
 import { formatPercent } from "@/lib/format";
 import { depositNetForQuote, lastProgressInvoice } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Nouvelle situation de travaux" };
 
 export default async function NewProgressInvoicePage({ searchParams }: { searchParams: Promise<{ devis?: string }> }) {
   const { devis } = await searchParams;
   if (!devis) notFound();
-  const { repos, orgId, today } = await getContext();
+  const { repos, orgId, today } = await getRequestContext();
   const quote = await repos.quotes.get(orgId, devis);
   if (!quote || quote.status !== "accepted") notFound();
   const [client, worksite, invoices] = await Promise.all([

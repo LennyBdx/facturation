@@ -3,6 +3,8 @@
  * Utilisés par les services ET par le jeu de données fictives, pour que les montants
  * fictifs soient produits par les mêmes calculs que l'application.
  */
+import "server-only";
+import { kindRules } from "@/domain/invoice-kinds";
 import { addDays, computePaymentStatus, type PaymentStatus, remainingDue } from "@/domain/lifecycle";
 import { compareMoney, type Money, type Percent, sumMoney, ZERO } from "@/domain/money";
 import {
@@ -194,7 +196,7 @@ export function depositNetForQuote(invoices: readonly Invoice[], quoteId: string
 /** Dernière situation émise (non annulée) d'un devis. */
 export function lastProgressInvoice(invoices: readonly Invoice[], quoteId: string): Invoice | null {
   const list = invoices
-    .filter((i) => i.quoteId === quoteId && (i.kind === "progress" || i.kind === "final") && i.issuedAt && !i.cancelledByCreditNoteId && i.progress)
+    .filter((i) => i.quoteId === quoteId && kindRules(i.kind).isProgress && i.issuedAt && !i.cancelledByCreditNoteId && i.progress)
     .sort((a, b) => a.progress!.index - b.progress!.index);
   return list.at(-1) ?? null;
 }
@@ -318,7 +320,7 @@ export function buildCreditNote(params: { invoice: Invoice; issueDate: string; r
 }
 
 export function invoicePaymentStatus(invoice: Invoice, today: string): PaymentStatus {
-  if (invoice.kind === "credit_note") return invoice.issuedAt ? "issued" : "draft";
+  if (!kindRules(invoice.kind).isReceivable) return invoice.issuedAt ? "issued" : "draft";
   return computePaymentStatus({
     issued: invoice.issuedAt !== null,
     cancelled: invoice.cancelledByCreditNoteId !== null,
@@ -330,13 +332,13 @@ export function invoicePaymentStatus(invoice: Invoice, today: string): PaymentSt
 }
 
 export function invoiceRemaining(invoice: Invoice): Money {
-  if (!invoice.issuedAt || invoice.cancelledByCreditNoteId || invoice.kind === "credit_note") return ZERO;
+  if (!invoice.issuedAt || invoice.cancelledByCreditNoteId || !kindRules(invoice.kind).isReceivable) return ZERO;
   return remainingDue(invoice.totals.netToPay, invoice.payments.map((p) => p.amount));
 }
 
 /** Retenue de garantie cumulée retenue sur un ensemble de factures émises. */
 export function retentionHeld(invoices: readonly Invoice[]): Money {
   return sumMoney(
-    invoices.filter((i) => i.issuedAt && !i.cancelledByCreditNoteId && i.kind !== "credit_note").map((i) => i.totals.retention),
+    invoices.filter((i) => i.issuedAt && !i.cancelledByCreditNoteId && kindRules(i.kind).isReceivable).map((i) => i.totals.retention),
   );
 }

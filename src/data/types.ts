@@ -7,6 +7,7 @@
  * - montants : `Money` (chaîne décimale à 2 décimales), jamais `number` ;
  * - les champs EN 16931 utiles à Factur-X sont indiqués par leur identifiant (BT-xx).
  */
+import type { InvoiceKind } from "@/domain/invoice-kinds";
 import type { NumberingSeries } from "@/domain/numbering";
 import type { LifecycleStatus } from "@/domain/lifecycle";
 import type { Money, Percent, Quantity } from "@/domain/money";
@@ -241,7 +242,7 @@ export interface Quote {
  * - `final`    : facture de solde (dernière situation / décompte) ;
  * - `credit_note` : avoir (code type 381).
  */
-export type InvoiceKind = "standard" | "deposit" | "progress" | "final" | "credit_note";
+export type { InvoiceKind };
 
 export type OperationCategory = "services" | "goods" | "mixed";
 

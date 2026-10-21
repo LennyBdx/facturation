@@ -1,3 +1,4 @@
+import { kindRules } from "@/domain/invoice-kinds";
 import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -8,14 +9,14 @@ import { INVOICE_KIND_LABELS } from "@/components/status/status-config";
 import { addMoney } from "@/domain/money";
 import { formatDate, formatPercent } from "@/lib/format";
 import { buyerSnapshot, sellerSnapshot } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { invoiceMentions, sellerIdentityLine } from "@/services/legal-mentions";
 
 export const metadata: Metadata = { title: "Aperçu de la facture" };
 
 export default async function InvoicePreviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId, org } = await getContext();
+  const { repos, orgId, org } = await getRequestContext();
   const invoice = await repos.invoices.get(orgId, id);
   if (!invoice) notFound();
   const [client, worksite, corrected] = await Promise.all([
@@ -55,7 +56,7 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
         number={invoice.number ?? "BROUILLON — non numérotée"}
         meta={[
           { label: "Date d'émission", value: formatDate(invoice.issueDate) },
-          ...(invoice.kind !== "credit_note" ? [{ label: "Échéance", value: formatDate(invoice.dueDate) }] : []),
+          ...(kindRules(invoice.kind).isReceivable ? [{ label: "Échéance", value: formatDate(invoice.dueDate) }] : []),
           ...(invoice.orderReference ? [{ label: "Réf. commande", value: invoice.orderReference }] : []),
           ...(invoice.progress ? [{ label: "Avancement cumulé", value: formatPercent(invoice.progress.overallPercent) }] : []),
         ]}
@@ -74,7 +75,7 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
           { label: "Total TVA", value: t.vat },
           { label: invoice.reverseCharge ? "Total (TVA autoliquidée)" : "Total TTC", value: t.gross },
           ...(t.retention !== "0.00" ? [{ label: "Retenue de garantie", value: t.retention, negative: true }] : []),
-          { label: invoice.kind === "credit_note" ? "Montant de l'avoir" : "Net à payer", value: t.netToPay, strong: true },
+          { label: kindRules(invoice.kind).isReceivable ? "Net à payer" : "Montant de l'avoir", value: t.netToPay, strong: true },
         ]}
         mentions={invoiceMentions({ invoice, seller, buyer, org, correctedInvoice: corrected })}
         accentColor={org.settings.branding.accentColor}

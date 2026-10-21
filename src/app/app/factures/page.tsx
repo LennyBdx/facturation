@@ -1,3 +1,4 @@
+import { kindRules } from "@/domain/invoice-kinds";
 import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -14,7 +15,7 @@ import type { PaymentStatus } from "@/domain/lifecycle";
 import { compareMoney, ZERO } from "@/domain/money";
 import { formatDate } from "@/lib/format";
 import { invoicePaymentStatus, invoiceRemaining } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { invoiceNeedsCorrection } from "@/services/dashboard";
 
 export const metadata: Metadata = { title: "Factures émises" };
@@ -27,7 +28,7 @@ const FILTERS = [
 
 export default async function InvoicesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
   const { q, filtre } = await searchParams;
-  const { repos, orgId, today } = await getContext();
+  const { repos, orgId, today } = await getRequestContext();
   const [invoices, clients] = await Promise.all([repos.invoices.list(orgId, { search: q }), repos.clients.list(orgId)]);
   const clientName = new Map(clients.map((c) => [c.id, c.name]));
   const rows = invoices
@@ -90,14 +91,14 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
               ),
             },
             { header: "Émission", cell: (r) => <span className="num">{formatDate(r.invoice.issueDate)}</span> },
-            { header: "Échéance", cell: (r) => <span className="num">{r.invoice.kind === "credit_note" ? "—" : formatDate(r.invoice.dueDate)}</span> },
+            { header: "Échéance", cell: (r) => <span className="num">{kindRules(r.invoice.kind).isReceivable ? formatDate(r.invoice.dueDate) : "—"}</span> },
             { header: "Statuts", cell: (r) => <span className="flex flex-wrap gap-1">{badges(r)}</span> },
             {
               header: "Net à payer",
               align: "right",
               cell: (r) => (
                 <span className="block">
-                  {r.invoice.kind === "credit_note" ? "− " : ""}
+                  {kindRules(r.invoice.kind).sign < 0 ? "− " : ""}
                   <Amount value={r.invoice.totals.netToPay} />
                   {compareMoney(r.remaining, ZERO) > 0 && r.remaining !== r.invoice.totals.netToPay ? (
                     <span className="block text-xs text-muted-foreground">
@@ -113,7 +114,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
             subtitle: `${r.invoice.number ?? "Brouillon"} · ${INVOICE_KIND_LABELS[r.invoice.kind]} · ${formatDate(r.invoice.issueDate)}`,
             amount: (
               <>
-                {r.invoice.kind === "credit_note" ? "− " : ""}
+                {kindRules(r.invoice.kind).sign < 0 ? "− " : ""}
                 <Amount value={r.invoice.totals.netToPay} />
               </>
             ),

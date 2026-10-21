@@ -1,3 +1,4 @@
+import { type InvoiceKind, kindRules } from "./invoice-kinds";
 import { Dec } from "./money";
 import { validateSiren, validateSiret, validateVatNumber } from "./identifiers";
 import type { VatCategory } from "./vat";
@@ -46,7 +47,7 @@ export interface ComplianceBuyer extends ComplianceParty {
 }
 
 export interface ComplianceInvoice {
-  kind: "standard" | "deposit" | "progress" | "final" | "credit_note";
+  kind: InvoiceKind;
   issueDate?: string;
   dueDate?: string;
   paymentTerms?: string;
@@ -146,7 +147,7 @@ export function checkInvoiceCompliance(input: {
 
   // --- Facture -------------------------------------------------------------
   if (blank(invoice.issueDate)) push({ id: "invoice.issueDate", scope: "invoice", message: "Date d'émission manquante.", blocking: true });
-  if (invoice.kind !== "credit_note") {
+  if (kindRules(invoice.kind).isReceivable) {
     if (blank(invoice.dueDate)) push({ id: "invoice.dueDate", scope: "invoice", message: "Date d'échéance du paiement manquante.", blocking: true });
     else if (invoice.issueDate && invoice.dueDate! < invoice.issueDate) {
       push({ id: "invoice.dueDate", scope: "invoice", message: "La date d'échéance est antérieure à la date d'émission.", blocking: true });

@@ -2,13 +2,14 @@
  * Factures fournisseurs reçues via la plateforme agréée (obligatoire depuis le
  * 1er septembre 2026) : synchronisation, traitement, rattachement aux chantiers.
  */
+import "server-only";
 import { allowedReceivedInvoiceActions, type ReceivedInvoiceAction } from "@/domain/lifecycle";
 import type { ReceivedInvoice } from "@/data/types";
-import type { Context } from "./context";
-import { BusinessError } from "./quotes";
+import type { ServiceContext } from "./context";
+import { BusinessError } from "./errors";
 
 /** Récupère les nouvelles factures auprès de la plateforme. */
-export async function syncReceivedInvoices(ctx: Context): Promise<number> {
+export async function syncReceivedInvoices(ctx: ServiceContext<"receivedInvoices", "listReceivedInvoices">): Promise<number> {
   const address = ctx.org.settings.eInvoicing.receptionAddress;
   if (!address || ctx.org.settings.eInvoicing.connectionStatus !== "connected") return 0;
   const incoming = await ctx.provider.listReceivedInvoices(address);
@@ -25,7 +26,7 @@ export async function syncReceivedInvoices(ctx: Context): Promise<number> {
 
 const REASON_REQUIRED: ReceivedInvoiceAction[] = ["refuse", "dispute"];
 
-export async function actOnReceivedInvoice(ctx: Context, id: string, action: ReceivedInvoiceAction, reason?: string) {
+export async function actOnReceivedInvoice(ctx: ServiceContext<"receivedInvoices", "updateReceivedInvoiceStatus">, id: string, action: ReceivedInvoiceAction, reason?: string) {
   const inv = await ctx.repos.receivedInvoices.get(ctx.orgId, id);
   if (!inv) throw new BusinessError("Facture reçue introuvable.");
   if (!allowedReceivedInvoiceActions(inv.status).includes(action)) {
@@ -43,7 +44,7 @@ export async function actOnReceivedInvoice(ctx: Context, id: string, action: Rec
   });
 }
 
-export async function attachReceivedToWorksite(ctx: Context, id: string, worksiteId: string | null) {
+export async function attachReceivedToWorksite(ctx: ServiceContext<"receivedInvoices" | "worksites">, id: string, worksiteId: string | null) {
   if (worksiteId && !(await ctx.repos.worksites.get(ctx.orgId, worksiteId))) throw new BusinessError("Chantier introuvable.");
   return ctx.repos.receivedInvoices.update(ctx.orgId, id, { worksiteId });
 }

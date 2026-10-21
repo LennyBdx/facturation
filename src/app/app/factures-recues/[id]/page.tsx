@@ -14,7 +14,7 @@ import { allowedReceivedInvoiceActions, daysBetween } from "@/domain/lifecycle";
 import { formatVatRateLabel, REVERSE_CHARGE_MENTION } from "@/domain/vat";
 import { ReceivedActions, WorksiteAttach } from "@/features/received/received-actions";
 import { formatAddress, formatDate, formatDueIn, formatQuantity } from "@/lib/format";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Facture reçue" };
 
@@ -22,7 +22,7 @@ const ACTORS = { platform: "Plateforme agréée", buyer: "Votre entreprise", sel
 
 export default async function ReceivedInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId, today } = await getContext();
+  const { repos, orgId, today } = await getRequestContext();
   const [inv, worksites] = await Promise.all([repos.receivedInvoices.get(orgId, id), repos.worksites.list(orgId)]);
   if (!inv) notFound();
   const dueIn = daysBetween(today, inv.dueDate);

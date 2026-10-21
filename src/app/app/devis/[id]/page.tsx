@@ -17,17 +17,17 @@ import { changeQuoteStatus, duplicateQuoteAction, quoteToInvoiceAction, quoteToW
 import { effectiveQuoteStatus } from "@/features/quotes/form-values";
 import { RefuseQuoteButton } from "@/features/quotes/refuse-quote-button";
 import { quoteTotals } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   return { title: `Devis ${(await repos.quotes.get(orgId, id))?.number ?? ""}` };
 }
 
 export default async function QuotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId, today } = await getContext();
+  const { repos, orgId, today } = await getRequestContext();
   const quote = await repos.quotes.get(orgId, id);
   if (!quote) notFound();
   const [client, worksite, invoices] = await Promise.all([

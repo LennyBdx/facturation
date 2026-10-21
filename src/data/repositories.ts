@@ -138,6 +138,14 @@ export interface Repositories {
   receivedInvoices: ReceivedInvoiceRepository;
 }
 
+/**
+ * Unité de travail : exécute plusieurs écritures de façon atomique (tout ou rien).
+ * En base : une transaction SQL. En mémoire : instantané puis restauration en cas d'erreur.
+ */
+export interface UnitOfWork {
+  run<T>(work: (repos: Repositories) => Promise<T>): Promise<T>;
+}
+
 export class NotFoundError extends Error {
   constructor(entity: string, id: string) {
     super(`${entity} introuvable (${id}).`);

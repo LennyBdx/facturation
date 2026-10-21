@@ -2,12 +2,12 @@ import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/app/page-header";
 import { ClientForm } from "@/features/clients/client-form";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Nouveau client" };
 
 export default async function NewClientPage() {
-  const { org } = await getContext();
+  const { org } = await getRequestContext();
   return (
     <>
       <PageHeader title="Nouveau client" backHref={routes.clients.list()} backLabel="Clients" />

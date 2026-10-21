@@ -7,12 +7,12 @@ import { E_INVOICING_READY_LABEL } from "@/config/app";
 import { LIFECYCLE_STATUSES, type LifecycleStatus } from "@/domain/lifecycle";
 import { PlatformPicker } from "@/features/settings/platform-picker";
 import { formatDateTime } from "@/lib/format";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Facture électronique — Paramètres" };
 
 export default async function EInvoicingSettingsPage() {
-  const { org, provider } = await getContext();
+  const { org, provider } = await getRequestContext();
   const platforms = await provider.listPlatforms();
   const e = org.settings.eInvoicing;
   const current = platforms.find((p) => p.id === e.platformId);

@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
 import { WorksiteForm } from "@/features/worksites/worksite-form";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Modifier le chantier" };
 
 export default async function EditWorksitePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const [w, clients] = await Promise.all([repos.worksites.get(orgId, id), repos.clients.list(orgId)]);
   if (!w) notFound();
   return (

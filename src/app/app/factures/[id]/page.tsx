@@ -1,3 +1,4 @@
+import { kindRules } from "@/domain/invoice-kinds";
 import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -19,12 +20,12 @@ import { deleteDraftAction, issueInvoiceAction, resubmitInvoiceAction } from "@/
 import { CreditNoteDialog, LifecyclePoller, PaymentDialog } from "@/features/invoices/invoice-widgets";
 import { formatDate, formatPercent, formatQuantity } from "@/lib/format";
 import { invoicePaymentStatus, invoiceRemaining } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { complianceFor, goesThroughPlatform, refreshInvoiceStatus } from "@/services/invoices";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const inv = await repos.invoices.get(orgId, id);
   return { title: inv?.number ? `Facture ${inv.number}` : "Brouillon de facture" };
 }
@@ -33,7 +34,7 @@ const PAYMENT_METHOD_LABELS = { transfer: "Virement", check: "Chèque", card: "C
 
 export default async function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const ctx = await getContext();
+  const ctx = await getRequestContext();
   const { repos, orgId, today } = ctx;
   const found = await repos.invoices.get(orgId, id);
   if (!found) notFound();
@@ -120,7 +121,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
                   Supprimer
                 </ActionButton>
               </>
-            ) : invoice.kind !== "credit_note" && !invoice.cancelledByCreditNoteId && invoice.payments.length === 0 ? (
+            ) : kindRules(invoice.kind).canBeCredited && !invoice.cancelledByCreditNoteId && invoice.payments.length === 0 ? (
               <CreditNoteDialog invoiceId={id} number={invoice.number!} />
             ) : null}
           </>
@@ -130,11 +131,11 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
       {/* --- Montant principal --- */}
       <section aria-label="Montant" className="mb-6 grid gap-3 sm:grid-cols-3">
         <div className="rounded-lg border bg-card p-4 sm:col-span-1">
-          <p className="text-sm text-muted-foreground">{invoice.kind === "credit_note" ? "Montant de l'avoir" : "Net à payer"}</p>
+          <p className="text-sm text-muted-foreground">{kindRules(invoice.kind).isReceivable ? "Net à payer" : "Montant de l'avoir"}</p>
           <p className="num text-3xl font-semibold tracking-tight">
             <Amount value={invoice.totals.netToPay} />
           </p>
-          {!draft && invoice.kind !== "credit_note" ? (
+          {!draft && kindRules(invoice.kind).isReceivable ? (
             <p className="text-sm text-muted-foreground">
               {compareMoney(remaining, ZERO) > 0 ? (
                 <>
@@ -153,7 +154,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             columns={3}
             items={[
               { label: "Émission", value: formatDate(invoice.issueDate) },
-              { label: "Échéance", value: invoice.kind === "credit_note" ? "—" : formatDate(invoice.dueDate) },
+              { label: "Échéance", value: kindRules(invoice.kind).isReceivable ? formatDate(invoice.dueDate) : "—" },
               { label: "Devis", value: quote ? <Link className="text-primary underline-offset-4 hover:underline" href={routes.quotes.show(quote.id)}>{quote.number}</Link> : "—" },
               { label: "Réf. marché / commande", value: invoice.orderReference },
               { label: "Facture corrigée", value: corrected ? <Link className="text-primary underline-offset-4 hover:underline" href={routes.invoices.show(corrected.id)}>{corrected.number}</Link> : null, hidden: !corrected },
@@ -272,7 +273,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
           </Card>
 
           {/* --- Paiements --- */}
-          {!draft && invoice.kind !== "credit_note" ? (
+          {!draft && kindRules(invoice.kind).isReceivable ? (
             <Card>
               <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
                 <CardTitle className="text-lg">Paiements</CardTitle>

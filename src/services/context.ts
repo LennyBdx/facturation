@@ -1,28 +1,59 @@
 /**
- * Contexte d'exécution côté serveur : repositories, entreprise et utilisateur
- * courants, provider de facture électronique. Tous les services passent par lui.
+ * Dépendances des services (injection explicite).
+ *
+ * - `AppDeps` : implémentations techniques (données, transactions, plateforme, horloge),
+ *   fournies par la racine de composition (`src/composition/request-context.ts`) ou par un test.
+ * - `RequestScope` : qui agit, pour quelle entreprise.
+ * - `ServiceContext<R, P>` : chaque service ne déclare que les repositories (`R`) et les
+ *   méthodes de plateforme (`P`) dont il a besoin (ségrégation des interfaces).
  */
-import { getRepositories } from "@/data";
-import { getEInvoicingProvider } from "@/integrations/e-invoicing";
-import { today } from "@/lib/clock";
-import { getCurrentMembership, getCurrentOrganization, getCurrentUser } from "@/lib/session";
+import "server-only";
+import type { Membership, Organization, Repositories, UnitOfWork, User } from "@/data";
+import type { Role } from "@/domain/permissions";
+import type { EInvoicingProvider } from "@/integrations/e-invoicing";
 
-export async function getContext() {
-  const [org, user] = await Promise.all([getCurrentOrganization(), getCurrentUser()]);
+export interface Clock {
+  /** Date du jour, AAAA-MM-JJ. */
+  today(): string;
+  /** Horodatage ISO. */
+  now(): string;
+}
+
+export interface AppDeps {
+  repos: Repositories;
+  uow: UnitOfWork;
+  provider: EInvoicingProvider;
+  clock: Clock;
+}
+
+export interface RequestScope {
+  org: Organization;
+  user: User;
+  membership: Membership;
+}
+
+export interface Context extends AppDeps {
+  org: Organization;
+  orgId: string;
+  user: User;
+  role: Role;
+  today: string;
+}
+
+export function createContext(deps: AppDeps, scope: RequestScope): Context {
   return {
-    repos: getRepositories(),
-    provider: getEInvoicingProvider(),
-    org,
-    orgId: org.id,
-    user,
-    today: today(),
-    membership: () => getCurrentMembership(),
+    ...deps,
+    org: scope.org,
+    orgId: scope.org.id,
+    user: scope.user,
+    role: scope.membership.role,
+    today: deps.clock.today(),
   };
 }
 
-export type Context = Awaited<ReturnType<typeof getContext>>;
+type Scope = Pick<Context, "org" | "orgId" | "user" | "role" | "today" | "clock">;
 
-/** Résultat standard d'une Server Action. */
-export type ActionResult<T = undefined> =
-  | { ok: true; data?: T; message?: string }
-  | { ok: false; error: string; fieldErrors?: Record<string, string> };
+/** Contexte réduit à ce qu'un service utilise réellement. */
+export type ServiceContext<R extends keyof Repositories = never, P extends keyof EInvoicingProvider = never> = Scope & {
+  repos: Pick<Repositories, R>;
+} & ([P] extends [never] ? unknown : { provider: Pick<EInvoicingProvider, P> });

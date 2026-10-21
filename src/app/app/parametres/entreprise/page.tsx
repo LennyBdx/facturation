@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { CompanySettingsForm } from "@/features/settings/settings-forms";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Entreprise — Paramètres" };
 
 export default async function CompanySettingsPage() {
-  const { org } = await getContext();
+  const { org } = await getRequestContext();
   return (
     <section aria-labelledby="s-title" className="space-y-4">
       <div>

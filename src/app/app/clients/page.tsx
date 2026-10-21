@@ -15,14 +15,14 @@ import { sumMoney } from "@/domain/money";
 import { formatSiren } from "@/domain/identifiers";
 import { CLIENT_KINDS } from "@/features/clients/schemas";
 import { invoiceRemaining } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Clients" };
 
 export default async function ClientsPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
   const { q, filtre } = await searchParams;
   const kind = CLIENT_KINDS.includes(filtre as ClientKind) ? (filtre as ClientKind) : undefined;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const [clients, invoices] = await Promise.all([repos.clients.list(orgId, { search: q, kind }), repos.invoices.list(orgId)]);
   const due = new Map(clients.map((c) => [c.id, sumMoney(invoices.filter((i) => i.clientId === c.id).map(invoiceRemaining))]));
 

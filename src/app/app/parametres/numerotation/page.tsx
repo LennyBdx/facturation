@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { BillingSettingsForm } from "@/features/settings/settings-forms";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Numérotation — Paramètres" };
 
 const fr = (v: string) => v.replace(".", ",").replace(/,00$/, "");
 
 export default async function NumberingSettingsPage() {
-  const { org, today } = await getContext();
+  const { org, today } = await getRequestContext();
   const s = org.settings;
   return (
     <section aria-labelledby="s-title" className="space-y-4">

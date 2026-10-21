@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import type { WorksiteStatus } from "@/data/types";
 import { WORKSITE_STATUSES } from "@/features/worksites/schemas";
 import { formatPercent } from "@/lib/format";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { billedProgress } from "@/services/dashboard";
 
 export const metadata: Metadata = { title: "Chantiers" };
@@ -22,7 +22,7 @@ export const metadata: Metadata = { title: "Chantiers" };
 export default async function WorksitesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
   const { q, filtre } = await searchParams;
   const status = WORKSITE_STATUSES.includes(filtre as WorksiteStatus) ? (filtre as WorksiteStatus) : undefined;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const [worksites, clients, invoices] = await Promise.all([
     repos.worksites.list(orgId, { search: q, status }),
     repos.clients.list(orgId),

@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { DetailList } from "@/components/app/detail-list";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Mon compte — Paramètres" };
 
 const ROLE_LABELS = { owner: "Propriétaire", admin: "Administrateur", member: "Membre" } as const;
 
 export default async function AccountPage() {
-  const ctx = await getContext();
-  const me = await ctx.membership();
+  const ctx = await getRequestContext();
   return (
     <section aria-labelledby="s-title" className="space-y-4">
       <h2 id="s-title" className="text-xl font-semibold">Mon compte</h2>
@@ -26,7 +25,7 @@ export default async function AccountPage() {
               { label: "E-mail", value: ctx.user.email },
               { label: "Téléphone", value: ctx.user.phone },
               { label: "Fonction", value: ctx.user.jobTitle },
-              { label: `Rôle chez ${ctx.org.name}`, value: ROLE_LABELS[me.role] },
+              { label: `Rôle chez ${ctx.org.name}`, value: ROLE_LABELS[ctx.role] },
             ]}
           />
         </CardContent>

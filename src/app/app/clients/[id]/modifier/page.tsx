@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
 import { ClientForm } from "@/features/clients/client-form";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Modifier le client" };
 
 export default async function EditClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const client = await repos.clients.get(orgId, id);
   if (!client) notFound();
   return (

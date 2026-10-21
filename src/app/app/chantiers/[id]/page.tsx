@@ -1,3 +1,4 @@
+import { kindRules } from "@/domain/invoice-kinds";
 import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -17,18 +18,18 @@ import { REVERSE_CHARGE_MENTION } from "@/domain/vat";
 import { markRetentionReleased } from "@/features/worksites/actions";
 import { formatAddress, formatDate, formatPercent } from "@/lib/format";
 import { invoicePaymentStatus, invoiceRemaining } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { billedProgress, retentionReleaseDate } from "@/services/dashboard";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   return { title: (await repos.worksites.get(orgId, id))?.name ?? "Chantier" };
 }
 
 export default async function WorksitePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId, today } = await getContext();
+  const { repos, orgId, today } = await getRequestContext();
   const w = await repos.worksites.get(orgId, id);
   if (!w) notFound();
   const [client, invoices, quotes, received] = await Promise.all([
@@ -41,7 +42,7 @@ export default async function WorksitePage({ params }: { params: Promise<{ id: s
   const issued = invoices.filter((i) => i.issuedAt && !i.cancelledByCreditNoteId);
   const situations = issued.filter((i) => i.progress).sort((a, b) => a.progress!.index - b.progress!.index);
   const pct = billedProgress(id, invoices);
-  const retention = sumMoney(issued.filter((i) => i.kind !== "credit_note").map((i) => i.totals.retention));
+  const retention = sumMoney(issued.filter((i) => kindRules(i.kind).isReceivable).map((i) => i.totals.retention));
   const releaseDate = retentionReleaseDate(w);
   const releasable = !w.retentionReleased && compareMoney(retention, ZERO) > 0 && releaseDate !== null && releaseDate <= today;
   const remaining = sumMoney(invoices.map(invoiceRemaining));

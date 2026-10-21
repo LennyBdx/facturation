@@ -6,14 +6,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
 import { SelectField, TextField } from "@/components/forms/form-fields";
 import { applyActionResult } from "@/components/forms/submit";
 import { Button } from "@/components/ui/button";
-import { emailSchema } from "@/lib/validation";
-import { changeRoleAction, type InviteInput, inviteMemberAction } from "./actions";
-
-const schema = z.object({ email: emailSchema, role: z.enum(["admin", "member"]) });
+import { changeRoleAction, inviteMemberAction } from "./actions";
+import { inviteSchema, type InviteInput } from "./schemas";
 
 export const ROLE_OPTIONS = [
   { value: "admin", label: "Administrateur — gère l'équipe et les paramètres" },
@@ -22,7 +19,7 @@ export const ROLE_OPTIONS = [
 
 export function InviteForm() {
   const router = useRouter();
-  const form = useForm<InviteInput>({ resolver: zodResolver(schema), defaultValues: { email: "", role: "member" }, mode: "onBlur" });
+  const form = useForm<InviteInput>({ resolver: zodResolver(inviteSchema), defaultValues: { email: "", role: "member" }, mode: "onBlur" });
   return (
     <form
       noValidate

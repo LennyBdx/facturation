@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import type { ActionResult } from "@/services/context";
+import type { ActionResult } from "@/lib/action-result";
 
 type ButtonProps = React.ComponentProps<typeof Button>;
 

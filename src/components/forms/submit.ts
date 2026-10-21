@@ -2,7 +2,7 @@
 
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
-import type { ActionResult } from "@/services/context";
+import type { ActionResult } from "@/lib/action-result";
 
 /**
  * Applique le résultat d'une Server Action à un formulaire : erreurs serveur

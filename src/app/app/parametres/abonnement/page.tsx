@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SubscriptionPlan } from "@/data/types";
 import { cn } from "@/lib/utils";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Abonnement — Paramètres" };
 
@@ -35,7 +35,7 @@ const PLANS: { id: SubscriptionPlan; name: string; price: string; tagline: strin
 ];
 
 export default async function SubscriptionPage() {
-  const { org } = await getContext();
+  const { org } = await getRequestContext();
   return (
     <section aria-labelledby="s-title" className="space-y-4">
       <div>

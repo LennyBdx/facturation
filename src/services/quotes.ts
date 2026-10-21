@@ -1,37 +1,45 @@
 /**
  * Cas d'usage des devis. Orchestration uniquement : les calculs sont dans
- * `@/domain`, la persistance passe par les repositories.
+ * `@/domain`, la persistance passe par les repositories reçus en paramètre.
  */
+import "server-only";
 import { addDays } from "@/domain/lifecycle";
 import type { Quote, QuoteInput, QuoteStatus } from "@/data/types";
 import { buildDepositInvoice, buildStandardInvoice, quoteTotals } from "./builders";
-import type { Context } from "./context";
-
-export class BusinessError extends Error {}
+import type { ServiceContext } from "./context";
+import { BusinessError } from "./errors";
 
 const EDITABLE: QuoteStatus[] = ["draft", "sent"];
 
-export async function createQuote(ctx: Context, input: QuoteInput): Promise<Quote> {
-  const number = await ctx.repos.organizations.takeNextNumber(ctx.orgId, "quote", input.issueDate);
-  return ctx.repos.quotes.create(ctx.orgId, { ...input, number });
-}
+const TRANSITIONS: Record<QuoteStatus, QuoteStatus[]> = {
+  draft: ["sent"],
+  sent: ["accepted", "refused", "draft"],
+  accepted: [],
+  refused: ["draft"],
+  expired: ["draft"],
+};
 
-export async function updateQuote(ctx: Context, id: string, input: QuoteInput): Promise<Quote> {
-  const quote = await requireQuote(ctx, id);
-  if (!EDITABLE.includes(quote.status)) {
-    throw new BusinessError("Un devis accepté, refusé ou expiré n'est plus modifiable : dupliquez-le.");
-  }
-  // Un devis envoyé modifié repasse en brouillon pour être renvoyé.
-  return ctx.repos.quotes.update(ctx.orgId, id, { ...input, status: quote.status === "sent" ? "draft" : input.status });
-}
-
-export async function requireQuote(ctx: Context, id: string): Promise<Quote> {
+export async function requireQuote(ctx: ServiceContext<"quotes">, id: string): Promise<Quote> {
   const quote = await ctx.repos.quotes.get(ctx.orgId, id);
   if (!quote) throw new BusinessError("Devis introuvable.");
   return quote;
 }
 
-export async function duplicateQuote(ctx: Context, id: string): Promise<Quote> {
+export async function createQuote(ctx: ServiceContext<"quotes" | "organizations">, input: QuoteInput): Promise<Quote> {
+  const number = await ctx.repos.organizations.takeNextNumber(ctx.orgId, "quote", input.issueDate);
+  return ctx.repos.quotes.create(ctx.orgId, { ...input, number });
+}
+
+export async function updateQuote(ctx: ServiceContext<"quotes">, id: string, input: QuoteInput): Promise<Quote> {
+  const quote = await requireQuote(ctx, id);
+  if (!EDITABLE.includes(quote.status)) {
+    throw new BusinessError("Un devis accepté, refusé ou expiré n'est plus modifiable : dupliquez-le.");
+  }
+  // Un devis envoyé puis modifié repasse en brouillon pour être renvoyé.
+  return ctx.repos.quotes.update(ctx.orgId, id, { ...input, status: quote.status === "sent" ? "draft" : input.status });
+}
+
+export async function duplicateQuote(ctx: ServiceContext<"quotes" | "organizations">, id: string): Promise<Quote> {
   const q = await requireQuote(ctx, id);
   const newId = () => crypto.randomUUID();
   return createQuote(ctx, {
@@ -50,15 +58,7 @@ export async function duplicateQuote(ctx: Context, id: string): Promise<Quote> {
   });
 }
 
-const TRANSITIONS: Record<QuoteStatus, QuoteStatus[]> = {
-  draft: ["sent"],
-  sent: ["accepted", "refused", "draft"],
-  accepted: [],
-  refused: ["draft"],
-  expired: ["draft"],
-};
-
-export async function setQuoteStatus(ctx: Context, id: string, status: QuoteStatus, reason?: string): Promise<Quote> {
+export async function setQuoteStatus(ctx: ServiceContext<"quotes">, id: string, status: QuoteStatus, reason?: string): Promise<Quote> {
   const q = await requireQuote(ctx, id);
   if (!TRANSITIONS[q.status].includes(status)) {
     throw new BusinessError("Ce changement de statut n'est pas possible pour ce devis.");
@@ -66,7 +66,7 @@ export async function setQuoteStatus(ctx: Context, id: string, status: QuoteStat
   if (status === "sent" && q.sections.every((s) => s.lines.length === 0)) {
     throw new BusinessError("Le devis ne contient aucune ligne.");
   }
-  const now = new Date().toISOString();
+  const now = ctx.clock.now();
   return ctx.repos.quotes.update(ctx.orgId, id, {
     status,
     sentAt: status === "sent" ? now : q.sentAt,
@@ -76,10 +76,13 @@ export async function setQuoteStatus(ctx: Context, id: string, status: QuoteStat
 }
 
 /** Crée le chantier correspondant à un devis accepté. */
-export async function quoteToWorksite(ctx: Context, id: string) {
+export async function quoteToWorksite(ctx: ServiceContext<"quotes" | "clients" | "worksites">, id: string) {
   const q = await requireQuote(ctx, id);
   if (q.status !== "accepted") throw new BusinessError("Seul un devis accepté peut devenir un chantier.");
-  if (q.worksiteId) return ctx.repos.worksites.get(ctx.orgId, q.worksiteId);
+  if (q.worksiteId) {
+    const existing = await ctx.repos.worksites.get(ctx.orgId, q.worksiteId);
+    if (existing) return existing;
+  }
   const client = await ctx.repos.clients.get(ctx.orgId, q.clientId);
   if (!client) throw new BusinessError("Client introuvable.");
   const count = (await ctx.repos.worksites.list(ctx.orgId)).length;
@@ -102,7 +105,7 @@ export async function quoteToWorksite(ctx: Context, id: string) {
 }
 
 /** Brouillon de facture unique ou d'acompte à partir d'un devis accepté. */
-export async function quoteToInvoice(ctx: Context, id: string, kind: "standard" | "deposit") {
+export async function quoteToInvoice(ctx: ServiceContext<"quotes" | "clients" | "worksites" | "invoices">, id: string, kind: "standard" | "deposit") {
   const q = await requireQuote(ctx, id);
   if (q.status !== "accepted") throw new BusinessError("Acceptez d'abord le devis pour le facturer.");
   const client = await ctx.repos.clients.get(ctx.orgId, q.clientId);

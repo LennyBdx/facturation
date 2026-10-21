@@ -3,6 +3,7 @@
  * Remplacer `MockEInvoicingProvider` par l'adaptateur de la plateforme agréée
  * choisie (même interface) pour passer en conditions réelles.
  */
+import "server-only";
 import { MockEInvoicingProvider } from "./mock-provider";
 import type { EInvoicingProvider } from "./provider";
 

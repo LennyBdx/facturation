@@ -6,14 +6,14 @@ import { DocumentSheet } from "@/components/documents/document-sheet";
 import { PrintButton } from "@/components/documents/print-button";
 import { formatDate } from "@/lib/format";
 import { quoteTotals } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 import { quoteMentions, sellerIdentityLine } from "@/services/legal-mentions";
 
 export const metadata: Metadata = { title: "Aperçu du devis" };
 
 export default async function QuotePreviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId, org } = await getContext();
+  const { repos, orgId, org } = await getRequestContext();
   const quote = await repos.quotes.get(orgId, id);
   if (!quote) notFound();
   const [client, worksite] = await Promise.all([

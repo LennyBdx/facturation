@@ -4,13 +4,13 @@ import { notFound, redirect } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
 import { quoteToFormValues } from "@/features/quotes/form-values";
 import { QuoteEditor } from "@/features/quotes/quote-editor";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Modifier le devis" };
 
 export default async function EditQuotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const [quote, clients, worksites] = await Promise.all([repos.quotes.get(orgId, id), repos.clients.list(orgId), repos.worksites.list(orgId)]);
   if (!quote) notFound();
   if (quote.status !== "draft" && quote.status !== "sent") redirect(routes.quotes.show(id));

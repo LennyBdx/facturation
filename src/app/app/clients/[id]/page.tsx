@@ -15,17 +15,17 @@ import { formatSiren, formatSiret } from "@/domain/identifiers";
 import { compareMoney, sumMoney, ZERO } from "@/domain/money";
 import { formatAddress } from "@/lib/format";
 import { invoicePaymentStatus, invoiceRemaining } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   return { title: (await repos.clients.get(orgId, id))?.name ?? "Client" };
 }
 
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId, today } = await getContext();
+  const { repos, orgId, today } = await getRequestContext();
   const client = await repos.clients.get(orgId, id);
   if (!client) notFound();
   const [invoices, quotes, worksites] = await Promise.all([

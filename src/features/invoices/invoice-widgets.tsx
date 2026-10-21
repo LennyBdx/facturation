@@ -19,7 +19,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createCreditNoteAction, type PaymentInput, recordPaymentAction, refreshInvoiceStatusAction } from "./actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createCreditNoteAction, recordPaymentAction, refreshInvoiceStatusAction } from "./actions";
+import { paymentSchema, type PaymentInput } from "./schemas";
 
 const PAYMENT_METHODS = [
   { value: "transfer", label: "Virement" },
@@ -34,6 +36,7 @@ export function PaymentDialog({ invoiceId, remaining, today }: { invoiceId: stri
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const form = useForm<PaymentInput>({
+    resolver: zodResolver(paymentSchema),
     defaultValues: { date: today, amount: remaining.replace(".", ","), method: "transfer", reference: "" },
   });
   return (
@@ -171,11 +174,15 @@ export function LifecyclePoller({ invoiceId, status, eventCount }: { invoiceId: 
     const timer = setInterval(async () => {
       polls += 1;
       const r = await refreshInvoiceStatusAction(invoiceId);
-      if (r.count !== count.current) {
-        count.current = r.count;
+      if (!r.ok || !r.data) {
+        setLive(false);
+        return;
+      }
+      if (r.data.count !== count.current) {
+        count.current = r.data.count;
         router.refresh();
       }
-      if (!r.status || !LIVE_STATUSES.includes(r.status) || polls > 40) setLive(false);
+      if (!r.data.status || !LIVE_STATUSES.includes(r.data.status) || polls > 40) setLive(false);
     }, 3000);
     return () => clearInterval(timer);
   }, [live, invoiceId, router]);

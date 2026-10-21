@@ -2,7 +2,9 @@
  * Cas d'usage des factures émises : brouillons, contrôle de conformité, émission
  * et transmission à la plateforme agréée, suivi des statuts, paiements, avoirs.
  */
+import "server-only";
 import { checkInvoiceCompliance, type ComplianceReport } from "@/domain/compliance";
+import { kindRules } from "@/domain/invoice-kinds";
 import { TERMINAL_LIFECYCLE_STATUSES } from "@/domain/lifecycle";
 import { compareMoney, type Money, type Percent, sumMoney, ZERO } from "@/domain/money";
 import type { Client, Invoice, InvoiceInput, LifecycleEvent, Payment, PaymentMethod } from "@/data/types";
@@ -16,24 +18,29 @@ import {
   lastProgressInvoice,
   sellerSnapshot,
 } from "./builders";
-import type { Context } from "./context";
-import { BusinessError, requireQuote } from "./quotes";
+import type { Context, ServiceContext } from "./context";
+import { BusinessError } from "./errors";
+import { requireQuote } from "./quotes";
 
-export { BusinessError };
-
-export async function requireInvoice(ctx: Context, id: string): Promise<Invoice> {
+export async function requireInvoice(ctx: ServiceContext<"invoices">, id: string): Promise<Invoice> {
   const invoice = await ctx.repos.invoices.get(ctx.orgId, id);
   if (!invoice) throw new BusinessError("Facture introuvable.");
   return invoice;
 }
 
-/** Une facture B2C n'est pas une facture électronique (e-reporting) : pas de transmission. */
+async function requireClient(ctx: ServiceContext<"clients">, id: string): Promise<Client> {
+  const client = await ctx.repos.clients.get(ctx.orgId, id);
+  if (!client) throw new BusinessError("Client introuvable.");
+  return client;
+}
+
+/** Une facture à un particulier n'est pas une facture électronique (e-reporting) : pas de transmission. */
 export function goesThroughPlatform(client: Pick<Client, "kind">): boolean {
   return isProfessionalClient(client.kind);
 }
 
-export async function complianceFor(ctx: Context, invoice: Invoice, client: Client): Promise<ComplianceReport> {
-  const pro = isProfessionalClient(client.kind);
+export async function complianceFor(ctx: ServiceContext<"invoices">, invoice: Invoice, client: Client): Promise<ComplianceReport> {
+  const corrected = invoice.correctedInvoiceId ? await ctx.repos.invoices.get(ctx.orgId, invoice.correctedInvoiceId) : null;
   return checkInvoiceCompliance({
     seller: ctx.org,
     buyer: {
@@ -42,7 +49,7 @@ export async function complianceFor(ctx: Context, invoice: Invoice, client: Clie
       siret: client.siret,
       vatNumber: client.vatNumber,
       address: client.billingAddress,
-      isProfessional: pro,
+      isProfessional: isProfessionalClient(client.kind),
       isPublicBuyer: client.kind === "public_buyer",
       serviceCode: client.serviceCode,
     },
@@ -56,21 +63,23 @@ export async function complianceFor(ctx: Context, invoice: Invoice, client: Clie
       reverseCharge: invoice.reverseCharge,
       operationCategory: invoice.operationCategory,
       orderReference: invoice.orderReference,
-      correctedInvoiceNumber: invoice.correctedInvoiceId
-        ? ((await ctx.repos.invoices.get(ctx.orgId, invoice.correctedInvoiceId))?.number ?? undefined)
-        : undefined,
+      correctedInvoiceNumber: corrected?.number ?? undefined,
       lines: invoice.lines,
     },
   });
 }
 
 /** Situation de travaux (brouillon) à partir d'un devis accepté. */
-export async function createProgressDraft(ctx: Context, quoteId: string, progress: Record<string, Percent>, issueDate: string) {
+export async function createProgressDraft(
+  ctx: ServiceContext<"quotes" | "clients" | "invoices" | "worksites">,
+  quoteId: string,
+  progress: Record<string, Percent>,
+  issueDate: string,
+) {
   const quote = await requireQuote(ctx, quoteId);
   if (quote.status !== "accepted") throw new BusinessError("Le devis doit être accepté pour facturer une situation.");
-  const [client, invoices] = await Promise.all([ctx.repos.clients.get(ctx.orgId, quote.clientId), ctx.repos.invoices.list(ctx.orgId, { quoteId })]);
-  if (!client) throw new BusinessError("Client introuvable.");
-  if (invoices.some((i) => (i.kind === "progress" || i.kind === "final") && !i.issuedAt)) {
+  const [client, invoices] = await Promise.all([requireClient(ctx, quote.clientId), ctx.repos.invoices.list(ctx.orgId, { quoteId })]);
+  if (invoices.some((i) => kindRules(i.kind).isProgress && !i.issuedAt)) {
     throw new BusinessError("Une situation est déjà en brouillon pour ce devis : émettez-la ou supprimez-la d'abord.");
   }
   const worksite = quote.worksiteId ? await ctx.repos.worksites.get(ctx.orgId, quote.worksiteId) : null;
@@ -91,7 +100,7 @@ export async function createProgressDraft(ctx: Context, quoteId: string, progres
 }
 
 export async function updateDraft(
-  ctx: Context,
+  ctx: ServiceContext<"invoices">,
   id: string,
   patch: Pick<InvoiceInput, "issueDate" | "dueDate" | "paymentTermsLabel" | "orderReference" | "notes" | "title">,
 ) {
@@ -100,42 +109,45 @@ export async function updateDraft(
   return ctx.repos.invoices.update(ctx.orgId, id, patch);
 }
 
-export async function deleteDraft(ctx: Context, id: string) {
+export async function deleteDraft(ctx: ServiceContext<"invoices">, id: string) {
   const invoice = await requireInvoice(ctx, id);
   if (invoice.issuedAt) throw new BusinessError("Une facture émise ne peut pas être supprimée : établissez un avoir.");
   await ctx.repos.invoices.delete(ctx.orgId, id);
 }
 
 /**
- * Émission : contrôle de conformité bloquant, attribution du numéro (séquence
- * continue), figement des données vendeur/acheteur, puis dépôt sur la plateforme
- * agréée pour un client professionnel.
+ * Émission :
+ *  1. contrôle de conformité bloquant ;
+ *  2. TRANSACTION : numéro (séquence continue), données figées, lien avoir → facture ;
+ *  3. après validation de la transaction, dépôt sur la plateforme agréée (client professionnel).
+ * L'appel externe reste hors transaction : un échec de dépôt laisse une facture émise
+ * « non transmise », qui pourra être redéposée.
  */
-export async function issueInvoice(ctx: Context, id: string): Promise<Invoice> {
+export async function issueInvoice(ctx: ServiceContext<"invoices" | "clients", "submitInvoice"> & Pick<Context, "uow">, id: string): Promise<Invoice> {
   const invoice = await requireInvoice(ctx, id);
   if (invoice.issuedAt) throw new BusinessError("Cette facture est déjà émise.");
-  const client = await ctx.repos.clients.get(ctx.orgId, invoice.clientId);
-  if (!client) throw new BusinessError("Client introuvable.");
+  const client = await requireClient(ctx, invoice.clientId);
   const report = await complianceFor(ctx, invoice, client);
   if (!report.ok) throw new BusinessError("Des mentions obligatoires manquent : corrigez-les avant d'émettre.");
 
-  const number = await ctx.repos.organizations.takeNextNumber(ctx.orgId, invoice.kind === "credit_note" ? "creditNote" : "invoice", invoice.issueDate);
-  let issued = await ctx.repos.invoices.update(ctx.orgId, id, {
-    number,
-    issuedAt: new Date().toISOString(),
-    seller: sellerSnapshot(ctx.org),
-    buyer: buyerSnapshot(client),
+  const issued = await ctx.uow.run(async (repos) => {
+    const number = await repos.organizations.takeNextNumber(ctx.orgId, kindRules(invoice.kind).numberingSeries, invoice.issueDate);
+    const updated = await repos.invoices.update(ctx.orgId, id, {
+      number,
+      issuedAt: ctx.clock.now(),
+      seller: sellerSnapshot(ctx.org),
+      buyer: buyerSnapshot(client),
+    });
+    if (invoice.correctedInvoiceId) {
+      await repos.invoices.update(ctx.orgId, invoice.correctedInvoiceId, { cancelledByCreditNoteId: id });
+    }
+    return updated;
   });
 
-  if (invoice.kind === "credit_note" && invoice.correctedInvoiceId) {
-    await ctx.repos.invoices.update(ctx.orgId, invoice.correctedInvoiceId, { cancelledByCreditNoteId: id });
-  }
-
-  if (goesThroughPlatform(client)) issued = await submit(ctx, issued);
-  return issued;
+  return goesThroughPlatform(client) ? submit(ctx, issued) : issued;
 }
 
-async function submit(ctx: Context, invoice: Invoice): Promise<Invoice> {
+async function submit(ctx: ServiceContext<"invoices", "submitInvoice">, invoice: Invoice): Promise<Invoice> {
   const result = await ctx.provider.submitInvoice(invoice);
   return ctx.repos.invoices.update(ctx.orgId, invoice.id, {
     eInvoicing: { platformInvoiceId: result.platformInvoiceId, status: result.status, events: [...invoice.eInvoicing.events, ...result.events] },
@@ -143,23 +155,22 @@ async function submit(ctx: Context, invoice: Invoice): Promise<Invoice> {
 }
 
 /** Facture rejetée par la plateforme (213) : correction puis nouveau dépôt. */
-export async function resubmitInvoice(ctx: Context, id: string): Promise<Invoice> {
+export async function resubmitInvoice(ctx: ServiceContext<"invoices" | "clients", "submitInvoice">, id: string): Promise<Invoice> {
   const invoice = await requireInvoice(ctx, id);
   if (invoice.eInvoicing.status !== "rejected") throw new BusinessError("Seule une facture rejetée peut être redéposée.");
-  const client = await ctx.repos.clients.get(ctx.orgId, invoice.clientId);
-  if (!client) throw new BusinessError("Client introuvable.");
+  const client = await requireClient(ctx, invoice.clientId);
   const report = await complianceFor(ctx, invoice, client);
   if (!report.ok) throw new BusinessError("Corrigez d'abord les données signalées.");
   if (client.kind === "public_buyer" && !client.serviceCode) {
     throw new BusinessError("Le code service de l'acheteur public est toujours absent : complétez la fiche client.");
   }
-  // Les données de l'acheteur sont re-figées à partir de la fiche client corrigée.
+  // Les données de l'acheteur sont figées à nouveau à partir de la fiche client corrigée.
   const refreshed = await ctx.repos.invoices.update(ctx.orgId, id, { buyer: buyerSnapshot(client) });
   return submit(ctx, refreshed);
 }
 
-/** Synchronise les statuts depuis la plateforme (appelé à l'affichage de la fiche). */
-export async function refreshInvoiceStatus(ctx: Context, id: string): Promise<Invoice> {
+/** Synchronise les statuts depuis la plateforme agréée. */
+export async function refreshInvoiceStatus(ctx: ServiceContext<"invoices", "getInvoiceStatus">, id: string): Promise<Invoice> {
   const invoice = await requireInvoice(ctx, id);
   const pid = invoice.eInvoicing.platformInvoiceId;
   if (!pid || (invoice.eInvoicing.status && TERMINAL_LIFECYCLE_STATUSES.includes(invoice.eInvoicing.status))) return invoice;
@@ -179,10 +190,14 @@ function mergeEvents(current: LifecycleEvent[], fresh: LifecycleEvent[]): Lifecy
 }
 
 /** Enregistre un paiement ; à solde nul, déclare l'encaissement (statut 212). */
-export async function recordPayment(ctx: Context, id: string, payment: { date: string; amount: Money; method: PaymentMethod; reference?: string }) {
+export async function recordPayment(
+  ctx: ServiceContext<"invoices", "reportPayment">,
+  id: string,
+  payment: { date: string; amount: Money; method: PaymentMethod; reference?: string },
+) {
   const invoice = await requireInvoice(ctx, id);
   if (!invoice.issuedAt) throw new BusinessError("Émettez la facture avant d'enregistrer un paiement.");
-  if (invoice.kind === "credit_note") throw new BusinessError("Un avoir ne reçoit pas de paiement.");
+  if (!kindRules(invoice.kind).isReceivable) throw new BusinessError("Un avoir ne reçoit pas de paiement.");
   if (invoice.cancelledByCreditNoteId) throw new BusinessError("Cette facture est annulée par un avoir.");
   const remaining = invoiceRemaining(invoice);
   if (compareMoney(payment.amount, ZERO) <= 0) throw new BusinessError("Le montant doit être positif.");
@@ -202,10 +217,10 @@ export async function recordPayment(ctx: Context, id: string, payment: { date: s
 }
 
 /** Avoir d'annulation totale (brouillon), à émettre ensuite. */
-export async function createCreditNote(ctx: Context, id: string, reason: string) {
+export async function createCreditNote(ctx: ServiceContext<"invoices">, id: string, reason: string) {
   const invoice = await requireInvoice(ctx, id);
   if (!invoice.issuedAt) throw new BusinessError("Un brouillon se supprime ; l'avoir concerne une facture émise.");
-  if (invoice.kind === "credit_note") throw new BusinessError("Un avoir ne peut pas être annulé par un autre avoir dans le prototype.");
+  if (!kindRules(invoice.kind).canBeCredited) throw new BusinessError("Ce document ne peut pas être annulé par un avoir.");
   if (invoice.cancelledByCreditNoteId) throw new BusinessError("Cette facture est déjà annulée par un avoir.");
   if (invoice.payments.length > 0) throw new BusinessError("Cette facture a reçu des paiements : traitez le remboursement avant l'avoir.");
   const existing = (await ctx.repos.invoices.list(ctx.orgId)).find((i) => i.correctedInvoiceId === id && !i.issuedAt);

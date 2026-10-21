@@ -8,21 +8,18 @@ import type { MemberRole } from "@/data/types";
 import { revokeInvitationAction } from "@/features/team/actions";
 import { InviteForm, RoleSelect } from "@/features/team/team-widgets";
 import { formatDate, initials } from "@/lib/format";
-import { getContext } from "@/services/context";
+import { can } from "@/domain/permissions";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Équipe" };
 
 const ROLE_LABELS: Record<MemberRole, string> = { owner: "Propriétaire", admin: "Administrateur", member: "Membre" };
 
 export default async function TeamPage() {
-  const ctx = await getContext();
-  const [members, invitations, me] = await Promise.all([
-    ctx.repos.memberships.listByOrganization(ctx.orgId),
-    ctx.repos.invitations.list(ctx.orgId),
-    ctx.membership(),
-  ]);
+  const ctx = await getRequestContext();
+  const [members, invitations] = await Promise.all([ctx.repos.memberships.listByOrganization(ctx.orgId), ctx.repos.invitations.list(ctx.orgId)]);
   const users = new Map((await ctx.repos.users.listByIds(members.map((m) => m.userId))).map((u) => [u.id, u]));
-  const canManage = me.role !== "member";
+  const canManage = can(ctx.role, "team:manage");
   const now = new Date(`${ctx.today}T12:00:00Z`).toISOString();
 
   return (

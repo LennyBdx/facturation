@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { quoteToInvoiceAction } from "@/features/quotes/actions";
 import { quoteTotals } from "@/services/builders";
-import { getContext } from "@/services/context";
+import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Nouvelle facture" };
 
 export default async function NewInvoicePage() {
-  const { repos, orgId } = await getContext();
+  const { repos, orgId } = await getRequestContext();
   const [quotes, clients, invoices] = await Promise.all([
     repos.quotes.list(orgId, { status: "accepted" }),
     repos.clients.list(orgId),

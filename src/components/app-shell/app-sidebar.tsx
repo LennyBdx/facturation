@@ -65,7 +65,7 @@ export function AppSidebar({
       <SidebarHeader>
         <Link href="/app/tableau-de-bord" className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
           <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground">
-            S<span className="text-brand">.</span>
+            <span className="size-3 rotate-45 rounded-[2px] bg-brand" />
           </span>
           <span className="text-lg font-semibold tracking-tight group-data-[collapsible=icon]:hidden">{APP_NAME}</span>
         </Link>

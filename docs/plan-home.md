@@ -1,6 +1,6 @@
 # Plan — page d'accueil (site vitrine) — à valider
 
-Le nom du produit est « Factobat » (choisi après validation du plan), centralisé dans `src/config/site.ts`. L'application garde son nom de travail « Situa ».
+Le nom du produit est « Factobat » (choisi après validation du plan), centralisé dans `src/config/site.ts`. L'application porte le même nom depuis la v2 du site vitrine.
 
 Skill ui-ux-pro-max : il est utilisé. Python n'est pas installé, donc ses bases de données CSV sont interrogées directement.
 

@@ -1,8 +1,8 @@
-# Situa — devis et factures de situation pour le BTP (prototype V1)
+# Factobat — devis et factures de situation pour le BTP (prototype V1)
 
-« Situa » est un nom de travail ; on le change dans `src/config/app.ts`.
+« Factobat » est le nom du produit (site vitrine et application) ; on le change en un seul endroit, `src/config/site.ts`.
 
-Situa est un SaaS de devis et de facturation pour les entreprises du second œuvre (5 à 50 salariés) qui facturent à l'avancement. Il gère :
+Factobat est un SaaS de devis et de facturation pour les entreprises du second œuvre (5 à 50 salariés) qui facturent à l'avancement. Il gère :
 - les acomptes et les situations de travaux ;
 - la retenue de garantie ;
 - l'autoliquidation de la TVA en sous-traitance ;

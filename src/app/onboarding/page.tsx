@@ -12,7 +12,7 @@ export default async function OnboardingPage() {
       <header className="border-b bg-card">
         <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-4 font-semibold">
           <span aria-hidden className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            S<span className="text-brand">.</span>
+            <span className="size-3 rotate-45 rounded-[2px] bg-brand" />
           </span>
           {APP_NAME}
         </div>

@@ -1,6 +1,6 @@
 # Plan V1 — prototype front-end (validé le 18/10/2026, réalisé)
 
-Nom de travail du produit : **Situa** (de « situation de travaux »). Provisoire, modifiable en un seul endroit (`src/config/app.ts`).
+Nom de travail initial : « Situa ». Nom retenu ensuite : **Factobat** (`src/config/site.ts`, repris par `APP_NAME`).
 
 ## 1. Arborescence
 

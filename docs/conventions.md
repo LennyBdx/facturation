@@ -3,7 +3,7 @@
 ## Couches et sens des dépendances
 
 ```
-app/ (pages, layouts)            ← rendu serveur, aucune règle métier
+app/ (pages : (marketing) = site, app/ = application, (auth))  ← rendu serveur
   └─ features/<domaine>/          ← formulaires (client), Server Actions, schémas Zod
        └─ services/               ← cas d'usage : orchestration repositories + domaine + intégration
             ├─ domain/            ← fonctions PURES (calculs, validations, statuts), testées

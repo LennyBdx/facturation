@@ -184,3 +184,21 @@ Alternative du skill : Lexend + Source Sans 3 (« Corporate Trust », plus arron
 | Accessibilité | Lien d'évitement « Aller au contenu », focus visible de 2 px, libellés associés, erreurs en `role="alert"` reliées par `aria-describedby`, respect de `prefers-reduced-motion`. |
 | Typographie | IBM Plex Sans et IBM Plex Mono via `next/font` (`display: swap`). Chiffres tabulaires via la classe `num`. |
 | Couleurs | Hexadécimal (et non OKLCH) pour garder le lien direct avec les rapports de contraste documentés ci-dessus. |
+
+## Site vitrine (page d'accueil)
+
+Ajouts propres au site public (`src/app/(marketing)/`, `src/components/marketing/`). Ils s'appuient sur les mêmes jetons ; il n'y a aucune nouvelle couleur.
+
+| Sujet | Règle |
+|---|---|
+| Motif de page (skill : « Hero + Features + CTA », profil « Conversion-Optimized + Trust ») | Hero, bandeau réforme, problèmes, fonctionnalités alternées, étapes, métiers, tarifs, FAQ, appel final. Le bouton principal est dans le hero, l'en-tête collant et la section finale. |
+| Largeur et rythme | Contenu de 72 rem maximum (`max-w-6xl`). Sections de 64 px (mobile) et 96 px (ordinateur). Alternance fond `background` / `card`. |
+| Titres | `h1` unique : 36 px (mobile), 48 px, puis 56 px (`lg`), `text-balance`. Titres de section : 30 px puis 36 px. Surtitres en capitales dans la couleur `brand`. |
+| Couleurs | Une seule section en teinte primaire (appel final). L'orange chantier est réservé aux icônes, surtitres et petits repères ; jamais pour du texte courant. Les cartes « problèmes » utilisent le ton `warning`. |
+| Visuels | Uniquement des **captures réelles** du prototype (`pnpm screenshots` → `public/screenshots/`), dans des cadres d'appareils en CSS (`DesktopFrame`, `PhoneFrame`), servies par `next/image` (AVIF/WebP). Pas d'illustration décorative ; pour l'équipe, un schéma informatif plutôt qu'une fausse capture. |
+| Boutons | Pleine largeur sur mobile, 48 px de haut (`size="lg"`). Libellé principal unique, « Essayer gratuitement » (« Essayer » dans l'en-tête mobile). |
+| Navigation | En-tête collant de 64 px ; menu visible à partir de `lg`, tiroir `Sheet` en dessous ; `scroll-padding-top` pour que les ancres ne passent pas sous l'en-tête. |
+| FAQ | `<details>`/`<summary>` natifs : clavier, lecteurs d'écran, fonctionne sans JavaScript. |
+| Animation | Classe `.reveal` : fondu et translation de 8 px liés au défilement (`animation-timeline: view()`). Active seulement si le navigateur la gère et sans `prefers-reduced-motion`. Défilement doux désactivé dans ce cas aussi. |
+| Preuve sociale | Composant `SocialProof` alimenté par `testimonials` (vide) : rien ne s'affiche sans témoignage réel. Aucune note, aucun compteur, aucun logo client. |
+| Image de partage | `opengraph-image.tsx` : générée hors navigateur, donc les couleurs y sont écrites en hexadécimal (seule exception à la règle des jetons). |

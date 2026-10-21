@@ -24,7 +24,7 @@ pnpm install
 pnpm dev
 ```
 
-Ouvrez ensuite http://localhost:3000. Aucune variable d'environnement n'est nécessaire.
+Ouvrez ensuite http://localhost:3000 (site vitrine) ; l'application est sous http://localhost:3000/app. Aucune variable d'environnement n'est nécessaire.
 
 | Script | Rôle |
 |---|---|
@@ -32,6 +32,7 @@ Ouvrez ensuite http://localhost:3000. Aucune variable d'environnement n'est néc
 | `pnpm build` | Build de production |
 | `pnpm lint` | ESLint (inclut les règles d'architecture) |
 | `pnpm test` | Tests Vitest de la logique métier et du jeu de données |
+| `pnpm screenshots` | Refait les captures du prototype pour le site vitrine (`public/screenshots/`) et les aperçus de la page d'accueil (`docs/references/home-v1-*.png`). Utilise `BASE_URL` s'il est défini, sinon lance `next dev` sur le port 3210. |
 | `pnpm references` | Refait les captures de référence (Playwright) dans `docs/references/` |
 | `pnpm format` | Prettier |
 
@@ -39,7 +40,8 @@ Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec pl
 
 ### Parcours conseillé pour une démo
 
-1. **Tableau de bord** : indicateurs, factures électroniques à traiter, retenues de garantie à récupérer.
+0. **Site vitrine** sur `/`, puis « Se connecter » pour entrer dans l'application.
+1. **Tableau de bord** (`/app/tableau-de-bord`) : indicateurs, factures électroniques à traiter, retenues de garantie à récupérer.
 2. **Factures émises → filtre « Brouillon » → Situation n° 2 de l'Hôtel Le Cèdre Bleu.**
    - L'émission est bloquée : le SIREN du client manque.
    - Suivez le lien « Compléter la fiche client » et utilisez le SIREN fictif `812 345 601`.
@@ -52,6 +54,14 @@ Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec pl
 6. **Facture FA-…-0019 (École, rejetée)** : comprendre la différence entre **rejet** (plateforme, on redépose) et **refus** (client, on fait un avoir).
 7. Le **sélecteur d'entreprise** (en haut de la barre latérale) permet de passer à « Chêne & Fil Agencement ».
 
+## Site vitrine
+
+- Page d'accueil sur `/` : groupe de routes `src/app/(marketing)/`, avec son en-tête et son pied de page.
+- Tous les textes sont dans `src/content/home.ts`. Le nom du produit (`[NOM DU PRODUIT]`), l'URL publique et le lien officiel sont dans `src/config/site.ts`.
+- Routes publiques et entrée de l'application : `src/config/routes.ts`. L'application vit sous `/app` et n'est pas indexée (`robots`, `noindex`).
+- SEO : `opengraph-image.tsx`, JSON-LD (`components/marketing/json-ld.tsx`), `app/sitemap.ts`, `app/robots.ts`.
+- Plan et contenus à compléter : [docs/plan-home.md](docs/plan-home.md). Les marqueurs `[À DÉFINIR]`, `[À CONFIRMER]` et `[À RÉDIGER]` signalent ce qui reste à décider.
+
 ## Structure
 
 ```
@@ -63,7 +73,7 @@ docs/
   plan-v1.md          plan validé
 scripts/capture-references.mjs
 src/
-  app/                routes (App Router) : (auth), onboarding, (app)/…
+  app/                routes (App Router) : (marketing) = site vitrine, app/ = application sous /app, (auth), onboarding
   components/         ui (shadcn), app (listes, en-têtes, frise), status, forms, documents, app-shell
   features/           par domaine : formulaires client, Server Actions, schémas Zod
   services/           cas d'usage (devis, factures, factures reçues, tableau de bord, mentions légales)
@@ -92,7 +102,7 @@ L'architecture isole tout ce qui est simulé. **Les pages, les composants et `sr
 | Remplacer / ajouter | Détail |
 |---|---|
 | `src/lib/session.ts` | Réimplémenter `getCurrentUser()`, `getCurrentOrganization()` et `getCurrentMembership()` à partir de la vraie session (cookie signé, JWT ou fournisseur d'identité). Toutes les pages passent déjà par ce module. |
-| `src/proxy.ts` (nouveau ; c'est l'ancien « middleware » de Next.js 16) | Rediriger vers `/connexion` sans session sur le groupe `(app)`. |
+| `src/proxy.ts` (nouveau ; c'est l'ancien « middleware » de Next.js 16) | Rediriger vers `/connexion` sans session sur `/app`. |
 | `src/features/auth/auth-forms.tsx` | Remplacer les `router.push` simulés par l'appel au fournisseur d'authentification. Les schémas Zod restent. |
 | `src/features/session/actions.ts` | `signOut()` : détruire la session. |
 | `src/features/organization/onboarding-wizard.tsx` | `finish()` : créer l'entreprise et le membership « propriétaire » via une Server Action. |
@@ -103,7 +113,7 @@ L'architecture isole tout ce qui est simulé. **Les pages, les composants et `sr
 |---|---|
 | `src/integrations/billing/` (nouveau) | Client Stripe : Checkout, portail client, webhooks. |
 | `src/app/api/webhooks/stripe/route.ts` (nouveau) | Mettre à jour `organization.settings.plan`. |
-| `src/app/(app)/parametres/abonnement/page.tsx` | Remplacer les boutons désactivés par un Checkout ou par le portail. |
+| `src/app/app/parametres/abonnement/page.tsx` | Remplacer les boutons désactivés par un Checkout ou par le portail. |
 
 ### 4. Plateforme agréée
 
@@ -122,7 +132,7 @@ Les options les plus simples et standard ont été retenues quand le cahier des 
 - **Dossier** : le projet est dans `facturation-btp/`, car la racine contient déjà un autre projet. Le dépôt git est propre à ce dossier.
 - **Next.js 16.4** (dernière version stable) :
   - Cache Components est **désactivé**, car toutes les pages dépendent de la session et de données mutables ; le rendu dynamique classique est plus simple ;
-  - le groupe `(app)` est en `force-dynamic`.
+  - le dossier `src/app/app` (`/app`) est en `force-dynamic`.
 - **shadcn/ui** : style « radix-nova ».
   - Les hauteurs des contrôles sont agrandies (44 px sur mobile, 40 px sur ordinateur) et les cartes aplaties (bordure, rayon de 8 px), conformément au design system.
   - Les jetons sont en hexadécimal, pas en OKLCH, pour garder le lien avec les rapports de contraste documentés.

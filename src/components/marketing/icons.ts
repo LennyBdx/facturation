@@ -1,0 +1,35 @@
+import {
+  Calculator,
+  Droplets,
+  FileSpreadsheet,
+  Hammer,
+  Inbox,
+  Layers,
+  type LucideIcon,
+  Paintbrush,
+  Percent,
+  PhoneCall,
+  ShieldCheck,
+  ShieldOff,
+  Smartphone,
+  Users,
+  Zap,
+} from "lucide-react";
+
+/** Icônes référencées par nom dans `src/content/home.ts`. */
+export const ICONS: Record<string, LucideIcon> = {
+  calculator: Calculator,
+  shield: ShieldCheck,
+  smartphone: Smartphone,
+  sheet: FileSpreadsheet,
+  "shield-off": ShieldOff,
+  percent: Percent,
+  phone: PhoneCall,
+  inbox: Inbox,
+  users: Users,
+  zap: Zap,
+  droplets: Droplets,
+  hammer: Hammer,
+  paintbrush: Paintbrush,
+  layers: Layers,
+};

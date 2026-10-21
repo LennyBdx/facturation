@@ -57,7 +57,7 @@ Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec pl
 ## Site vitrine
 
 - Page d'accueil sur `/` : groupe de routes `src/app/(marketing)/`, avec son en-tête et son pied de page.
-- Tous les textes sont dans `src/content/home.ts`. Le nom du produit (`[NOM DU PRODUIT]`), l'URL publique et le lien officiel sont dans `src/config/site.ts`.
+- Tous les textes sont dans `src/content/home.ts`. Le nom du produit (« Factobat »), l'URL publique et le lien officiel sont dans `src/config/site.ts`.
 - Routes publiques et entrée de l'application : `src/config/routes.ts`. L'application vit sous `/app` et n'est pas indexée (`robots`, `noindex`).
 - SEO : `opengraph-image.tsx`, JSON-LD (`components/marketing/json-ld.tsx`), `app/sitemap.ts`, `app/robots.ts`.
 - Plan et contenus à compléter : [docs/plan-home.md](docs/plan-home.md). Les marqueurs `[À DÉFINIR]`, `[À CONFIRMER]` et `[À RÉDIGER]` signalent ce qui reste à décider.

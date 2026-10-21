@@ -1,8 +1,8 @@
 /**
- * Identité du site vitrine. Le nom définitif n'est pas encore choisi :
+ * Identité du site vitrine. Nom du produit (site vitrine) :
  * remplacer `PRODUCT_NAME` ici suffit à mettre à jour toute la page d'accueil.
  */
-export const PRODUCT_NAME = "[NOM DU PRODUIT]";
+export const PRODUCT_NAME = "Factobat";
 
 /** URL publique du site (SEO, sitemap, Open Graph). [À DÉFINIR] */
 export const SITE_URL = "https://www.example.com";

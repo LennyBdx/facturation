@@ -26,6 +26,8 @@ interface Options<S extends z.ZodType | undefined> {
   schema?: S;
   /** Message affiché si la validation échoue. */
   invalidMessage?: string;
+  /** Action de lecture seule (recherche…) : ne vide pas le cache de l'entreprise. */
+  readOnly?: boolean;
 }
 
 type Input<S> = S extends z.ZodType ? z.output<S> : undefined;
@@ -58,7 +60,7 @@ export async function runAction<S extends z.ZodType | undefined, R>(
       data = parsed.data as Input<S>;
     }
     const result = await handler(ctx, data);
-    if (result.ok) updateTag(orgCacheTag(orgId));
+    if (result.ok && !options.readOnly) updateTag(orgCacheTag(orgId));
     return result;
   } catch (error) {
     if (error instanceof BusinessError || error instanceof ProgressBillingError)

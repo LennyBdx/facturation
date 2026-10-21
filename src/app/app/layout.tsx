@@ -9,6 +9,7 @@ import { APP_NAME } from "@/config/app";
 import { initials } from "@/lib/format";
 import { listCurrentUserOrganizations } from "@/lib/session";
 import { getRequestContext } from "@/composition/request-context";
+import { GlobalSearch } from "@/features/search/global-search";
 import { getNavBadges } from "@/services/dashboard";
 
 /** L'application n'est jamais indexée par les moteurs de recherche. */
@@ -58,7 +59,12 @@ async function AppShell({ children }: { children: React.ReactNode }) {
             aria-label="Replier ou déplier le menu"
           />
           <span className="font-semibold md:hidden">{APP_NAME}</span>
-          <span className="ml-auto truncate text-sm text-muted-foreground">{ctx.org.name}</span>
+          <div className="ml-auto flex min-w-0 items-center gap-3">
+            <GlobalSearch />
+            <span className="hidden truncate text-sm text-muted-foreground sm:inline">
+              {ctx.org.name}
+            </span>
+          </div>
         </header>
         <main
           id="contenu"

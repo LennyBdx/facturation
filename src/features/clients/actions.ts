@@ -33,6 +33,6 @@ export async function saveClient(id: string | null, input: ClientFormInput): Pro
   const { repos, orgId } = await getContext();
   const entity = toEntity(parsed.data);
   const client = id ? await repos.clients.update(orgId, id, entity) : await repos.clients.create(orgId, entity);
-  revalidatePath("/clients");
+  revalidatePath("/app/clients");
   return { ok: true, data: { id: client.id }, message: id ? "Client mis à jour." : "Client créé." };
 }

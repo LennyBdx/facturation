@@ -18,7 +18,7 @@ export function InvoiceMiniList({ invoices, today }: { invoices: Invoice[]; toda
     <ul className="divide-y">
       {invoices.map((i) => (
         <li key={i.id}>
-          <Link href={`/factures/${i.id}`} className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link href={`/app/factures/${i.id}`} className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
             <span className="flex items-start justify-between gap-3">
               <span className="min-w-0">
                 <span className="block truncate font-medium">{i.number ?? "Brouillon"} — {INVOICE_KIND_LABELS[i.kind]}</span>
@@ -45,7 +45,7 @@ export function QuoteMiniList({ quotes }: { quotes: Quote[] }) {
     <ul className="divide-y">
       {quotes.map((q) => (
         <li key={q.id}>
-          <Link href={`/devis/${q.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link href={`/app/devis/${q.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
             <span className="min-w-0">
               <span className="block truncate font-medium">{q.title}</span>
               <span className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -69,7 +69,7 @@ export function WorksiteMiniList({ worksites }: { worksites: Worksite[] }) {
     <ul className="divide-y">
       {worksites.map((w) => (
         <li key={w.id}>
-          <Link href={`/chantiers/${w.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link href={`/app/chantiers/${w.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
             <span className="min-w-0">
               <span className="block truncate font-medium">{w.name}</span>
               <span className="block text-sm text-muted-foreground">
@@ -90,7 +90,7 @@ export function ReceivedMiniList({ invoices }: { invoices: ReceivedInvoice[] }) 
     <ul className="divide-y">
       {invoices.map((r) => (
         <li key={r.id}>
-          <Link href={`/factures-recues/${r.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link href={`/app/factures-recues/${r.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
             <span className="min-w-0">
               <span className="block truncate font-medium">{r.supplier.name}</span>
               <span className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">

@@ -20,7 +20,7 @@ export function DraftForm({ invoiceId, defaultValues }: { invoiceId: string; def
       className="space-y-6"
       onSubmit={form.handleSubmit(async (values) => {
         const r = await updateDraftAction(invoiceId, values);
-        if (applyActionResult(form, r)) router.push(`/factures/${invoiceId}`);
+        if (applyActionResult(form, r)) router.push(`/app/factures/${invoiceId}`);
       })}
     >
       <div className="grid gap-4 sm:grid-cols-2">
@@ -31,7 +31,7 @@ export function DraftForm({ invoiceId, defaultValues }: { invoiceId: string; def
         <TextareaField control={form.control} name="paymentTermsLabel" label="Conditions de paiement" required className="sm:col-span-2" />
         <TextareaField control={form.control} name="notes" label="Notes" className="sm:col-span-2" />
       </div>
-      <FormActions pending={form.formState.isSubmitting} submitLabel="Enregistrer le brouillon" cancelHref={`/factures/${invoiceId}`} />
+      <FormActions pending={form.formState.isSubmitting} submitLabel="Enregistrer le brouillon" cancelHref={`/app/factures/${invoiceId}`} />
     </form>
   );
 }

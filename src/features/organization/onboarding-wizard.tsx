@@ -49,7 +49,7 @@ export function OnboardingWizard({ platforms }: { platforms: PlatformInfo[] }) {
     setFinishing(true);
     await new Promise((r) => setTimeout(r, 700));
     toast.success("Entreprise configurée (simulation) : bienvenue !");
-    router.push("/tableau-de-bord");
+    router.push("/app/tableau-de-bord");
   };
 
   return (

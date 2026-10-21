@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import { PageHeader } from "@/components/app/page-header";
+import { ClientForm } from "@/features/clients/client-form";
+import { getContext } from "@/services/context";
+
+export const metadata: Metadata = { title: "Nouveau client" };
+
+export default async function NewClientPage() {
+  const { org } = await getContext();
+  return (
+    <>
+      <PageHeader title="Nouveau client" backHref="/app/clients" backLabel="Clients" />
+      <ClientForm
+        clientId={null}
+        defaultValues={{
+          kind: "private_owner",
+          name: "",
+          siren: "",
+          siret: "",
+          vatNumber: "",
+          billingAddress: { line1: "", postalCode: "", city: "", countryCode: "FR" },
+          contact: { name: "", email: "", phone: "" },
+          paymentTermsDays: org.settings.defaultPaymentTermsDays,
+          serviceCode: "",
+          notes: "",
+        }}
+      />
+    </>
+  );
+}

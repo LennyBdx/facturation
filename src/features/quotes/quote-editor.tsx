@@ -206,7 +206,7 @@ export function QuoteEditor({
         return;
       }
       toast.success(result.message);
-      router.push(`/devis/${result.data!.id}`);
+      router.push(`/app/devis/${result.data!.id}`);
     });
   };
 

@@ -5,13 +5,13 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export const SETTINGS_SECTIONS = [
-  { href: "/parametres/entreprise", label: "Entreprise" },
-  { href: "/parametres/numerotation", label: "Numérotation et conditions" },
-  { href: "/parametres/documents", label: "Personnalisation" },
-  { href: "/parametres/facture-electronique", label: "Facture électronique" },
-  { href: "/parametres/abonnement", label: "Abonnement" },
-  { href: "/parametres/expert-comptable", label: "Expert-comptable" },
-  { href: "/parametres/compte", label: "Mon compte" },
+  { href: "/app/parametres/entreprise", label: "Entreprise" },
+  { href: "/app/parametres/numerotation", label: "Numérotation et conditions" },
+  { href: "/app/parametres/documents", label: "Personnalisation" },
+  { href: "/app/parametres/facture-electronique", label: "Facture électronique" },
+  { href: "/app/parametres/abonnement", label: "Abonnement" },
+  { href: "/app/parametres/expert-comptable", label: "Expert-comptable" },
+  { href: "/app/parametres/compte", label: "Mon compte" },
 ];
 
 /** Sous-navigation des paramètres : liste verticale (bureau), défilement horizontal de puces (mobile). */

@@ -23,13 +23,13 @@ export async function saveWorksite(id: string | null, input: WorksiteFormInput):
   const w = id
     ? await repos.worksites.update(orgId, id, entity)
     : await repos.worksites.create(orgId, { ...entity, retentionReleased: false });
-  revalidatePath("/chantiers");
+  revalidatePath("/app/chantiers");
   return { ok: true, data: { id: w.id }, message: id ? "Chantier mis à jour." : "Chantier créé." };
 }
 
 export async function markRetentionReleased(id: string): Promise<ActionResult> {
   const { repos, orgId } = await getContext();
   await repos.worksites.update(orgId, id, { retentionReleased: true });
-  revalidatePath(`/chantiers/${id}`);
+  revalidatePath(`/app/chantiers/${id}`);
   return { ok: true, message: "Retenue de garantie marquée comme récupérée." };
 }

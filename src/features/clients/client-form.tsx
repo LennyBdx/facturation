@@ -32,7 +32,7 @@ export function ClientForm({ clientId, defaultValues }: { clientId: string | nul
       className="space-y-8"
       onSubmit={form.handleSubmit(async (values) => {
         const result = await saveClient(clientId, values);
-        if (applyActionResult(form, result)) router.push(`/clients/${result.data!.id}`);
+        if (applyActionResult(form, result)) router.push(`/app/clients/${result.data!.id}`);
       })}
     >
       <FieldSet>
@@ -111,7 +111,7 @@ export function ClientForm({ clientId, defaultValues }: { clientId: string | nul
         </div>
       </FieldSet>
 
-      <FormActions pending={form.formState.isSubmitting} submitLabel={clientId ? "Enregistrer" : "Créer le client"} cancelHref={clientId ? `/clients/${clientId}` : "/clients"} />
+      <FormActions pending={form.formState.isSubmitting} submitLabel={clientId ? "Enregistrer" : "Créer le client"} cancelHref={clientId ? `/app/clients/${clientId}` : "/app/clients"} />
     </form>
   );
 }

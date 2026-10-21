@@ -29,7 +29,7 @@ export function SignInForm() {
       className="space-y-4"
       onSubmit={form.handleSubmit(async () => {
         await fakeDelay();
-        router.push("/tableau-de-bord");
+        router.push("/app/tableau-de-bord");
       })}
     >
       <TextField control={form.control} name="email" label="Adresse e-mail" type="email" autoComplete="email" required />

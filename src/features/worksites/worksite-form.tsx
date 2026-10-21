@@ -30,7 +30,7 @@ export function WorksiteForm({
       className="space-y-8"
       onSubmit={form.handleSubmit(async (values) => {
         const result = await saveWorksite(worksiteId, values);
-        if (applyActionResult(form, result)) router.push(`/chantiers/${result.data!.id}`);
+        if (applyActionResult(form, result)) router.push(`/app/chantiers/${result.data!.id}`);
       })}
     >
       <FieldSet>
@@ -90,7 +90,7 @@ export function WorksiteForm({
         </div>
       </FieldSet>
 
-      <FormActions pending={form.formState.isSubmitting} submitLabel={worksiteId ? "Enregistrer" : "Créer le chantier"} cancelHref={worksiteId ? `/chantiers/${worksiteId}` : "/chantiers"} />
+      <FormActions pending={form.formState.isSubmitting} submitLabel={worksiteId ? "Enregistrer" : "Créer le chantier"} cancelHref={worksiteId ? `/app/chantiers/${worksiteId}` : "/app/chantiers"} />
     </form>
   );
 }

@@ -63,7 +63,7 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link href="/tableau-de-bord" className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+        <Link href="/app/tableau-de-bord" className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
           <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground">
             S<span className="text-brand">.</span>
           </span>
@@ -182,7 +182,7 @@ function UserMenu({ user }: { user: ShellUser }) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild className="min-h-11 md:min-h-9">
-                <Link href="/parametres/compte">
+                <Link href="/app/parametres/compte">
                   <UserRound aria-hidden />
                   Mon compte
                 </Link>

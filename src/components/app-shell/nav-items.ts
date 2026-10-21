@@ -19,18 +19,18 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/tableau-de-bord", label: "Tableau de bord", shortLabel: "Accueil", icon: LayoutDashboard },
-  { href: "/clients", label: "Clients", icon: Users },
-  { href: "/chantiers", label: "Chantiers", icon: HardHat },
-  { href: "/devis", label: "Devis", icon: FileText },
-  { href: "/factures", label: "Factures émises", shortLabel: "Factures", icon: Receipt, badgeKey: "rejected" },
-  { href: "/factures-recues", label: "Factures reçues", shortLabel: "Reçues", icon: Inbox, badgeKey: "received" },
-  { href: "/equipe", label: "Équipe", icon: UsersRound },
-  { href: "/parametres", label: "Paramètres", icon: Settings },
+  { href: "/app/tableau-de-bord", label: "Tableau de bord", shortLabel: "Accueil", icon: LayoutDashboard },
+  { href: "/app/clients", label: "Clients", icon: Users },
+  { href: "/app/chantiers", label: "Chantiers", icon: HardHat },
+  { href: "/app/devis", label: "Devis", icon: FileText },
+  { href: "/app/factures", label: "Factures émises", shortLabel: "Factures", icon: Receipt, badgeKey: "rejected" },
+  { href: "/app/factures-recues", label: "Factures reçues", shortLabel: "Reçues", icon: Inbox, badgeKey: "received" },
+  { href: "/app/equipe", label: "Équipe", icon: UsersRound },
+  { href: "/app/parametres", label: "Paramètres", icon: Settings },
 ];
 
 /** Barre d'onglets mobile : 4 destinations + « Menu » (règle : 5 entrées maximum). */
-export const MOBILE_TABS = ["/tableau-de-bord", "/devis", "/factures", "/factures-recues"];
+export const MOBILE_TABS = ["/app/tableau-de-bord", "/app/devis", "/app/factures", "/app/factures-recues"];
 
 export function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);

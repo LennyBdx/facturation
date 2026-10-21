@@ -92,7 +92,7 @@ export async function saveBillingSettingsAction(input: BillingSettingsInput): Pr
       defaultQuoteValidityDays: v.defaultQuoteValidityDays,
     },
   });
-  revalidatePath("/parametres");
+  revalidatePath("/app/parametres");
   return { ok: true, message: "Numérotation et conditions enregistrées." };
 }
 
@@ -111,7 +111,7 @@ export async function saveDocumentSettingsAction(input: DocumentSettingsInput): 
       branding: { ...ctx.org.settings.branding, accentColor: parsed.data.accentColor.toLowerCase() },
     },
   });
-  revalidatePath("/parametres");
+  revalidatePath("/app/parametres");
   return { ok: true, message: "Personnalisation enregistrée." };
 }
 

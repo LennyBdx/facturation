@@ -16,8 +16,8 @@ const MESSAGES: Record<ReceivedInvoiceAction, string> = {
 export async function receivedInvoiceAction(id: string, action: ReceivedInvoiceAction, reason?: string): Promise<ActionResult> {
   try {
     await actOnReceivedInvoice(await getContext(), id, action, reason);
-    revalidatePath("/factures-recues");
-    revalidatePath(`/factures-recues/${id}`);
+    revalidatePath("/app/factures-recues");
+    revalidatePath(`/app/factures-recues/${id}`);
     return { ok: true, message: MESSAGES[action] };
   } catch (e) {
     if (e instanceof BusinessError) return { ok: false, error: e.message };
@@ -28,7 +28,7 @@ export async function receivedInvoiceAction(id: string, action: ReceivedInvoiceA
 export async function attachWorksiteAction(id: string, worksiteId: string): Promise<ActionResult> {
   try {
     await attachReceivedToWorksite(await getContext(), id, worksiteId || null);
-    revalidatePath(`/factures-recues/${id}`);
+    revalidatePath(`/app/factures-recues/${id}`);
     return { ok: true, message: worksiteId ? "Facture rattachée au chantier." : "Rattachement retiré." };
   } catch (e) {
     if (e instanceof BusinessError) return { ok: false, error: e.message };

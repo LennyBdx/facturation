@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { BackHome } from "@/features/auth/back-home";
 import { SignInForm } from "@/features/auth/auth-forms";
 
 export const metadata: Metadata = { title: "Connexion" };
@@ -7,6 +8,7 @@ export const metadata: Metadata = { title: "Connexion" };
 export default function SignInPage() {
   return (
     <div className="space-y-6">
+      <BackHome />
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Connexion</h1>
         <p className="text-muted-foreground">Accédez à vos devis, situations et factures.</p>

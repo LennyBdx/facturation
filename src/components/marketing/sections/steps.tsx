@@ -5,14 +5,14 @@ import { cn } from "@/lib/utils";
 type Visual = (typeof steps.items)[number]["visual"];
 
 /**
- * « Comment ça marche » : bandeau sombre (jetons « band ») qui rompt le rythme des grilles blanches.
+ * « Comment ça marche » : bandeau teinté (comme le bloc réforme), entre le bandeau marine des fonctionnalités et les sections blanches.
  * Étapes reliées par un fil, grands numéros en contour, et pour chacune une mini-interface
  * du produit (contrôles de la fiche, cumul des situations, suivi de la facture).
  */
 export function Steps() {
   return (
     <section aria-labelledby="steps-title" className="px-3 py-8 sm:px-6 md:py-12">
-      <div className="mx-auto max-w-7xl rounded-[2rem] bg-band px-5 py-12 text-band-foreground ring-1 ring-white/5 sm:px-10 md:py-16 lg:px-16">
+      <div className="mx-auto max-w-7xl rounded-[2rem] bg-accent px-5 py-12 sm:px-10 md:py-16 lg:px-16">
         <div className="reveal grid gap-4 lg:grid-cols-2 lg:items-end lg:gap-16">
           <h2
             id="steps-title"
@@ -20,31 +20,31 @@ export function Steps() {
           >
             {steps.title}
           </h2>
-          <p className="max-w-xl text-lg text-band-foreground/75">{steps.intro}</p>
+          <p className="max-w-xl text-lg text-muted-foreground">{steps.intro}</p>
         </div>
 
         <ol className="relative mt-12 grid gap-12 lg:mt-16 lg:grid-cols-3 lg:gap-8">
           {/* Fil qui relie les étapes (ordinateur). */}
           <span
             aria-hidden
-            className="absolute top-8 right-0 left-0 hidden h-px bg-band-foreground/20 lg:block"
+            className="absolute top-8 right-0 left-0 hidden h-px bg-foreground/15 lg:block"
           />
           {steps.items.map((s, i) => (
             <li key={s.title} className="reveal relative flex flex-col">
               <div className="flex items-center">
                 <span
                   aria-hidden
-                  className="num relative bg-band pr-3 text-6xl leading-none font-bold text-transparent [-webkit-text-stroke:1.5px_var(--band-accent)]"
+                  className="num relative bg-accent pr-3 text-6xl leading-none font-bold text-transparent [-webkit-text-stroke:1.5px_var(--brand)]"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span
                   aria-hidden
-                  className="relative size-3 rounded-full bg-band-accent ring-4 ring-band"
+                  className="relative size-3 rounded-full bg-brand ring-4 ring-accent"
                 />
               </div>
               <h3 className="mt-6 text-xl font-semibold">{s.title}</h3>
-              <p className="mt-2 text-band-foreground/75">{s.text}</p>
+              <p className="mt-2 text-muted-foreground">{s.text}</p>
               <div className="mt-6 lg:mt-auto lg:pt-6">
                 <StepVisual visual={s.visual} />
               </div>

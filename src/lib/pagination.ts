@@ -1,6 +1,6 @@
 /** Pagination des listes : fonctions pures, page lue dans l'URL (?page=N). */
 
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 10;
 
 export interface Page<T> {
   items: T[];

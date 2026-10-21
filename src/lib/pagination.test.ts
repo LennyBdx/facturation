@@ -13,21 +13,25 @@ describe("parsePage", () => {
 
 describe("paginate", () => {
   it("découpe par pages de 20", () => {
-    const p = paginate(rows, "2");
+    const p = paginate(rows, "2", 20);
     expect(p.items).toEqual(rows.slice(20, 40));
     expect(p).toMatchObject({ page: 2, pageCount: 3, total: 45, from: 21, to: 40 });
   });
 
   it("dernière page partielle", () => {
-    expect(paginate(rows, "3")).toMatchObject({ from: 41, to: 45, items: [41, 42, 43, 44, 45] });
+    expect(paginate(rows, "3", 20)).toMatchObject({
+      from: 41,
+      to: 45,
+      items: [41, 42, 43, 44, 45],
+    });
   });
 
   it("une page trop grande renvoie la dernière", () => {
-    expect(paginate(rows, "99").page).toBe(3);
+    expect(paginate(rows, "99", 20).page).toBe(3);
   });
 
   it("liste vide : une page, aucun élément", () => {
-    expect(paginate([], "1")).toEqual({
+    expect(paginate([], "1", 20)).toEqual({
       items: [],
       page: 1,
       pageCount: 1,
@@ -52,5 +56,11 @@ describe("pageWindow", () => {
 
   it("remplace une ellipse d'une seule page par le numéro", () => {
     expect(pageWindow(4, 12)).toEqual([1, 2, 3, 4, 5, null, 12]);
+  });
+});
+
+describe("taille de page par défaut", () => {
+  it("affiche 10 éléments par page", () => {
+    expect(paginate(rows, "1")).toMatchObject({ pageCount: 5, from: 1, to: 10 });
   });
 });

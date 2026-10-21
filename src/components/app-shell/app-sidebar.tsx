@@ -169,16 +169,19 @@ function OrganizationSwitcher({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="border bg-card"
+              className="border bg-card group-data-[collapsible=icon]:justify-center"
               aria-label="Changer d'entreprise"
               disabled={pending}
             >
               <Building2 aria-hidden />
-              <span className="flex min-w-0 flex-col text-left leading-tight">
+              <span className="flex min-w-0 flex-col text-left leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">{active.name}</span>
                 <span className="truncate text-xs text-muted-foreground">{active.activity}</span>
               </span>
-              <ChevronsUpDown aria-hidden className="ml-auto" />
+              <ChevronsUpDown
+                aria-hidden
+                className="ml-auto group-data-[collapsible=icon]:hidden"
+              />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

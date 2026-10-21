@@ -1,3 +1,4 @@
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { ExternalLink, ShieldCheck } from "lucide-react";
 import { OFFICIAL_PLATFORMS_URL, PRODUCT_NAME } from "@/config/site";
@@ -47,9 +48,16 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-primary-foreground/15">
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-primary-foreground/75 sm:px-6">
-          © {new Date().getFullYear()} {PRODUCT_NAME}. Aucun cookie de suivi n&apos;est utilisé sur ce site.
+          © <CopyrightYear /> {PRODUCT_NAME}. Aucun cookie de suivi n&apos;est utilisé sur ce site.
         </p>
       </div>
     </footer>
   );
+}
+
+/** Année figée au prérendu (`use cache`) puis rafraîchie au plus une fois par jour. */
+async function CopyrightYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
 }

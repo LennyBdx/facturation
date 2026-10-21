@@ -9,22 +9,33 @@
 import "server-only";
 import { cache } from "react";
 import { getRepositories, getUnitOfWork } from "@/data";
+import { withReadCache } from "@/data/cached-repositories";
 import { getEInvoicingProvider } from "@/integrations/e-invoicing";
 import { nowIso, today } from "@/lib/clock";
 import { getCurrentMembership, getCurrentOrganization, getCurrentUser } from "@/lib/session";
 import { type AppDeps, type Context, createContext } from "@/services/context";
 
-export function getAppDeps(): AppDeps {
+/**
+ * @param readCache lectures servies par le cache (`"use cache"`) : vrai pour le rendu,
+ * faux dans les Server Actions, qui doivent lire leurs propres écritures.
+ */
+export function getAppDeps({ readCache }: { readCache: boolean }): AppDeps {
+  const repos = getRepositories();
   return {
-    repos: getRepositories(),
+    repos: readCache ? withReadCache(repos) : repos,
     uow: getUnitOfWork(),
     provider: getEInvoicingProvider(),
     clock: { today, now: nowIso },
   };
 }
 
-/** Contexte de la requête courante (mémoïsé pendant le rendu). */
-export const getRequestContext = cache(async (): Promise<Context> => {
+async function buildContext(readCache: boolean): Promise<Context> {
   const [org, user, membership] = await Promise.all([getCurrentOrganization(), getCurrentUser(), getCurrentMembership()]);
-  return createContext(getAppDeps(), { org, user, membership });
-});
+  return createContext(getAppDeps({ readCache }), { org, user, membership });
+}
+
+/** Contexte de rendu de la requête courante (mémoïsé pendant le rendu, lectures en cache). */
+export const getRequestContext = cache(() => buildContext(true));
+
+/** Contexte d'une Server Action : lectures directes, sans cache. */
+export const getActionContext = cache(() => buildContext(false));

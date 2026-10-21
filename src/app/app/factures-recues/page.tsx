@@ -12,7 +12,7 @@ import type { ReceivedInvoice } from "@/data/types";
 import { formatDate } from "@/lib/format";
 import { getRequestContext } from "@/composition/request-context";
 import { receivedNeedsAction } from "@/services/dashboard";
-import { syncReceivedInvoices } from "@/services/received";
+import { ReceivedSync } from "@/features/received/received-sync";
 
 export const metadata: Metadata = { title: "Factures reçues" };
 
@@ -27,7 +27,6 @@ const FILTERS: { value: string; label: string; test: (r: ReceivedInvoice) => boo
 export default async function ReceivedInvoicesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
   const { q, filtre } = await searchParams;
   const ctx = await getRequestContext();
-  const added = await syncReceivedInvoices(ctx);
   const [all, worksites] = await Promise.all([ctx.repos.receivedInvoices.list(ctx.orgId, { search: q }), ctx.repos.worksites.list(ctx.orgId)]);
   const worksiteName = new Map(worksites.map((w) => [w.id, w.name]));
   const filter = FILTERS.find((f) => f.value === filtre);
@@ -45,11 +44,9 @@ export default async function ReceivedInvoicesPage({ searchParams }: { searchPar
           <Info aria-hidden className="mt-0.5 size-4 shrink-0" />
           La connexion à votre plateforme agréée n&apos;est pas finalisée : les nouvelles factures n&apos;arrivent pas encore. Voir Paramètres → Facture électronique.
         </div>
-      ) : added > 0 ? (
-        <p role="status" className="mb-4 rounded-lg border border-info/25 bg-info-soft p-3 text-sm text-info">
-          {added} nouvelle{added > 1 ? "s" : ""} facture{added > 1 ? "s" : ""} reçue{added > 1 ? "s" : ""} depuis votre dernière visite.
-        </p>
-      ) : null}
+      ) : (
+        <ReceivedSync />
+      )}
       <ListToolbar
         searchLabel="Rechercher une facture reçue"
         searchPlaceholder="Fournisseur ou numéro…"

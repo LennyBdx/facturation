@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import { Suspense } from "react";
+import { AppShellSkeleton } from "@/components/app-shell/app-shell-skeleton";
 import { AppSidebar } from "@/components/app-shell/app-sidebar";
 import { MobileTabBar } from "@/components/app-shell/mobile-tab-bar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -9,12 +11,19 @@ import { listCurrentUserOrganizations } from "@/lib/session";
 import { getRequestContext } from "@/composition/request-context";
 import { getNavBadges } from "@/services/dashboard";
 
-export const dynamic = "force-dynamic";
-
 /** L'application n'est jamais indexée par les moteurs de recherche. */
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-export default async function AppLayout({ children }: { children: React.ReactNode }) {
+/** Coquille statique prérendue ; la session et les données arrivent en streaming. */
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<AppShellSkeleton />}>
+      <AppShell>{children}</AppShell>
+    </Suspense>
+  );
+}
+
+async function AppShell({ children }: { children: React.ReactNode }) {
   const ctx = await getRequestContext();
   const [organizations, badges, cookieStore] = await Promise.all([
     listCurrentUserOrganizations(),

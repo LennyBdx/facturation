@@ -27,6 +27,45 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    // Domaine : fonctions pures, sans dépendance vers les couches extérieures ni le framework.
+    files: ["src/domain/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/*", "!@/domain/*", "next", "next/*", "react", "react-dom"],
+              message: "Le domaine reste pur : aucune dépendance vers les données, services, UI ou Next.js.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Services, données et intégrations ne dépendent jamais de l'interface.
+    files: ["src/services/**", "src/data/**", "src/integrations/**", "src/composition/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/app/*", "@/components/*", "@/features/*"],
+              message: "Dépendance inversée : les couches internes ne connaissent pas l'interface.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", destructuredArrayIgnorePattern: "^_" }],
+    },
+  },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "src/components/ui/**"]),
 ]);
 

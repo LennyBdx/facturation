@@ -17,7 +17,7 @@ import { forgotPasswordSchema, signInSchema, signUpSchema } from "./schemas";
 /** Maquettes : la validation est réelle (Zod) ; la connexion ouvre la session de démonstration. */
 const fakeDelay = () => new Promise((r) => setTimeout(r, 500));
 
-export function SignInForm({ next }: { next?: string }) {
+export function SignInForm() {
   const form = useForm<z.input<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: "julien.morel@volta-energies.example", password: "" },
@@ -28,7 +28,8 @@ export function SignInForm({ next }: { next?: string }) {
       noValidate
       className="space-y-4"
       onSubmit={form.handleSubmit(async () => {
-        await startSession(next);
+        // Lu à la soumission : la page reste entièrement statique. Filtré côté serveur.
+        await startSession(new URLSearchParams(window.location.search).get("next") ?? undefined);
       })}
     >
       <TextField control={form.control} name="email" label="Adresse e-mail" type="email" autoComplete="email" required />

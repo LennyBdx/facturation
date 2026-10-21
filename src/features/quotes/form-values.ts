@@ -48,9 +48,9 @@ export function emptyQuoteValues(org: Organization, today: string, clientId = ""
     notes: "",
     sections: [
       {
-        id: crypto.randomUUID(),
+        id: "nouveau-lot-1",
         title: "Lot 1",
-        lines: [{ id: crypto.randomUUID(), description: "", quantity: "1", unit: "u", unitPrice: "", vatRate: "20.00" }],
+        lines: [{ id: "nouvelle-ligne-1", description: "", quantity: "1", unit: "u", unitPrice: "", vatRate: "20.00" }],
       },
     ],
   };

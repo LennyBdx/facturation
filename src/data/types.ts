@@ -170,6 +170,8 @@ export interface Client {
   /** Code service (acheteur public). */
   serviceCode?: string;
   notes?: string;
+  /** Client archivé : masqué des listes et des choix, conservé sur ses documents. */
+  archivedAt?: ISODateTime | null;
   createdAt: ISODateTime;
 }
 

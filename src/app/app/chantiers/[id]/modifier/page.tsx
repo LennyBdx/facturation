@@ -24,7 +24,10 @@ export default async function EditWorksitePage({ params }: { params: Promise<{ i
       />
       <WorksiteForm
         worksiteId={w.id}
-        clients={clients.map((c) => ({ id: c.id, name: c.name }))}
+        // Un client archivé reste proposé s'il est déjà celui du chantier.
+        clients={clients
+          .filter((c) => !c.archivedAt || c.id === w.clientId)
+          .map((c) => ({ id: c.id, name: c.name }))}
         defaultValues={{
           clientId: w.clientId,
           name: w.name,

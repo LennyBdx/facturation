@@ -189,7 +189,11 @@ export const AREAS: Area[] = [
           { label: "« Vous doit » et retards", status: "done" },
           { label: "Coordonnées cliquables (e-mail, téléphone)", status: "done" },
           { label: "Factures, devis et chantiers liés", status: "done" },
-          { label: "Archivage ou suppression d'un client", status: "todo" },
+          {
+            label: "Archivage et restauration d'un client",
+            status: "done",
+            note: "Refusé tant que le client doit de l'argent",
+          },
         ],
       },
       {

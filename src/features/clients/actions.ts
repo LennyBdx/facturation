@@ -5,6 +5,7 @@ import { runAction } from "@/composition/action";
 import { routes } from "@/config/routes";
 import type { ClientInput } from "@/data/types";
 import type { ActionResult } from "@/lib/action-result";
+import { archiveClient, restoreClient } from "@/services/clients";
 import { clientSchema, type ClientFormInput, type ClientFormOutput } from "./schemas";
 
 function toEntity(v: ClientFormOutput): ClientInput {
@@ -46,4 +47,20 @@ export async function saveClient(
       };
     },
   );
+}
+
+export async function archiveClientAction(id: string): Promise<ActionResult> {
+  return runAction({ permission: "client:write" }, undefined, async (ctx) => {
+    await archiveClient(ctx, id);
+    revalidatePath(routes.clients.list());
+    return { ok: true, message: "Client archivé." };
+  });
+}
+
+export async function restoreClientAction(id: string): Promise<ActionResult> {
+  return runAction({ permission: "client:write" }, undefined, async (ctx) => {
+    await restoreClient(ctx, id);
+    revalidatePath(routes.clients.list());
+    return { ok: true, message: "Client restauré." };
+  });
 }

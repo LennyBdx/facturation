@@ -61,6 +61,8 @@ export interface InvitationRepository {
 export interface ClientFilter {
   search?: string;
   kind?: ClientKind;
+  /** true : archivés seulement ; false : actifs seulement ; absent : tous. */
+  archived?: boolean;
 }
 
 export interface ClientRepository {

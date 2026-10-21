@@ -18,7 +18,7 @@ import { sortOptions } from "@/features/lists/sort-options";
 import { listHref } from "@/lib/list-href";
 import { paginate } from "@/lib/pagination";
 import { formatSort } from "@/lib/sorting";
-import { clientRows } from "@/services/list-views";
+import { CLIENT_ARCHIVED_FILTER, clientRows } from "@/services/list-views";
 
 export const metadata: Metadata = { title: "Clients" };
 
@@ -57,7 +57,10 @@ export default async function ClientsPage({
         searchLabel="Rechercher un client"
         searchPlaceholder="Nom, SIREN, ville, contact…"
         filterLabel="Type"
-        filterOptions={CLIENT_KINDS.map((k) => ({ value: k, label: CLIENT_KIND_LABELS[k] }))}
+        filterOptions={[
+          ...CLIENT_KINDS.map((k) => ({ value: k, label: CLIENT_KIND_LABELS[k] })),
+          { value: CLIENT_ARCHIVED_FILTER, label: "Archivés" },
+        ]}
         sortOptions={SORT_OPTIONS}
         sortValue={formatSort(sort)}
         exportHref={rows.length ? routes.exportCsv("clients") : undefined}

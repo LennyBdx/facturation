@@ -154,7 +154,7 @@ Les options les plus simples et standard ont été retenues quand le cahier des 
   - Les hauteurs des contrôles sont agrandies (44 px sur mobile, 40 px sur ordinateur) et les cartes aplaties (bordure, rayon de 8 px), conformément au design system.
   - Les jetons sont en hexadécimal, pas en OKLCH, pour garder le lien avec les rapports de contraste documentés.
 - **Données** :
-  - la base en mémoire est un singleton `globalThis` : elle survit au rechargement à chaud, mais pas au redémarrage ;
+  - les données en mémoire sont un singleton `globalThis` : elles survivent au rechargement à chaud (les repositories, eux, sont reconstruits avec le code courant), mais pas au redémarrage ;
   - l'entreprise active est mémorisée dans un cookie ;
   - la date du jour est simulée au **18/10/2026**.
 - **Numérotation** : `{préfixe}-{année}-{compteur}`, compteur non remis à zéro chaque année, numéro attribué à l'émission, avoirs dans une série distincte.

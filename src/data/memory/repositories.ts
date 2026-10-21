@@ -128,6 +128,7 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
       async list(organizationId, filter = {}) {
         return scoped(db.clients, organizationId)
           .filter((c) => !filter.kind || c.kind === filter.kind)
+          .filter((c) => filter.archived === undefined || !!c.archivedAt === filter.archived)
           .filter((c) =>
             matches(
               [c.name, c.siren, c.billingAddress.city, c.contact.name, c.contact.email],

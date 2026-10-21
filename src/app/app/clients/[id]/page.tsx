@@ -2,11 +2,22 @@ import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { FilePlus2, Mail, MapPin, Pencil, Phone, TriangleAlert, UserRound } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  FilePlus2,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  TriangleAlert,
+  UserRound,
+} from "lucide-react";
 import { Amount } from "@/components/app/amount";
 import { DetailList } from "@/components/app/detail-list";
 import { InvoiceMiniList, QuoteMiniList, WorksiteMiniList } from "@/components/app/document-lists";
 import { PageHeader } from "@/components/app/page-header";
+import { ActionButton } from "@/components/forms/action-button";
 import { ToneBadge } from "@/components/status/status-badge";
 import { CLIENT_KIND_LABELS } from "@/components/status/status-config";
 import { Button } from "@/components/ui/button";
@@ -16,6 +27,9 @@ import { compareMoney, sumMoney, ZERO } from "@/domain/money";
 import { formatAddress } from "@/lib/format";
 import { invoicePaymentStatus, invoiceRemaining } from "@/services/builders";
 import { getRequestContext } from "@/composition/request-context";
+import { can } from "@/domain/permissions";
+import { archiveClientAction, restoreClientAction } from "@/features/clients/actions";
+import { formatDate } from "@/lib/format";
 
 export async function generateMetadata({
   params,
@@ -29,7 +43,7 @@ export async function generateMetadata({
 
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { repos, orgId, today } = await getRequestContext();
+  const { repos, orgId, today, role } = await getRequestContext();
   const client = await repos.clients.get(orgId, id);
   if (!client) notFound();
   const [invoices, quotes, worksites] = await Promise.all([
@@ -42,6 +56,8 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     invoices.filter((i) => invoicePaymentStatus(i, today) === "overdue").map(invoiceRemaining),
   );
   const isPro = client.kind !== "individual";
+  const archived = !!client.archivedAt;
+  const canWrite = can(role, "client:write");
 
   return (
     <>
@@ -49,7 +65,16 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         title={client.name}
         backHref={routes.clients.list()}
         backLabel="Clients"
-        meta={<ToneBadge tone="neutral">{CLIENT_KIND_LABELS[client.kind]}</ToneBadge>}
+        meta={
+          <>
+            <ToneBadge tone="neutral">{CLIENT_KIND_LABELS[client.kind]}</ToneBadge>
+            {archived ? (
+              <ToneBadge tone="warning" icon={Archive}>
+                Archivé
+              </ToneBadge>
+            ) : null}
+          </>
+        }
         actions={
           <>
             <Button asChild variant="outline">
@@ -58,15 +83,49 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                 Modifier
               </Link>
             </Button>
-            <Button asChild>
-              <Link href={routes.quotes.new({ client: id })}>
-                <FilePlus2 aria-hidden />
-                Nouveau devis
-              </Link>
-            </Button>
+            {canWrite && archived ? (
+              <ActionButton action={restoreClientAction.bind(null, id)}>
+                <ArchiveRestore aria-hidden />
+                Restaurer
+              </ActionButton>
+            ) : null}
+            {canWrite && !archived ? (
+              <ActionButton
+                variant="ghost"
+                action={archiveClientAction.bind(null, id)}
+                confirm={{
+                  title: "Archiver ce client ?",
+                  description:
+                    "Il n'apparaîtra plus dans la liste ni dans les choix de client. Ses devis, chantiers et factures sont conservés ; vous pourrez le restaurer à tout moment.",
+                  confirmLabel: "Archiver",
+                }}
+              >
+                <Archive aria-hidden />
+                Archiver
+              </ActionButton>
+            ) : null}
+            {!archived ? (
+              <Button asChild>
+                <Link href={routes.quotes.new({ client: id })}>
+                  <FilePlus2 aria-hidden />
+                  Nouveau devis
+                </Link>
+              </Button>
+            ) : null}
           </>
         }
       />
+
+      {archived ? (
+        <p
+          role="status"
+          className="mb-6 flex items-center gap-2 rounded-lg border border-warning/30 bg-warning-soft p-4 text-sm text-warning"
+        >
+          <Archive aria-hidden className="size-4 shrink-0" />
+          Client archivé le {formatDate(client.archivedAt!.slice(0, 10))} : il n&apos;apparaît plus
+          dans les listes ni dans les choix de client.
+        </p>
+      ) : null}
 
       {isPro && !client.siren ? (
         <div

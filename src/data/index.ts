@@ -14,27 +14,30 @@ export type * from "./types";
 export type * from "./repositories";
 export { NotFoundError } from "./repositories";
 
+import type { MemoryDb } from "./memory/store";
+
 interface DataLayer {
   repositories: Repositories;
   unitOfWork: UnitOfWork;
 }
 
-const globalForData = globalThis as unknown as { __factobatData?: DataLayer };
+/**
+ * Seules les DONNÉES survivent au rechargement à chaud (singleton `globalThis`) ;
+ * les repositories sont reconstruits avec le code courant à chaque rechargement du module.
+ */
+const globalForData = globalThis as unknown as { __factobatDb?: MemoryDb };
+let layer: DataLayer | undefined;
 
 /** Implémentations concrètes (racine de composition de la couche de données). */
 function dataLayer(): DataLayer {
-  if (!globalForData.__factobatData) {
-    const db = createMemoryDb(buildSeed());
+  if (!layer) {
+    const db = (globalForData.__factobatDb ??= createMemoryDb(buildSeed()));
     const repositories = createMemoryRepositories(db);
-    globalForData.__factobatData = {
-      repositories,
-      unitOfWork: createMemoryUnitOfWork(db, repositories),
-    };
+    layer = { repositories, unitOfWork: createMemoryUnitOfWork(db, repositories) };
   }
-  return globalForData.__factobatData;
+  return layer;
 }
 
-/** Repositories de l'application (singleton : survit au rechargement à chaud). */
 export function getRepositories(): Repositories {
   return dataLayer().repositories;
 }

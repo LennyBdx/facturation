@@ -15,7 +15,7 @@ export default async function NewQuotePage({
   const { client, chantier } = await searchParams;
   const { repos, orgId, org, today } = await getRequestContext();
   const [clients, worksites] = await Promise.all([
-    repos.clients.list(orgId),
+    repos.clients.list(orgId, { archived: false }),
     repos.worksites.list(orgId),
   ]);
   const worksite = worksites.find((w) => w.id === chantier);

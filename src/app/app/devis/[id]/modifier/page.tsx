@@ -34,7 +34,10 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
         quoteId={quote.id}
         number={quote.number}
         initial={quoteToFormValues(quote)}
-        clients={clients.map((c) => ({ id: c.id, name: c.name, kind: c.kind }))}
+        // Un client archivé reste proposé s'il est déjà celui du devis.
+        clients={clients
+          .filter((c) => !c.archivedAt || c.id === quote.clientId)
+          .map((c) => ({ id: c.id, name: c.name, kind: c.kind }))}
         worksites={worksites.map((w) => ({
           id: w.id,
           name: w.name,

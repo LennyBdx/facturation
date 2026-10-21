@@ -57,6 +57,9 @@ const nameMap = <T extends { id: string; name: string }>(items: T[]) =>
 
 // --- Clients ------------------------------------------------------------------
 
+/** Valeur du filtre qui affiche les clients archivés (masqués sinon). */
+export const CLIENT_ARCHIVED_FILTER = "archives";
+
 export const CLIENT_SORT_KEYS = ["nom", "type", "ville", "solde"] as const;
 export type ClientSortKey = (typeof CLIENT_SORT_KEYS)[number];
 export type ClientRow = { client: Client; due: string };
@@ -66,11 +69,12 @@ export async function clientRows(
   params: ListParams,
   kinds: readonly ClientKind[],
 ): Promise<ListResult<ClientRow, ClientSortKey>> {
+  const archived = params.filtre === CLIENT_ARCHIVED_FILTER;
   const kind = kinds.includes(params.filtre as ClientKind)
     ? (params.filtre as ClientKind)
     : undefined;
   const [clients, invoices] = await Promise.all([
-    ctx.repos.clients.list(ctx.orgId, { search: params.q, kind }),
+    ctx.repos.clients.list(ctx.orgId, { search: params.q, kind, archived }),
     ctx.repos.invoices.list(ctx.orgId),
   ]);
   const rows = clients.map((client) => ({
@@ -88,7 +92,7 @@ export async function clientRows(
       ville: by.text((r) => r.client.billingAddress.city),
       solde: by.decimal((r) => r.due),
     },
-    !!(params.q || kind),
+    !!(params.q || kind || archived),
   );
 }
 

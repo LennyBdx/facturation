@@ -48,6 +48,19 @@ export function describeRepositoryContract(name: string, factory: () => Promise<
       expect(found.map((c) => c.id)).toContain(client.id);
     });
 
+    it("filtre les clients archivés ou actifs", async () => {
+      const { repos, orgA } = await factory();
+      const [client] = await repos.clients.list(orgA);
+      await repos.clients.update(orgA, client.id, { archivedAt: "2026-10-18T10:00:00.000Z" });
+      const ids = async (archived?: boolean) =>
+        (await repos.clients.list(orgA, { archived })).map((c) => c.id);
+      expect(await ids(true)).toEqual([client.id]);
+      expect(await ids(false)).not.toContain(client.id);
+      expect(await ids()).toContain(client.id);
+      await repos.clients.update(orgA, client.id, { archivedAt: null });
+      expect(await ids(false)).toContain(client.id);
+    });
+
     it("réserve des numéros strictement croissants", async () => {
       const { repos, orgA } = await factory();
       const a = await repos.organizations.takeNextNumber(orgA, "invoice", "2026-10-18");

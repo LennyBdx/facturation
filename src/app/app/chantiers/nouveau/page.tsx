@@ -14,7 +14,7 @@ export default async function NewWorksitePage({
   const { client } = await searchParams;
   const { repos, orgId, org, today } = await getRequestContext();
   const [clients, worksites] = await Promise.all([
-    repos.clients.list(orgId),
+    repos.clients.list(orgId, { archived: false }),
     repos.worksites.list(orgId),
   ]);
   const reference = `CH-${today.slice(0, 4)}-${String(worksites.length + 1).padStart(3, "0")}`;

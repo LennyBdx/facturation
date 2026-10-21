@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { PRODUCT_NAME, SITE_DESCRIPTION, SITE_URL } from "@/config/site";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: { default: PRODUCT_NAME, template: `%s · ${PRODUCT_NAME}` },
+  description: SITE_DESCRIPTION,
+};
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (

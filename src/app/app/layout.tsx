@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/app-shell/app-sidebar";
 import { MobileTabBar } from "@/components/app-shell/mobile-tab-bar";
@@ -9,6 +10,9 @@ import { getContext } from "@/services/context";
 import { getNavBadges } from "@/services/dashboard";
 
 export const dynamic = "force-dynamic";
+
+/** L'application n'est jamais indexée par les moteurs de recherche. */
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getContext();

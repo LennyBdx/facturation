@@ -29,9 +29,8 @@ import {
   quoteToInvoiceAction,
   quoteToWorksiteAction,
 } from "@/features/quotes/actions";
-import { effectiveQuoteStatus } from "@/features/quotes/form-values";
 import { RefuseQuoteButton } from "@/features/quotes/refuse-quote-button";
-import { quoteTotals } from "@/services/builders";
+import { quoteTotals, effectiveQuoteStatus } from "@/services/builders";
 import { getRequestContext } from "@/composition/request-context";
 
 export async function generateMetadata({

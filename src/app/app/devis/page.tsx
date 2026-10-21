@@ -4,46 +4,43 @@ import type { Metadata } from "next";
 import { FileText, Plus } from "lucide-react";
 import { Amount } from "@/components/app/amount";
 import { EmptyState } from "@/components/app/empty-state";
+import { ListPagination } from "@/components/app/list-pagination";
 import { ListToolbar } from "@/components/app/list-toolbar";
 import { PageHeader } from "@/components/app/page-header";
-import { ListPagination } from "@/components/app/list-pagination";
 import { ResponsiveList } from "@/components/app/responsive-list";
-import { paginate } from "@/lib/pagination";
 import { QuoteStatusBadge } from "@/components/status/status-badge";
 import { QUOTE_STATUS } from "@/components/status/status-config";
 import { Button } from "@/components/ui/button";
-import type { QuoteStatus } from "@/data/types";
-import { effectiveQuoteStatus } from "@/features/quotes/form-values";
-import { formatDate } from "@/lib/format";
-import { quoteTotals } from "@/services/builders";
 import { getRequestContext } from "@/composition/request-context";
+import type { QuoteStatus } from "@/data/types";
+import { sortOptions } from "@/features/lists/sort-options";
+import { formatDate } from "@/lib/format";
+import { listHref } from "@/lib/list-href";
+import { paginate } from "@/lib/pagination";
+import { formatSort } from "@/lib/sorting";
+import { quoteRows } from "@/services/list-views";
 
 export const metadata: Metadata = { title: "Devis" };
 
 const STATUSES = Object.keys(QUOTE_STATUS) as QuoteStatus[];
 
+const SORT_OPTIONS = sortOptions([
+  { key: "date", label: "Date", kind: "date" },
+  { key: "client", label: "Client", kind: "text" },
+  { key: "montant", label: "Total HT", kind: "number" },
+  { key: "numero", label: "Numéro", kind: "text" },
+]);
+
 export default async function QuotesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; filtre?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; filtre?: string; tri?: string; page?: string }>;
 }) {
-  const { q, filtre, page } = await searchParams;
-  const status = STATUSES.includes(filtre as QuoteStatus) ? (filtre as QuoteStatus) : undefined;
-  const { repos, orgId, today } = await getRequestContext();
-  const [all, clients] = await Promise.all([
-    repos.quotes.list(orgId, { search: q }),
-    repos.clients.list(orgId),
-  ]);
-  const clientName = new Map(clients.map((c) => [c.id, c.name]));
-  const quotes = all
-    .map((quote) => ({
-      quote,
-      status: effectiveQuoteStatus(quote, today),
-      totals: quoteTotals(quote),
-    }))
-    .filter((x) => !status || x.status === status);
-
-  const paged = paginate(quotes, page);
+  const { q, filtre, tri, page } = await searchParams;
+  const ctx = await getRequestContext();
+  const { rows, sort, narrowed } = await quoteRows(ctx, { q, filtre, tri }, STATUSES);
+  const paged = paginate(rows, page);
+  const query = { q, filtre, tri };
 
   return (
     <>
@@ -64,12 +61,15 @@ export default async function QuotesPage({
         searchPlaceholder="Numéro ou objet du devis…"
         filterLabel="Statut"
         filterOptions={STATUSES.map((s) => ({ value: s, label: QUOTE_STATUS[s].label }))}
+        sortOptions={SORT_OPTIONS}
+        sortValue={formatSort(sort)}
+        exportHref={rows.length ? routes.exportCsv("devis") : undefined}
       />
-      {quotes.length === 0 ? (
+      {rows.length === 0 ? (
         <EmptyState
           icon={FileText}
           title={
-            q || status
+            narrowed
               ? "Aucun devis ne correspond à votre recherche."
               : "Aucun devis pour l'instant."
           }
@@ -85,34 +85,52 @@ export default async function QuotesPage({
           <ResponsiveList
             caption="Liste des devis"
             rows={paged.items}
-            getKey={(x) => x.quote.id}
-            href={(x) => routes.quotes.show(x.quote.id)}
+            getKey={(r) => r.quote.id}
+            href={(r) => routes.quotes.show(r.quote.id)}
+            sort={{
+              current: sort,
+              href: (s) => listHref(routes.quotes.list(), query, { tri: formatSort(s) }),
+            }}
             columns={[
               {
                 header: "Numéro",
-                cell: (x) => <span className="font-mono text-sm">{x.quote.number}</span>,
+                sortKey: "numero",
+                cell: (r) => <span className="font-mono text-sm">{r.quote.number}</span>,
               },
               {
                 header: "Objet",
-                cell: (x) => <span className="line-clamp-1">{x.quote.title}</span>,
+                sortKey: "objet",
+                cell: (r) => <span className="line-clamp-1">{r.quote.title}</span>,
               },
-              { header: "Client", cell: (x) => clientName.get(x.quote.clientId) },
+              { header: "Client", sortKey: "client", cell: (r) => r.clientName },
               {
                 header: "Date",
-                cell: (x) => <span className="num">{formatDate(x.quote.issueDate)}</span>,
+                sortKey: "date",
+                sortFirstDir: "desc",
+                cell: (r) => <span className="num">{formatDate(r.quote.issueDate)}</span>,
               },
-              { header: "Statut", cell: (x) => <QuoteStatusBadge status={x.status} /> },
-              { header: "Total HT", align: "right", cell: (x) => <Amount value={x.totals.net} /> },
+              {
+                header: "Statut",
+                sortKey: "statut",
+                cell: (r) => <QuoteStatusBadge status={r.status} />,
+              },
+              {
+                header: "Total HT",
+                align: "right",
+                sortKey: "montant",
+                sortFirstDir: "desc",
+                cell: (r) => <Amount value={r.net} />,
+              },
             ]}
-            mobile={(x) => ({
-              title: x.quote.title,
-              subtitle: `${x.quote.number} · ${clientName.get(x.quote.clientId)}`,
-              amount: <Amount value={x.totals.net} />,
+            mobile={(r) => ({
+              title: r.quote.title,
+              subtitle: `${r.quote.number} · ${r.clientName}`,
+              amount: <Amount value={r.net} />,
               meta: (
                 <>
-                  <QuoteStatusBadge status={x.status} />
+                  <QuoteStatusBadge status={r.status} />
                   <span className="num ml-auto text-sm text-muted-foreground">
-                    {formatDate(x.quote.issueDate)}
+                    {formatDate(r.quote.issueDate)}
                   </span>
                 </>
               ),
@@ -121,7 +139,7 @@ export default async function QuotesPage({
           <ListPagination
             pagination={paged}
             pathname={routes.quotes.list()}
-            query={{ q, filtre }}
+            query={query}
             label="devis"
           />
         </>

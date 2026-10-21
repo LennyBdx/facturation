@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { listHref } from "@/lib/list-href";
 import { type Page, pageWindow } from "@/lib/pagination";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,7 @@ export function ListPagination({
 }: {
   pagination: Pick<Page<unknown>, "page" | "pageCount" | "total" | "from" | "to">;
   pathname: string;
-  /** Paramètres courants de l'URL à conserver (recherche, filtre…). */
+  /** Paramètres courants de l'URL à conserver (recherche, filtre, tri). */
   query: Record<string, string | undefined>;
   /** Nom des éléments au pluriel, pour le récapitulatif (« 21–40 sur 45 factures »). */
   label?: string;
@@ -26,13 +27,7 @@ export function ListPagination({
   const { page, pageCount, total, from, to } = pagination;
   if (total === 0) return null;
 
-  const href = (p: number) => {
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(query)) if (v && k !== "page") params.set(k, v);
-    if (p > 1) params.set("page", String(p));
-    const qs = params.toString();
-    return qs ? `${pathname}?${qs}` : pathname;
-  };
+  const href = (p: number) => listHref(pathname, query, { page: p > 1 ? String(p) : undefined });
 
   return (
     <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">

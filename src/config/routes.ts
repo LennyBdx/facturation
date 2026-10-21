@@ -5,6 +5,16 @@
  */
 export const APP_BASE = "/app";
 
+/** Listes exportables en CSV (segment de l'URL d'export). */
+export const EXPORT_LISTS = [
+  "clients",
+  "chantiers",
+  "devis",
+  "factures",
+  "factures-recues",
+] as const;
+export type ExportList = (typeof EXPORT_LISTS)[number];
+
 type Query = Record<string, string | number | undefined | null>;
 
 /** Ajoute une chaîne de requête en ignorant les valeurs vides. */
@@ -58,6 +68,7 @@ export const routes = {
   },
   received: resource(`${APP_BASE}/factures-recues`),
   team: `${APP_BASE}/equipe`,
+  exportCsv: (list: ExportList) => `${APP_BASE}/export/${list}`,
   settings: {
     index: `${APP_BASE}/parametres`,
     company: `${APP_BASE}/parametres/entreprise`,

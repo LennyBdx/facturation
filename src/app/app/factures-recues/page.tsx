@@ -3,54 +3,50 @@ import type { Metadata } from "next";
 import { Inbox, Info } from "lucide-react";
 import { Amount } from "@/components/app/amount";
 import { EmptyState } from "@/components/app/empty-state";
+import { ListPagination } from "@/components/app/list-pagination";
 import { ListToolbar } from "@/components/app/list-toolbar";
 import { PageHeader } from "@/components/app/page-header";
-import { ListPagination } from "@/components/app/list-pagination";
 import { ResponsiveList } from "@/components/app/responsive-list";
-import { paginate } from "@/lib/pagination";
 import { LifecycleStatusBadge, ToneBadge } from "@/components/status/status-badge";
 import { RECEIVED_CATEGORY_LABELS } from "@/components/status/status-config";
-import type { ReceivedInvoice } from "@/data/types";
-import { formatDate } from "@/lib/format";
 import { getRequestContext } from "@/composition/request-context";
-import { receivedNeedsAction } from "@/services/dashboard";
+import { sortOptions } from "@/features/lists/sort-options";
 import { ReceivedSync } from "@/features/received/received-sync";
+import { formatDate } from "@/lib/format";
+import { listHref } from "@/lib/list-href";
+import { paginate } from "@/lib/pagination";
+import { formatSort } from "@/lib/sorting";
+import { receivedNeedsAction } from "@/services/dashboard";
+import { receivedRows } from "@/services/list-views";
 
 export const metadata: Metadata = { title: "Factures reçues" };
 
-const FILTERS: { value: string; label: string; test: (r: ReceivedInvoice) => boolean }[] = [
-  { value: "a-traiter", label: "À traiter", test: receivedNeedsAction },
-  {
-    value: "approuvees",
-    label: "Approuvées, à payer",
-    test: (r) => r.status === "approved" || r.status === "partially_approved",
-  },
-  {
-    value: "litiges",
-    label: "En litige ou suspendues",
-    test: (r) => r.status === "disputed" || r.status === "suspended",
-  },
-  { value: "refusees", label: "Refusées", test: (r) => r.status === "refused" },
-  { value: "payees", label: "Payées", test: (r) => r.status === "payment_sent" },
+/** Libellés des filtres ; les règles correspondantes sont dans `RECEIVED_FILTERS`. */
+const FILTERS = [
+  { value: "a-traiter", label: "À traiter" },
+  { value: "approuvees", label: "Approuvées, à payer" },
+  { value: "litiges", label: "En litige ou suspendues" },
+  { value: "refusees", label: "Refusées" },
+  { value: "payees", label: "Payées" },
 ];
+
+const SORT_OPTIONS = sortOptions([
+  { key: "echeance", label: "Échéance", kind: "date" },
+  { key: "fournisseur", label: "Fournisseur", kind: "text" },
+  { key: "montant", label: "TTC", kind: "number" },
+]);
 
 export default async function ReceivedInvoicesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; filtre?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; filtre?: string; tri?: string; page?: string }>;
 }) {
-  const { q, filtre, page } = await searchParams;
+  const { q, filtre, tri, page } = await searchParams;
   const ctx = await getRequestContext();
-  const [all, worksites] = await Promise.all([
-    ctx.repos.receivedInvoices.list(ctx.orgId, { search: q }),
-    ctx.repos.worksites.list(ctx.orgId),
-  ]);
-  const worksiteName = new Map(worksites.map((w) => [w.id, w.name]));
-  const filter = FILTERS.find((f) => f.value === filtre);
-  const rows = filter ? all.filter(filter.test) : all;
+  const { rows, sort, narrowed } = await receivedRows(ctx, { q, filtre, tri });
   const connected = ctx.org.settings.eInvoicing.connectionStatus === "connected";
-
   const paged = paginate(rows, page);
+  const query = { q, filtre, tri };
 
   return (
     <>
@@ -74,13 +70,16 @@ export default async function ReceivedInvoicesPage({
         searchLabel="Rechercher une facture reçue"
         searchPlaceholder="Fournisseur ou numéro…"
         filterLabel="Statut"
-        filterOptions={FILTERS.map(({ value, label }) => ({ value, label }))}
+        filterOptions={FILTERS}
+        sortOptions={SORT_OPTIONS}
+        sortValue={formatSort(sort)}
+        exportHref={rows.length ? routes.exportCsv("factures-recues") : undefined}
       />
       {rows.length === 0 ? (
         <EmptyState
           icon={Inbox}
           title={
-            q || filter
+            narrowed
               ? "Aucune facture ne correspond à votre recherche."
               : "Aucune facture reçue pour l'instant."
           }
@@ -91,12 +90,17 @@ export default async function ReceivedInvoicesPage({
           <ResponsiveList
             caption="Factures fournisseurs reçues"
             rows={paged.items}
-            getKey={(r) => r.id}
-            href={(r) => routes.received.show(r.id)}
+            getKey={(r) => r.received.id}
+            href={(r) => routes.received.show(r.received.id)}
+            sort={{
+              current: sort,
+              href: (s) => listHref(routes.received.list(), query, { tri: formatSort(s) }),
+            }}
             columns={[
               {
                 header: "Fournisseur",
-                cell: (r) => (
+                sortKey: "fournisseur",
+                cell: ({ received: r }) => (
                   <span className="block max-w-60">
                     <span className="block truncate">{r.supplier.name}</span>
                     <span className="block truncate font-mono text-xs text-muted-foreground">
@@ -107,34 +111,40 @@ export default async function ReceivedInvoicesPage({
               },
               {
                 header: "Catégorie",
+                sortKey: "categorie",
                 cell: (r) => (
-                  <span className="text-sm">{RECEIVED_CATEGORY_LABELS[r.category]}</span>
+                  <span className="text-sm">{RECEIVED_CATEGORY_LABELS[r.received.category]}</span>
                 ),
               },
               {
                 header: "Chantier",
-                cell: (r) => (
-                  <span className="line-clamp-1 text-sm">
-                    {r.worksiteId ? worksiteName.get(r.worksiteId) : "—"}
-                  </span>
-                ),
+                sortKey: "chantier",
+                cell: (r) => <span className="line-clamp-1 text-sm">{r.worksiteName || "—"}</span>,
               },
               {
                 header: "Échéance",
-                cell: (r) => <span className="num">{formatDate(r.dueDate)}</span>,
+                sortKey: "echeance",
+                cell: (r) => <span className="num">{formatDate(r.received.dueDate)}</span>,
               },
               {
                 header: "Statut",
-                cell: (r) => (
+                sortKey: "statut",
+                cell: ({ received: r }) => (
                   <span className="flex flex-wrap gap-1">
                     <LifecycleStatusBadge status={r.status} />
                     {receivedNeedsAction(r) ? <ToneBadge tone="info">À traiter</ToneBadge> : null}
                   </span>
                 ),
               },
-              { header: "TTC", align: "right", cell: (r) => <Amount value={r.gross} /> },
+              {
+                header: "TTC",
+                align: "right",
+                sortKey: "montant",
+                sortFirstDir: "desc",
+                cell: (r) => <Amount value={r.received.gross} />,
+              },
             ]}
-            mobile={(r) => ({
+            mobile={({ received: r }) => ({
               title: r.supplier.name,
               subtitle: `${r.number} · échéance ${formatDate(r.dueDate)}`,
               amount: <Amount value={r.gross} />,
@@ -149,7 +159,7 @@ export default async function ReceivedInvoicesPage({
           <ListPagination
             pagination={paged}
             pathname={routes.received.list()}
-            query={{ q, filtre }}
+            query={query}
             label="factures reçues"
           />
         </>

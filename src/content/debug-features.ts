@@ -501,6 +501,8 @@ export const AREAS: Area[] = [
           { label: "Isolation des données par entreprise", status: "done" },
           { label: "Responsive mobile, accessibilité, thème sombre", status: "done" },
           { label: "Pagination des listes (10 par page, dans l'URL)", status: "done" },
+          { label: "Tri des listes (en-têtes cliquables, sélecteur sur mobile)", status: "done" },
+          { label: "Export CSV des listes (recherche, filtre et tri appliqués)", status: "done" },
           { label: "Données fictives cohérentes (2 entreprises)", status: "done" },
           { label: "Base de données PostgreSQL", status: "todo" },
           { label: "Authentification réelle", status: "todo" },

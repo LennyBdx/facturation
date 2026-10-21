@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Loader2, Search } from "lucide-react";
+import { Download, Loader2, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -28,12 +29,21 @@ export function ListToolbar({
   filterLabel,
   filterOptions,
   filterParam = "filtre",
+  sortOptions,
+  sortValue,
+  exportHref,
 }: {
   searchPlaceholder: string;
   searchLabel: string;
   filterLabel?: string;
   filterOptions?: FilterOption[];
   filterParam?: string;
+  /** Choix du tri sur mobile (sur ordinateur, on trie en cliquant les en-têtes). */
+  sortOptions?: FilterOption[];
+  /** Tri courant (valeur de `tri`, y compris le tri par défaut). */
+  sortValue?: string;
+  /** Route d'export CSV : la recherche, le filtre et le tri courants y sont transmis. */
+  exportHref?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -61,8 +71,21 @@ export function ListToolbar({
     startTransition(() => router.replace(`${pathname}?${next.toString()}`, { scroll: false }));
   };
 
+  const setSort = (value: string) => {
+    const next = new URLSearchParams(params.toString());
+    next.delete("page");
+    next.set("tri", value);
+    startTransition(() => router.replace(`${pathname}?${next.toString()}`, { scroll: false }));
+  };
+
+  const exportQuery = new URLSearchParams(params.toString());
+  exportQuery.delete("page");
+  const exportUrl = exportHref
+    ? `${exportHref}${exportQuery.size ? `?${exportQuery.toString()}` : ""}`
+    : null;
+
   return (
-    <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+    <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap md:flex-nowrap">
       <div className="relative flex-1">
         <label htmlFor="list-search" className="sr-only">
           {searchLabel}
@@ -101,6 +124,28 @@ export function ListToolbar({
             ))}
           </SelectContent>
         </Select>
+      ) : null}
+      {sortOptions && sortValue ? (
+        <Select value={sortValue} onValueChange={setSort}>
+          <SelectTrigger aria-label="Trier" className="w-full sm:w-64 md:hidden">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {sortOptions.map((o) => (
+              <SelectItem key={o.value} value={o.value}>
+                {o.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : null}
+      {exportUrl ? (
+        <Button asChild variant="outline" className="sm:shrink-0">
+          <a href={exportUrl} download>
+            <Download aria-hidden />
+            Exporter (CSV)
+          </a>
+        </Button>
       ) : null}
     </div>
   );

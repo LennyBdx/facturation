@@ -1,5 +1,5 @@
 import { addDays } from "@/domain/lifecycle";
-import type { Organization, Quote, QuoteStatus } from "@/data/types";
+import type { Organization, Quote } from "@/data/types";
 import type { QuoteFormValues } from "./schemas";
 
 const frDecimal = (v: string) => v.replace(".", ",");
@@ -69,12 +69,4 @@ export function emptyQuoteValues(
       },
     ],
   };
-}
-
-/** Statut affiché : un devis envoyé dont la validité est dépassée apparaît « expiré ». */
-export function effectiveQuoteStatus(
-  q: Pick<Quote, "status" | "validUntil">,
-  today: string,
-): QuoteStatus {
-  return q.status === "sent" && q.validUntil < today ? "expired" : q.status;
 }

@@ -29,6 +29,7 @@ import type {
   InvoiceTotals,
   Organization,
   Quote,
+  QuoteStatus,
   SellerSnapshot,
   Worksite,
 } from "@/data/types";
@@ -374,4 +375,12 @@ export function retentionHeld(invoices: readonly Invoice[]): Money {
       .filter((i) => i.issuedAt && !i.cancelledByCreditNoteId && kindRules(i.kind).isReceivable)
       .map((i) => i.totals.retention),
   );
+}
+
+/** Statut affiché : un devis envoyé dont la validité est dépassée apparaît « expiré ». */
+export function effectiveQuoteStatus(
+  q: Pick<Quote, "status" | "validUntil">,
+  today: string,
+): QuoteStatus {
+  return q.status === "sent" && q.validUntil < today ? "expired" : q.status;
 }

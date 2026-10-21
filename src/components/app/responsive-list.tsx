@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { type Sort, type SortDir, toggleSort } from "@/lib/sorting";
 import { cn } from "@/lib/utils";
 
 export interface Column<T> {
@@ -15,6 +16,16 @@ export interface Column<T> {
   cell: (row: T) => React.ReactNode;
   align?: "left" | "right";
   className?: string;
+  /** Clé de tri (paramètre `tri`) : rend l'en-tête cliquable. */
+  sortKey?: string;
+  /** Sens au premier clic (décroissant pour les montants et dates, en général). */
+  sortFirstDir?: SortDir;
+}
+
+export interface ListSort {
+  current: Sort;
+  /** URL de la liste triée selon `sort`. */
+  href: (sort: Sort) => string;
 }
 
 export interface MobileCard {
@@ -28,7 +39,8 @@ export interface MobileCard {
  * Liste de données responsive (règle du skill : pas de défilement horizontal sur mobile).
  * - ≥ 768 px : tableau sémantique, montants alignés à droite ;
  * - < 768 px : cartes à deux niveaux (titre + montant, puis métadonnées et statuts).
- * Chaque ligne est un lien vers la fiche.
+ * Chaque ligne est un lien vers la fiche. Avec `sort`, les en-têtes des colonnes
+ * ayant une `sortKey` deviennent des liens de tri (aria-sort sur l'en-tête actif).
  */
 export function ResponsiveList<T>({
   rows,
@@ -37,6 +49,7 @@ export function ResponsiveList<T>({
   href,
   getKey,
   caption,
+  sort,
 }: {
   rows: readonly T[];
   columns: Column<T>[];
@@ -44,6 +57,7 @@ export function ResponsiveList<T>({
   href: (row: T) => string;
   getKey: (row: T) => string;
   caption: string;
+  sort?: ListSort;
 }) {
   return (
     <>
@@ -56,13 +70,24 @@ export function ResponsiveList<T>({
                 <TableHead
                   key={c.header}
                   scope="col"
+                  aria-sort={
+                    sort && c.sortKey && sort.current.key === c.sortKey
+                      ? sort.current.dir === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                   className={cn(
                     "h-10 text-muted-foreground",
                     c.align === "right" && "text-right",
                     c.className,
                   )}
                 >
-                  {c.header}
+                  {sort && c.sortKey ? (
+                    <SortLink column={c} sort={sort} sortKey={c.sortKey} />
+                  ) : (
+                    c.header
+                  )}
                 </TableHead>
               ))}
               <TableHead className="w-8">
@@ -128,5 +153,39 @@ export function ResponsiveList<T>({
         })}
       </ul>
     </>
+  );
+}
+
+function SortLink<T>({
+  column,
+  sort,
+  sortKey,
+}: {
+  column: Column<T>;
+  sort: ListSort;
+  sortKey: string;
+}) {
+  const active = sort.current.key === sortKey;
+  const Icon = !active ? ArrowUpDown : sort.current.dir === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <Link
+      href={sort.href(toggleSort(sort.current, sortKey, column.sortFirstDir))}
+      scroll={false}
+      className={cn(
+        "-mx-2 inline-flex min-h-9 items-center gap-1 rounded-md px-2 hover:bg-secondary hover:text-foreground",
+        column.align === "right" && "flex-row-reverse",
+        active && "text-foreground",
+      )}
+    >
+      {column.header}
+      <Icon aria-hidden className={cn("size-3.5", !active && "opacity-50")} />
+      <span className="sr-only">
+        {active
+          ? sort.current.dir === "asc"
+            ? " (tri croissant, cliquer pour inverser)"
+            : " (tri décroissant, cliquer pour inverser)"
+          : " (trier)"}
+      </span>
+    </Link>
   );
 }

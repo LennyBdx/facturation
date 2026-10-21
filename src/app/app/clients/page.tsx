@@ -4,43 +4,40 @@ import type { Metadata } from "next";
 import { Plus, Users } from "lucide-react";
 import { Amount } from "@/components/app/amount";
 import { EmptyState } from "@/components/app/empty-state";
+import { ListPagination } from "@/components/app/list-pagination";
 import { ListToolbar } from "@/components/app/list-toolbar";
 import { PageHeader } from "@/components/app/page-header";
-import { ListPagination } from "@/components/app/list-pagination";
 import { ResponsiveList } from "@/components/app/responsive-list";
-import { paginate } from "@/lib/pagination";
 import { ToneBadge } from "@/components/status/status-badge";
 import { CLIENT_KIND_LABELS } from "@/components/status/status-config";
 import { Button } from "@/components/ui/button";
-import type { ClientKind } from "@/data/types";
-import { sumMoney } from "@/domain/money";
+import { getRequestContext } from "@/composition/request-context";
 import { formatSiren } from "@/domain/identifiers";
 import { CLIENT_KINDS } from "@/features/clients/schemas";
-import { invoiceRemaining } from "@/services/builders";
-import { getRequestContext } from "@/composition/request-context";
+import { sortOptions } from "@/features/lists/sort-options";
+import { listHref } from "@/lib/list-href";
+import { paginate } from "@/lib/pagination";
+import { formatSort } from "@/lib/sorting";
+import { clientRows } from "@/services/list-views";
 
 export const metadata: Metadata = { title: "Clients" };
+
+const SORT_OPTIONS = sortOptions([
+  { key: "nom", label: "Nom", kind: "text" },
+  { key: "ville", label: "Ville", kind: "text" },
+  { key: "solde", label: "Solde dû", kind: "number" },
+]);
 
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; filtre?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; filtre?: string; tri?: string; page?: string }>;
 }) {
-  const { q, filtre, page } = await searchParams;
-  const kind = CLIENT_KINDS.includes(filtre as ClientKind) ? (filtre as ClientKind) : undefined;
-  const { repos, orgId } = await getRequestContext();
-  const [clients, invoices] = await Promise.all([
-    repos.clients.list(orgId, { search: q, kind }),
-    repos.invoices.list(orgId),
-  ]);
-  const due = new Map(
-    clients.map((c) => [
-      c.id,
-      sumMoney(invoices.filter((i) => i.clientId === c.id).map(invoiceRemaining)),
-    ]),
-  );
-
-  const paged = paginate(clients, page);
+  const { q, filtre, tri, page } = await searchParams;
+  const ctx = await getRequestContext();
+  const { rows, sort, narrowed } = await clientRows(ctx, { q, filtre, tri }, CLIENT_KINDS);
+  const paged = paginate(rows, page);
+  const query = { q, filtre, tri };
 
   return (
     <>
@@ -61,17 +58,20 @@ export default async function ClientsPage({
         searchPlaceholder="Nom, SIREN, ville, contact…"
         filterLabel="Type"
         filterOptions={CLIENT_KINDS.map((k) => ({ value: k, label: CLIENT_KIND_LABELS[k] }))}
+        sortOptions={SORT_OPTIONS}
+        sortValue={formatSort(sort)}
+        exportHref={rows.length ? routes.exportCsv("clients") : undefined}
       />
-      {clients.length === 0 ? (
+      {rows.length === 0 ? (
         <EmptyState
           icon={Users}
           title={
-            q || kind
+            narrowed
               ? "Aucun client ne correspond à votre recherche."
               : "Aucun client pour l'instant."
           }
           description={
-            q || kind
+            narrowed
               ? "Modifiez la recherche ou le filtre."
               : "Ajoutez votre premier client pour lui adresser un devis."
           }
@@ -86,17 +86,24 @@ export default async function ClientsPage({
           <ResponsiveList
             caption="Liste des clients"
             rows={paged.items}
-            getKey={(c) => c.id}
-            href={(c) => routes.clients.show(c.id)}
+            getKey={(r) => r.client.id}
+            href={(r) => routes.clients.show(r.client.id)}
+            sort={{
+              current: sort,
+              href: (s) => listHref(routes.clients.list(), query, { tri: formatSort(s) }),
+            }}
             columns={[
-              { header: "Client", cell: (c) => c.name },
+              { header: "Client", sortKey: "nom", cell: (r) => r.client.name },
               {
                 header: "Type",
-                cell: (c) => <ToneBadge tone="neutral">{CLIENT_KIND_LABELS[c.kind]}</ToneBadge>,
+                sortKey: "type",
+                cell: (r) => (
+                  <ToneBadge tone="neutral">{CLIENT_KIND_LABELS[r.client.kind]}</ToneBadge>
+                ),
               },
               {
                 header: "SIREN",
-                cell: (c) =>
+                cell: ({ client: c }) =>
                   c.siren ? (
                     <span className="num font-mono text-sm">{formatSiren(c.siren)}</span>
                   ) : c.kind === "individual" ? (
@@ -105,13 +112,19 @@ export default async function ClientsPage({
                     <ToneBadge tone="warning">À compléter</ToneBadge>
                   ),
               },
-              { header: "Ville", cell: (c) => c.billingAddress.city },
-              { header: "Solde dû", align: "right", cell: (c) => <Amount value={due.get(c.id)} /> },
+              { header: "Ville", sortKey: "ville", cell: (r) => r.client.billingAddress.city },
+              {
+                header: "Solde dû",
+                align: "right",
+                sortKey: "solde",
+                sortFirstDir: "desc",
+                cell: (r) => <Amount value={r.due} />,
+              },
             ]}
-            mobile={(c) => ({
+            mobile={({ client: c, due }) => ({
               title: c.name,
               subtitle: `${CLIENT_KIND_LABELS[c.kind]} · ${c.billingAddress.city}`,
-              amount: due.get(c.id) !== "0.00" ? <Amount value={due.get(c.id)} /> : undefined,
+              amount: due !== "0.00" ? <Amount value={due} /> : undefined,
               meta:
                 !c.siren && c.kind !== "individual" ? (
                   <ToneBadge tone="warning">SIREN à compléter</ToneBadge>
@@ -121,7 +134,7 @@ export default async function ClientsPage({
           <ListPagination
             pagination={paged}
             pathname={routes.clients.list()}
-            query={{ q, filtre }}
+            query={query}
             label="clients"
           />
         </>

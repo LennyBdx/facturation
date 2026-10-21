@@ -36,10 +36,10 @@ export function MobileNav() {
           </ul>
         </nav>
         <div className="mt-auto space-y-2 p-4">
-          <Button asChild size="lg" className="w-full">
+          <Button asChild size="lg" className="w-full rounded-full">
             <Link href={ROUTES.signUp}>{cta.primary}</Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="w-full">
+          <Button asChild size="lg" variant="outline" className="w-full rounded-full">
             <Link href={ROUTES.signIn}>{cta.signIn}</Link>
           </Button>
         </div>

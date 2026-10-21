@@ -1,60 +1,86 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, CircleCheck } from "lucide-react";
+import { LifecycleStatusBadge } from "@/components/status/status-badge";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { cta, hero } from "@/content/home";
 import { DesktopFrame, PhoneFrame } from "../device-frame";
+import { withHighlight } from "../highlight";
 import { ICONS } from "../icons";
 
-/** Hero : seul `h1` de la page, deux appels à l'action, captures réelles du prototype. */
+/**
+ * Hero centré : titre avec mot-clé souligné, pastilles, appel à l'action en pilule,
+ * grande capture réelle avec éléments flottants (téléphone, suivi des statuts).
+ */
 export function Hero() {
   return (
-    <section aria-labelledby="hero-title" className="overflow-hidden pt-10 pb-16 md:pt-16 md:pb-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-10">
-        <div>
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-sm text-muted-foreground">
-            <span aria-hidden className="size-1.5 rounded-full bg-brand" />
-            {hero.eyebrow}
-          </p>
-          <h1 id="hero-title" className="text-4xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-5xl lg:text-[3.5rem]">
-            {hero.title}
+    <section aria-labelledby="hero-title" className="overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-4xl text-center">
+          <h1 id="hero-title" className="text-4xl leading-[1.08] font-bold tracking-tight text-balance sm:text-6xl lg:text-7xl">
+            {withHighlight(hero.title, hero.titleHighlight)}
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-muted-foreground">{hero.subtitle}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="w-full sm:w-auto">
+          <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2" aria-label="Points forts">
+            {hero.tags.map((t) => (
+              <li key={t} className="inline-flex items-center gap-1.5 text-sm font-medium sm:text-base">
+                <CircleCheck aria-hidden className="size-4 text-primary" />
+                {t}
+              </li>
+            ))}
+          </ul>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">{hero.subtitle}</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild size="lg" className="h-12 w-full rounded-full px-7 text-base sm:w-auto">
               <Link href={ROUTES.signUp}>
                 {cta.primary}
                 <ArrowRight aria-hidden />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+            <Button asChild size="lg" variant="ghost" className="h-12 w-full rounded-full px-6 text-base sm:w-auto">
               <Link href="#fonctionnalites">{cta.secondary}</Link>
             </Button>
           </div>
-          <ul className="mt-8 space-y-3">
-            {hero.points.map((p) => {
-              const Icon = ICONS[p.icon] ?? Check;
-              return (
-                <li key={p.text} className="flex items-start gap-3">
-                  <span aria-hidden className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
-                    <Icon className="size-4" />
-                  </span>
-                  <span className="pt-0.5">{p.text}</span>
-                </li>
-              );
-            })}
-          </ul>
         </div>
 
-        <div className="relative pb-10 sm:pr-12 lg:pr-16 lg:pb-14">
-          <DesktopFrame shot={hero.images.desktop} priority sizes="(min-width: 1024px) 40rem, 100vw" />
+        <div className="relative mx-auto mt-14 max-w-5xl md:mt-16">
+          <div className="rounded-3xl bg-accent p-2 sm:p-4">
+            <DesktopFrame shot={hero.images.desktop} priority sizes="(min-width: 1024px) 64rem, 100vw" className="rounded-xl" />
+          </div>
+
           <PhoneFrame
             shot={hero.images.mobile}
             priority
-            sizes="(min-width: 1024px) 11rem, 30vw"
-            className="absolute right-0 bottom-0 w-[30%] max-w-44 min-w-28"
+            sizes="11rem"
+            className="absolute -bottom-10 -left-3 hidden w-40 shadow-xl md:block lg:-left-10 lg:w-44"
           />
+
+          <div className="absolute top-16 -right-3 hidden w-64 rounded-xl border bg-card p-4 shadow-xl md:block lg:-right-10">
+            <p className="text-sm font-semibold">Facture électronique</p>
+            <p className="mb-3 text-xs text-muted-foreground">Situation n° 3 · suivi de la plateforme agréée</p>
+            <ol className="space-y-2">
+              {(["deposited", "approved", "cashed"] as const).map((s) => (
+                <li key={s} className="flex items-center justify-between gap-2">
+                  <LifecycleStatusBadge status={s} />
+                  <Check aria-hidden className="size-4 text-success" />
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
+
+        <ul className="mx-auto mt-16 grid max-w-5xl gap-4 sm:grid-cols-3 md:mt-20">
+          {hero.points.map((p) => {
+            const Icon = ICONS[p.icon] ?? Check;
+            return (
+              <li key={p.text} className="flex items-center gap-3 sm:justify-center">
+                <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary">
+                  <Icon className="size-4" />
+                </span>
+                <span className="font-medium">{p.text}</span>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
   );

@@ -26,10 +26,10 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <Button asChild variant="ghost" className="hidden sm:inline-flex">
+          <Button asChild variant="outline" className="hidden rounded-full sm:inline-flex">
             <Link href={ROUTES.signIn}>{cta.signIn}</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="rounded-full">
             <Link href={ROUTES.signUp}>
               <span className="sm:hidden">Essayer</span>
               <span className="hidden sm:inline">{cta.primary}</span>

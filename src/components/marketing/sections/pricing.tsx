@@ -15,7 +15,7 @@ export function Pricing() {
         {pricing.plans.map((p) => (
           <li
             key={p.name}
-            className={cn("reveal flex flex-col rounded-lg border bg-card p-6", p.highlighted && "border-primary ring-1 ring-primary")}
+            className={cn("reveal flex flex-col rounded-2xl border bg-card p-6", p.highlighted && "border-primary ring-1 ring-primary")}
           >
             <h3 className="text-xl font-semibold">{p.name}</h3>
             <p className="text-sm text-muted-foreground">{p.audience}</p>
@@ -28,7 +28,7 @@ export function Pricing() {
                 </li>
               ))}
             </ul>
-            <Button asChild size="lg" variant={p.highlighted ? "default" : "outline"} className="mt-6 w-full">
+            <Button asChild size="lg" variant={p.highlighted ? "default" : "outline"} className="mt-6 h-12 w-full rounded-full text-base">
               <Link href={ROUTES.signUp}>
                 {cta.primary}
                 <span className="sr-only"> — offre {p.name}</span>

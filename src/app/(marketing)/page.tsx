@@ -3,6 +3,7 @@ import { HomeJsonLd } from "@/components/marketing/json-ld";
 import { Faq } from "@/components/marketing/sections/faq";
 import { Features } from "@/components/marketing/sections/features";
 import { FinalCta } from "@/components/marketing/sections/final-cta";
+import { Guarantees } from "@/components/marketing/sections/guarantees";
 import { Hero } from "@/components/marketing/sections/hero";
 import { Pricing } from "@/components/marketing/sections/pricing";
 import { Problems } from "@/components/marketing/sections/problems";
@@ -39,6 +40,7 @@ export default function HomePage() {
       <Features />
       <Steps />
       <Trades />
+      <Guarantees />
       <SocialProof />
       <Pricing />
       <Faq />

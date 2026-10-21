@@ -11,7 +11,7 @@ export function Trades() {
         {trades.items.map((t) => {
           const Icon = ICONS[t.icon] ?? HardHat;
           return (
-            <li key={t.name} className="reveal rounded-lg border bg-background p-5">
+            <li key={t.name} className="reveal rounded-2xl border bg-background p-5">
               <span aria-hidden className="mb-3 flex size-10 items-center justify-center rounded-md bg-accent text-brand">
                 <Icon className="size-5" />
               </span>

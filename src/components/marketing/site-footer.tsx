@@ -5,13 +5,13 @@ import { footer, READY_LABEL } from "@/content/home";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t bg-card">
+    <footer className="mt-8 bg-primary text-primary-foreground">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_repeat(3,1fr)]">
         <div className="space-y-3">
           <p className="font-semibold">{PRODUCT_NAME}</p>
-          <p className="max-w-xs text-sm text-muted-foreground">{footer.tagline}</p>
-          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <ShieldCheck aria-hidden className="size-4 text-success" />
+          <p className="max-w-xs text-sm text-primary-foreground/75">{footer.tagline}</p>
+          <p className="flex items-center gap-1.5 text-sm text-primary-foreground/75">
+            <ShieldCheck aria-hidden className="size-4" />
             {READY_LABEL}
           </p>
         </div>
@@ -26,7 +26,7 @@ export function SiteFooter() {
                       href={OFFICIAL_PLATFORMS_URL}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground md:min-h-8"
+                      className="inline-flex min-h-11 items-center gap-1 text-sm text-primary-foreground/75 hover:text-primary-foreground md:min-h-8"
                     >
                       {l.label}
                       <ExternalLink aria-hidden className="size-3.5" />
@@ -35,7 +35,7 @@ export function SiteFooter() {
                   </li>
                 ) : (
                   <li key={l.label}>
-                    <Link href={l.href} className="inline-flex min-h-11 items-center text-sm text-muted-foreground hover:text-foreground md:min-h-8">
+                    <Link href={l.href} className="inline-flex min-h-11 items-center text-sm text-primary-foreground/75 hover:text-primary-foreground md:min-h-8">
                       {l.label}
                     </Link>
                   </li>
@@ -45,8 +45,8 @@ export function SiteFooter() {
           </nav>
         ))}
       </div>
-      <div className="border-t">
-        <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground sm:px-6">
+      <div className="border-t border-primary-foreground/15">
+        <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-primary-foreground/75 sm:px-6">
           © {new Date().getFullYear()} {PRODUCT_NAME}. Aucun cookie de suivi n&apos;est utilisé sur ce site.
         </p>
       </div>

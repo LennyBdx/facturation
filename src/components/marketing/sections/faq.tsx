@@ -10,7 +10,7 @@ export function Faq() {
   return (
     <Section id={faq.id} labelledBy="faq-title" tone="card">
       <SectionHeading id="faq-title" title={faq.title} />
-      <div className="mx-auto max-w-3xl divide-y rounded-lg border bg-background">
+      <div className="mx-auto max-w-3xl divide-y overflow-hidden rounded-2xl border bg-background">
         {faq.items.map((item) => (
           <details key={item.q} className="group">
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium hover:bg-secondary/60 [&::-webkit-details-marker]:hidden">

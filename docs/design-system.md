@@ -202,3 +202,18 @@ Ajouts propres au site public (`src/app/(marketing)/`, `src/components/marketing
 | Animation | Classe `.reveal` : fondu et translation de 8 px liés au défilement (`animation-timeline: view()`). Active seulement si le navigateur la gère et sans `prefers-reduced-motion`. Défilement doux désactivé dans ce cas aussi. |
 | Preuve sociale | Composant `SocialProof` alimenté par `testimonials` (vide) : rien ne s'affiche sans témoignage réel. Aucune note, aucun compteur, aucun logo client. |
 | Image de partage | `opengraph-image.tsx` : générée hors navigateur, donc les couleurs y sont écrites en hexadécimal (seule exception à la règle des jetons). |
+
+### Direction artistique du site vitrine (v2, inspirée de Facture.net)
+
+À la demande du produit, le site vitrine reprend les **principes de mise en page** de Facture.net, avec notre palette et nos propres contenus. Aucun logo, texte, illustration ni couleur de marque n'est repris.
+
+| Principe repris | Notre traitement |
+|---|---|
+| Hero centré, titre très gras, mot-clé souligné d'un trait | `h1` en 700, jusqu'à 72 px ; « payées à temps » souligné d'un trait de pinceau orange chantier (`Highlight`, SVG décoratif `aria-hidden`). |
+| Points clés en ligne sous le titre | Trois pastilles cochées (situations, retenue de garantie, autoliquidation). |
+| Boutons en pilule | `rounded-full`, 48 px de haut, uniquement sur le site vitrine. L'application garde ses boutons à 6 px. |
+| Grande capture du produit avec éléments flottants | Capture réelle du tableau de bord sur fond `accent`, avec deux éléments flottants : un téléphone (situation réelle) et une carte de suivi construite avec nos vraies pastilles de statut. Ombre portée réservée à ces éléments flottants. |
+| Bloc foncé arrondi avec grille de fonctionnalités | Bloc `primary` (marine) au rayon de 32 px, avec des cartes claires montrant des mini-captures réelles, conclu par un appel à l'action. Cela **remplace** la règle « pas de section sombre » de la v1 : le contraste du texte blanc sur marine est de 11,5:1. |
+| Bandeau teinté arrondi | Bloc réforme sur fond `accent`, avec les dates en cartes flottantes décalées. |
+| Grille de garanties avec pastille surlignée | Six garanties réelles du produit ; pastille « Mentions obligatoires intégrées » légèrement inclinée. |
+| Pied de page foncé | Fond `primary`, liens à 75 % d'opacité (contraste supérieur à 7:1). |

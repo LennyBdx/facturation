@@ -3,8 +3,11 @@ import {
   Droplets,
   FileSpreadsheet,
   Hammer,
+  HardHat,
+  Hash,
   Inbox,
   Layers,
+  Lock,
   type LucideIcon,
   Paintbrush,
   Percent,
@@ -12,6 +15,7 @@ import {
   ShieldCheck,
   ShieldOff,
   Smartphone,
+  Undo2,
   Users,
   Zap,
 } from "lucide-react";
@@ -32,4 +36,8 @@ export const ICONS: Record<string, LucideIcon> = {
   hammer: Hammer,
   paintbrush: Paintbrush,
   layers: Layers,
+  hash: Hash,
+  lock: Lock,
+  undo: Undo2,
+  "hard-hat": HardHat,
 };

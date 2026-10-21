@@ -11,7 +11,7 @@ export function Problems() {
         {problems.items.map((p) => {
           const Icon = ICONS[p.icon] ?? CircleAlert;
           return (
-            <li key={p.title} className="reveal rounded-lg border bg-card p-6">
+            <li key={p.title} className="reveal rounded-2xl border bg-card p-6">
               <span aria-hidden className="mb-4 flex size-10 items-center justify-center rounded-md bg-warning-soft text-warning">
                 <Icon className="size-5" />
               </span>

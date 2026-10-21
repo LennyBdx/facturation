@@ -24,8 +24,11 @@ export const cta = {
 };
 
 export const hero = {
-  eyebrow: "Logiciel de devis et de facturation pour le second œuvre",
   title: "Vos situations de travaux, facturées juste et payées à temps.",
+  /** Partie du titre soulignée (doit figurer telle quelle dans `title`). */
+  titleHighlight: "payées à temps",
+  /** Pastilles sous le titre. */
+  tags: ["Situations de travaux", "Retenue de garantie", "Autoliquidation"],
   subtitle:
     "Devis par lots, situations à l'avancement, retenue de garantie et autoliquidation calculées pour vous. Vos factures sont prêtes pour la facture électronique.",
   points: [
@@ -131,6 +134,26 @@ export const features = {
     },
   ] satisfies Feature[],
 };
+
+/** Bandeau d'appel intermédiaire (après les fonctionnalités). */
+export const midCta = {
+  title: "Votre prochaine situation, en quelques minutes",
+  text: "Saisissez l'avancement depuis le chantier, le calcul est fait.",
+} as const;
+
+/** Garanties : uniquement ce que le produit fait réellement. */
+export const guarantees = {
+  title: "Des factures conformes, sans y penser",
+  highlight: "Mentions obligatoires intégrées",
+  items: [
+    { icon: "shield", title: "Contrôle avant émission", text: "SIREN, adresse, TVA, échéance, mentions : l'émission est bloquée tant qu'il manque une donnée obligatoire." },
+    { icon: "hash", title: "Numérotation continue", text: "Numéro attribué à l'émission, séquence sans trou, série distincte pour les avoirs." },
+    { icon: "lock", title: "Facture figée après émission", text: "Une facture émise ne se modifie plus : les données du vendeur et du client sont figées." },
+    { icon: "undo", title: "Correction par avoir", text: "Erreur ou refus du client : un avoir annule la facture, comme le prévoit la réglementation." },
+    { icon: "percent", title: "TVA du bâtiment", text: "Taux réduits, autoliquidation en sous-traitance avec la mention de l'article 283-2 nonies du CGI." },
+    { icon: "hard-hat", title: "Assurance décennale", text: "Assureur, numéro de contrat et couverture repris sur chaque devis et chaque facture." },
+  ],
+} as const;
 
 export const steps = {
   title: "Comment ça marche",

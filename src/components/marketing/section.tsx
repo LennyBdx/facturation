@@ -24,7 +24,7 @@ export function Section({
 export function SectionHeading({ id, title, intro, align = "center" }: { id: string; title: string; intro?: string; align?: "center" | "left" }) {
   return (
     <div className={cn("mb-10 max-w-2xl md:mb-14", align === "center" && "mx-auto text-center")}>
-      <h2 id={id} className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+      <h2 id={id} className="text-3xl font-bold tracking-tight text-balance md:text-5xl">
         {title}
       </h2>
       {intro ? <p className="mt-3 text-lg text-muted-foreground">{intro}</p> : null}

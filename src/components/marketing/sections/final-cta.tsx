@@ -4,17 +4,17 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { cta, finalCta } from "@/content/home";
 
-/** Seule section en teinte primaire de la page. */
+/** Appel final : bloc marine arrondi (comme le bloc des fonctionnalités). */
 export function FinalCta() {
   return (
-    <section aria-labelledby="final-cta-title" className="bg-primary py-16 text-primary-foreground md:py-20">
-      <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-        <h2 id="final-cta-title" className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+    <section aria-labelledby="final-cta-title" className="px-3 py-8 sm:px-6 md:py-12">
+      <div className="mx-auto max-w-7xl rounded-[2rem] bg-primary px-5 py-14 text-center text-primary-foreground md:py-20">
+        <h2 id="final-cta-title" className="mx-auto max-w-3xl text-3xl font-bold tracking-tight text-balance md:text-5xl">
           {finalCta.title}
         </h2>
         <p className="mt-3 text-lg text-primary-foreground/85">{finalCta.text}</p>
         <div className="mt-8 flex flex-col items-center gap-3">
-          <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
+          <Button asChild size="lg" variant="secondary" className="h-12 w-full rounded-full px-7 text-base sm:w-auto">
             <Link href={ROUTES.signUp}>
               {cta.primary}
               <ArrowRight aria-hidden />

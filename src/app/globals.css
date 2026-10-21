@@ -57,6 +57,10 @@
   --color-paper-border: var(--paper-border);
   --color-paper-on-accent: var(--paper-on-accent);
 
+  --color-band: var(--band);
+  --color-band-foreground: var(--band-foreground);
+  --color-band-accent: var(--band-accent);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -127,6 +131,11 @@
   --paper-border: #cbd5e1;
   --paper-on-accent: #ffffff;
 
+  /* Bandeau de mise en avant du site (sections sombres). */
+  --band: #1e3a5f;
+  --band-foreground: #ffffff;
+  --band-accent: #fb923c;
+
   --chart-1: #1d4ed8;
   --chart-2: #c2410c;
   --chart-3: #047857;
@@ -185,6 +194,10 @@
   --paper-muted: #475569;
   --paper-border: #cbd5e1;
   --paper-on-accent: #ffffff;
+
+  --band: #16223d;
+  --band-foreground: #e2e8f0;
+  --band-accent: #fb923c;
 
   --chart-1: #3b82f6;
   --chart-2: #ea580c;

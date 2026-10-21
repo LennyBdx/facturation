@@ -271,18 +271,44 @@ export const guarantees = {
 
 export const steps = {
   title: "Comment ça marche",
+  intro:
+    "Trois étapes, du premier devis à l'encaissement. Chaque document repart du précédent : rien n'est ressaisi.",
   items: [
     {
       title: "Créez votre entreprise",
       text: "SIREN, SIRET et TVA vérifiés à la saisie, assurance décennale et mentions légales renseignées une fois pour toutes.",
+      visual: {
+        kind: "checklist",
+        heading: "Fiche entreprise",
+        rows: [
+          "SIREN et SIRET vérifiés",
+          "N° de TVA intracommunautaire",
+          "Assurance décennale",
+          "Mentions légales",
+        ],
+      },
     },
     {
       title: "Faites vos devis, puis vos situations",
       text: "Le devis accepté devient votre marché : chaque situation repart du cumul précédent.",
+      visual: {
+        kind: "progress",
+        heading: "Avancement cumulé du marché",
+        rows: [
+          { label: "Situation 1", percent: 30 },
+          { label: "Situation 2", percent: 65 },
+          { label: "Situation 3", percent: 100 },
+        ],
+      },
     },
     {
       title: "Émettez, suivez, encaissez",
       text: "La facture part vers votre plateforme agréée ; vous suivez son statut jusqu'au paiement.",
+      visual: {
+        kind: "lifecycle",
+        heading: "Suivi de la facture",
+        rows: ["Déposée", "Approuvée", "Encaissée"],
+      },
     },
   ],
 } as const;

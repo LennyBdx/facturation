@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
@@ -25,7 +26,7 @@ export default async function QuotePreviewPage({ params }: { params: Promise<{ i
   return (
     <>
       <div className="no-print">
-        <PageHeader title={`Aperçu — devis ${quote.number}`} backHref={`/app/devis/${id}`} backLabel={quote.number} actions={<PrintButton />} />
+        <PageHeader title={`Aperçu — devis ${quote.number}`} backHref={routes.quotes.show(id)} backLabel={quote.number} actions={<PrintButton />} />
       </div>
       <DocumentSheet
         docLabel="Devis"

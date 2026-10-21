@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/config/routes";
+import { routes } from "@/config/routes";
 import { cta, finalCta } from "@/content/home";
 
 /** Appel final : bloc marine arrondi (comme le bloc des fonctionnalités). */
@@ -15,7 +15,7 @@ export function FinalCta() {
         <p className="mt-3 text-lg text-primary-foreground/85">{finalCta.text}</p>
         <div className="mt-8 flex flex-col items-center gap-3">
           <Button asChild size="lg" variant="secondary" className="h-12 w-full rounded-full px-7 text-base sm:w-auto">
-            <Link href={ROUTES.signUp}>
+            <Link href={routes.signUp}>
               {cta.primary}
               <ArrowRight aria-hidden />
             </Link>

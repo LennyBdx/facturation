@@ -1,12 +1,13 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import { APP_NAME } from "@/config/app";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { href: "/debug/app", label: "Fonctionnalités" },
-  { href: "/debug/tech", label: "Technique" },
-  { href: "/", label: "Site vitrine" },
-  { href: "/app", label: "Application" },
+  { href: routes.debug.features, label: "Fonctionnalités" },
+  { href: routes.debug.tech, label: "Technique" },
+  { href: routes.home, label: "Site vitrine" },
+  { href: routes.app, label: "Application" },
 ];
 
 /** En-tête commun aux pages de suivi interne (/debug/*). */

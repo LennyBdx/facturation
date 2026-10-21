@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Amount } from "@/components/app/amount";
@@ -31,7 +32,7 @@ export default async function ReceivedInvoicePage({ params }: { params: Promise<
     <>
       <PageHeader
         title={inv.supplier.name}
-        backHref="/app/factures-recues"
+        backHref={routes.received.list()}
         backLabel="Factures reçues"
         description={<span className="font-mono">Facture {inv.number}</span>}
         meta={

@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
@@ -13,7 +14,7 @@ export default async function EditClientPage({ params }: { params: Promise<{ id:
   if (!client) notFound();
   return (
     <>
-      <PageHeader title={`Modifier — ${client.name}`} backHref={`/app/clients/${id}`} backLabel={client.name} />
+      <PageHeader title={`Modifier — ${client.name}`} backHref={routes.clients.show(id)} backLabel={client.name} />
       <ClientForm
         clientId={client.id}
         defaultValues={{

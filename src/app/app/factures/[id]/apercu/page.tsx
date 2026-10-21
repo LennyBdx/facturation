@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
@@ -44,7 +45,7 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
         <PageHeader
           title={`Aperçu — ${label}`}
           description={!invoice.issuedAt ? "Brouillon : le numéro définitif sera attribué à l'émission." : undefined}
-          backHref={`/app/factures/${id}`}
+          backHref={routes.invoices.show(id)}
           backLabel={invoice.number ?? "Brouillon"}
           actions={<PrintButton />}
         />

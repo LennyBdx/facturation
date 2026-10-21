@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft, FileText } from "lucide-react";
-import { ROUTES } from "@/config/routes";
+import { routes } from "@/config/routes";
 
 /** Page légale minimale, contenu [À RÉDIGER]. */
 export function LegalPage({ title, description }: { title: string; description: string }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 md:py-16">
-      <Link href={ROUTES.home} className="inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+      <Link href={routes.home} className="inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft aria-hidden className="size-4" /> Accueil
       </Link>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance">{title}</h1>

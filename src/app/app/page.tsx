@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { ROUTES } from "@/config/routes";
+import { routes } from "@/config/routes";
 
 export default function AppIndex() {
-  redirect(ROUTES.appHome);
+  redirect(routes.dashboard);
 }

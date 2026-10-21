@@ -1,5 +1,6 @@
 "use client";
 
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,13 +30,13 @@ export function SignInForm() {
       className="space-y-4"
       onSubmit={form.handleSubmit(async () => {
         await fakeDelay();
-        router.push("/app/tableau-de-bord");
+        router.push(routes.dashboard);
       })}
     >
       <TextField control={form.control} name="email" label="Adresse e-mail" type="email" autoComplete="email" required />
       <PasswordField control={form.control} name="password" label="Mot de passe" autoComplete="current-password" required />
       <div className="flex justify-end">
-        <Link href="/mot-de-passe-oublie" className="text-sm text-primary underline-offset-4 hover:underline">
+        <Link href={routes.forgotPassword} className="text-sm text-primary underline-offset-4 hover:underline">
           Mot de passe oublié ?
         </Link>
       </div>
@@ -57,7 +58,7 @@ export function SignUpForm() {
       className="space-y-4"
       onSubmit={form.handleSubmit(async () => {
         await fakeDelay();
-        router.push("/onboarding");
+        router.push(routes.onboarding);
       })}
     >
       <div className="grid gap-4 sm:grid-cols-2">
@@ -116,7 +117,7 @@ export function ForgotPasswordForm() {
           Si un compte existe pour <strong>{sentTo}</strong>, un lien de réinitialisation vient d&apos;être envoyé (prototype : aucun
           e-mail n&apos;est réellement envoyé).
         </p>
-        <Link href="/connexion" className="inline-block text-primary underline-offset-4 hover:underline">
+        <Link href={routes.signIn} className="inline-block text-primary underline-offset-4 hover:underline">
           Retour à la connexion
         </Link>
       </div>

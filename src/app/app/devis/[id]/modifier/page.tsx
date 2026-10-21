@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
@@ -12,13 +13,13 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
   const { repos, orgId } = await getContext();
   const [quote, clients, worksites] = await Promise.all([repos.quotes.get(orgId, id), repos.clients.list(orgId), repos.worksites.list(orgId)]);
   if (!quote) notFound();
-  if (quote.status !== "draft" && quote.status !== "sent") redirect(`/app/devis/${id}`);
+  if (quote.status !== "draft" && quote.status !== "sent") redirect(routes.quotes.show(id));
   return (
     <>
       <PageHeader
         title={`Modifier le devis ${quote.number}`}
         description={quote.status === "sent" ? "Ce devis a déjà été envoyé : il repassera en brouillon après modification." : undefined}
-        backHref={`/app/devis/${id}`}
+        backHref={routes.quotes.show(id)}
         backLabel={quote.number}
       />
       <QuoteEditor

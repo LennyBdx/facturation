@@ -6,6 +6,7 @@
  * - aucun badge officiel : mention neutre « Prêt pour la facture électronique » ;
  * - ce qui n'est pas décidé est marqué [À DÉFINIR] ou [À CONFIRMER].
  */
+import { routes } from "@/config/routes";
 import { PRODUCT_NAME } from "@/config/site";
 
 export const READY_LABEL = "Prêt pour la facture électronique";
@@ -257,10 +258,10 @@ export const footer = {
     {
       title: "Légal",
       links: [
-        { href: "/mentions-legales", label: "Mentions légales" },
-        { href: "/cgu", label: "Conditions générales d'utilisation" },
-        { href: "/confidentialite", label: "Confidentialité" },
-        { href: "/contact", label: "Contact" },
+        { href: routes.legalNotice, label: "Mentions légales" },
+        { href: routes.terms, label: "Conditions générales d'utilisation" },
+        { href: routes.privacy, label: "Confidentialité" },
+        { href: routes.contact, label: "Contact" },
       ],
     },
   ],

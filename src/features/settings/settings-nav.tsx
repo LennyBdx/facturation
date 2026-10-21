@@ -1,17 +1,18 @@
 "use client";
 
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export const SETTINGS_SECTIONS = [
-  { href: "/app/parametres/entreprise", label: "Entreprise" },
-  { href: "/app/parametres/numerotation", label: "Numérotation et conditions" },
-  { href: "/app/parametres/documents", label: "Personnalisation" },
-  { href: "/app/parametres/facture-electronique", label: "Facture électronique" },
-  { href: "/app/parametres/abonnement", label: "Abonnement" },
-  { href: "/app/parametres/expert-comptable", label: "Expert-comptable" },
-  { href: "/app/parametres/compte", label: "Mon compte" },
+  { href: routes.settings.company, label: "Entreprise" },
+  { href: routes.settings.numbering, label: "Numérotation et conditions" },
+  { href: routes.settings.documents, label: "Personnalisation" },
+  { href: routes.settings.eInvoicing, label: "Facture électronique" },
+  { href: routes.settings.subscription, label: "Abonnement" },
+  { href: routes.settings.accountant, label: "Expert-comptable" },
+  { href: routes.settings.account, label: "Mon compte" },
 ];
 
 /** Sous-navigation des paramètres : liste verticale (bureau), défilement horizontal de puces (mobile). */

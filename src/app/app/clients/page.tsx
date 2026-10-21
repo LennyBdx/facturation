@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Plus, Users } from "lucide-react";
@@ -32,7 +33,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         description="Entreprises générales, maîtres d'ouvrage, particuliers et acheteurs publics."
         actions={
           <Button asChild>
-            <Link href="/app/clients/nouveau">
+            <Link href={routes.clients.new()}>
               <Plus aria-hidden />
               Nouveau client
             </Link>
@@ -52,7 +53,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
           description={q || kind ? "Modifiez la recherche ou le filtre." : "Ajoutez votre premier client pour lui adresser un devis."}
           action={
             <Button asChild>
-              <Link href="/app/clients/nouveau">Créer un client</Link>
+              <Link href={routes.clients.new()}>Créer un client</Link>
             </Button>
           }
         />
@@ -61,7 +62,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
           caption="Liste des clients"
           rows={clients}
           getKey={(c) => c.id}
-          href={(c) => `/app/clients/${c.id}`}
+          href={(c) => routes.clients.show(c.id)}
           columns={[
             { header: "Client", cell: (c) => c.name },
             { header: "Type", cell: (c) => <ToneBadge tone="neutral">{CLIENT_KIND_LABELS[c.kind]}</ToneBadge> },

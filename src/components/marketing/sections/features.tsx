@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Building2, Check, UserRoundCog, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/config/routes";
+import { routes } from "@/config/routes";
 import { cta, features, midCta } from "@/content/home";
 import { cn } from "@/lib/utils";
 import { ICONS } from "../icons";
@@ -80,7 +80,7 @@ export function Features() {
           <p className="text-2xl font-bold tracking-tight text-balance md:text-3xl">{midCta.title}</p>
           <p className="mt-2 text-primary-foreground/80">{midCta.text}</p>
           <Button asChild size="lg" variant="secondary" className="mt-6 h-12 rounded-full px-7 text-base">
-            <Link href={ROUTES.signUp}>
+            <Link href={routes.signUp}>
               {cta.primary}
               <ArrowRight aria-hidden />
             </Link>

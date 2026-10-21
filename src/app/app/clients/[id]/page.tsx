@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -40,19 +41,19 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     <>
       <PageHeader
         title={client.name}
-        backHref="/app/clients"
+        backHref={routes.clients.list()}
         backLabel="Clients"
         meta={<ToneBadge tone="neutral">{CLIENT_KIND_LABELS[client.kind]}</ToneBadge>}
         actions={
           <>
             <Button asChild variant="outline">
-              <Link href={`/app/clients/${id}/modifier`}>
+              <Link href={routes.clients.edit(id)}>
                 <Pencil aria-hidden />
                 Modifier
               </Link>
             </Button>
             <Button asChild>
-              <Link href={`/app/devis/nouveau?client=${id}`}>
+              <Link href={routes.quotes.new({ client: id })}>
                 <FilePlus2 aria-hidden />
                 Nouveau devis
               </Link>
@@ -67,7 +68,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           <div>
             <p className="font-medium">SIREN manquant</p>
             <p className="text-sm">Sans SIREN, aucune facture électronique ne peut être émise pour ce client.</p>
-            <Link href={`/app/clients/${id}/modifier`} className="mt-1 inline-block text-sm font-medium underline underline-offset-4">
+            <Link href={routes.clients.edit(id)} className="mt-1 inline-block text-sm font-medium underline underline-offset-4">
               Compléter la fiche
             </Link>
           </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { routes } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ChevronDown, Copy, Ellipsis, Loader2, Plus, Save, Trash2 } from "lucide-react";
@@ -206,7 +207,7 @@ export function QuoteEditor({
         return;
       }
       toast.success(result.message);
-      router.push(`/app/devis/${result.data!.id}`);
+      router.push(routes.quotes.show(result.data!.id));
     });
   };
 

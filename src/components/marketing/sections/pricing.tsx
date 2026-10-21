@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/config/routes";
+import { routes } from "@/config/routes";
 import { cta, pricing } from "@/content/home";
 import { cn } from "@/lib/utils";
 import { Section, SectionHeading } from "../section";
@@ -29,7 +29,7 @@ export function Pricing() {
               ))}
             </ul>
             <Button asChild size="lg" variant={p.highlighted ? "default" : "outline"} className="mt-6 h-12 w-full rounded-full text-base">
-              <Link href={ROUTES.signUp}>
+              <Link href={routes.signUp}>
                 {cta.primary}
                 <span className="sr-only"> — offre {p.name}</span>
               </Link>

@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { FileText, Plus } from "lucide-react";
@@ -36,7 +37,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
         description="Brouillons, devis envoyés et réponses de vos clients."
         actions={
           <Button asChild>
-            <Link href="/app/devis/nouveau">
+            <Link href={routes.quotes.new()}>
               <Plus aria-hidden />
               Nouveau devis
             </Link>
@@ -56,7 +57,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
           description="Créez un devis en quelques minutes : lots, lignes, TVA et totaux calculés automatiquement."
           action={
             <Button asChild>
-              <Link href="/app/devis/nouveau">Créer un devis</Link>
+              <Link href={routes.quotes.new()}>Créer un devis</Link>
             </Button>
           }
         />
@@ -65,7 +66,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
           caption="Liste des devis"
           rows={quotes}
           getKey={(x) => x.quote.id}
-          href={(x) => `/app/devis/${x.quote.id}`}
+          href={(x) => routes.quotes.show(x.quote.id)}
           columns={[
             { header: "Numéro", cell: (x) => <span className="font-mono text-sm">{x.quote.number}</span> },
             { header: "Objet", cell: (x) => <span className="line-clamp-1">{x.quote.title}</span> },

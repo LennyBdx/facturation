@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/app/page-header";
 import { emptyQuoteValues } from "@/features/quotes/form-values";
@@ -13,7 +14,7 @@ export default async function NewQuotePage({ searchParams }: { searchParams: Pro
   const worksite = worksites.find((w) => w.id === chantier);
   return (
     <>
-      <PageHeader title="Nouveau devis" backHref="/app/devis" backLabel="Devis" />
+      <PageHeader title="Nouveau devis" backHref={routes.quotes.list()} backLabel="Devis" />
       <QuoteEditor
         quoteId={null}
         initial={emptyQuoteValues(org, today, client ?? "", worksite?.id ?? "", worksite?.reverseCharge ?? false)}

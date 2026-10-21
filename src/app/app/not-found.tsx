@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import { SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ export default function NotFound() {
         <p className="text-sm text-muted-foreground">Il a peut-être été supprimé ou appartient à une autre entreprise.</p>
       </div>
       <Button asChild>
-        <Link href="/app/tableau-de-bord">Retour au tableau de bord</Link>
+        <Link href={routes.dashboard}>Retour au tableau de bord</Link>
       </Button>
     </div>
   );

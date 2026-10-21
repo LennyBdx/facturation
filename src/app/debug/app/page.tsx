@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CircleCheck, CircleDashed, ExternalLink, FlaskConical } from "lucide-react";
@@ -45,7 +46,7 @@ export default function DebugAppPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <DebugHeader current="/debug/app" />
+      <DebugHeader current={routes.debug.features} />
 
       <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
         <section aria-labelledby="global-title" className="rounded-2xl border bg-card p-6">

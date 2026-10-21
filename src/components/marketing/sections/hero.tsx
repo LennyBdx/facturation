@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Check, CircleCheck } from "lucide-react";
 import { LifecycleStatusBadge } from "@/components/status/status-badge";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/config/routes";
+import { routes } from "@/config/routes";
 import { cta, hero } from "@/content/home";
 import { DesktopFrame, PhoneFrame } from "../device-frame";
 import { withHighlight } from "../highlight";
@@ -31,7 +31,7 @@ export function Hero() {
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">{hero.subtitle}</p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 w-full rounded-full px-7 text-base sm:w-auto">
-              <Link href={ROUTES.signUp}>
+              <Link href={routes.signUp}>
                 {cta.primary}
                 <ArrowRight aria-hidden />
               </Link>

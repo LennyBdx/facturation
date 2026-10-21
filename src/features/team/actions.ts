@@ -1,5 +1,6 @@
 "use server";
 
+import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { emailSchema, fieldErrors } from "@/lib/validation";
@@ -34,7 +35,7 @@ export async function inviteMemberAction(input: InviteInput): Promise<ActionResu
     return { ok: false, error: "Une invitation est déjà en attente pour cette adresse.", fieldErrors: { email: "Invitation déjà envoyée." } };
   }
   await ctx.repos.invitations.create(ctx.orgId, { email, role: parsed.data.role, invitedByUserId: ctx.user.id });
-  revalidatePath("/app/equipe");
+  revalidatePath(routes.team);
   return { ok: true, message: `Invitation créée pour ${email} (prototype : aucun e-mail envoyé).` };
 }
 
@@ -42,7 +43,7 @@ export async function revokeInvitationAction(id: string): Promise<ActionResult> 
   const { ctx, error } = await requireAdmin();
   if (error) return { ok: false, error };
   await ctx.repos.invitations.delete(ctx.orgId, id);
-  revalidatePath("/app/equipe");
+  revalidatePath(routes.team);
   return { ok: true, message: "Invitation annulée." };
 }
 
@@ -54,6 +55,6 @@ export async function changeRoleAction(membershipId: string, role: "admin" | "me
   if (!target) return { ok: false, error: "Membre introuvable." };
   if (target.role === "owner") return { ok: false, error: "Le rôle du propriétaire ne peut pas être modifié." };
   await ctx.repos.memberships.updateRole(ctx.orgId, membershipId, role);
-  revalidatePath("/app/equipe");
+  revalidatePath(routes.team);
   return { ok: true, message: "Rôle mis à jour." };
 }

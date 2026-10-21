@@ -1,5 +1,6 @@
 "use server";
 
+import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
 import type { QuoteInput, QuoteStatus } from "@/data/types";
 import { parseDecimalInput, toMoney } from "@/domain/money";
@@ -68,7 +69,7 @@ export async function saveQuote(id: string | null, values: QuoteFormValues): Pro
     const ctx = await getContext();
     if (!(await ctx.repos.clients.get(ctx.orgId, parsed.data.clientId))) return { ok: false, error: "Client introuvable." };
     const quote = id ? await updateQuote(ctx, id, toEntity(parsed.data, "draft")) : await createQuote(ctx, toEntity(parsed.data, "draft"));
-    revalidatePath("/app/devis");
+    revalidatePath(routes.quotes.list());
     return { ok: true, data: { id: quote.id }, message: id ? "Devis enregistré." : `Devis ${quote.number} créé.` };
   });
 }
@@ -77,7 +78,7 @@ export async function changeQuoteStatus(id: string, status: QuoteStatus, reason?
   return guard(async () => {
     const ctx = await getContext();
     await setQuoteStatus(ctx, id, status, reason);
-    revalidatePath(`/app/devis/${id}`);
+    revalidatePath(routes.quotes.show(id));
     const messages: Partial<Record<QuoteStatus, string>> = {
       sent: "Devis marqué comme envoyé.",
       accepted: "Devis accepté : vous pouvez créer le chantier et facturer.",
@@ -91,14 +92,14 @@ export async function changeQuoteStatus(id: string, status: QuoteStatus, reason?
 export async function duplicateQuoteAction(id: string): Promise<ActionResult<{ redirectTo: string }>> {
   return guard(async () => {
     const copy = await duplicateQuote(await getContext(), id);
-    return { ok: true, data: { redirectTo: `/app/devis/${copy.id}/modifier` }, message: `Copie créée : ${copy.number}.` };
+    return { ok: true, data: { redirectTo: routes.quotes.edit(copy.id) }, message: `Copie créée : ${copy.number}.` };
   });
 }
 
 export async function quoteToWorksiteAction(id: string): Promise<ActionResult<{ redirectTo: string }>> {
   return guard(async () => {
     const w = await quoteToWorksite(await getContext(), id);
-    return { ok: true, data: { redirectTo: `/app/chantiers/${w!.id}` }, message: "Chantier créé à partir du devis." };
+    return { ok: true, data: { redirectTo: routes.worksites.show(w!.id) }, message: "Chantier créé à partir du devis." };
   });
 }
 
@@ -107,7 +108,7 @@ export async function quoteToInvoiceAction(id: string, kind: "standard" | "depos
     const invoice = await quoteToInvoice(await getContext(), id, kind);
     return {
       ok: true,
-      data: { redirectTo: `/app/factures/${invoice.id}` },
+      data: { redirectTo: routes.invoices.show(invoice.id) },
       message: kind === "deposit" ? "Facture d'acompte créée en brouillon." : "Facture créée en brouillon.",
     };
   });

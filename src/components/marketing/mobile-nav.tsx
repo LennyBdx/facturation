@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ROUTES } from "@/config/routes";
+import { routes } from "@/config/routes";
 import { PRODUCT_NAME } from "@/config/site";
 import { cta, nav } from "@/content/home";
 
@@ -37,10 +37,10 @@ export function MobileNav() {
         </nav>
         <div className="mt-auto space-y-2 p-4">
           <Button asChild size="lg" className="w-full rounded-full">
-            <Link href={ROUTES.signUp}>{cta.primary}</Link>
+            <Link href={routes.signUp}>{cta.primary}</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="w-full rounded-full">
-            <Link href={ROUTES.signIn}>{cta.signIn}</Link>
+            <Link href={routes.signIn}>{cta.signIn}</Link>
           </Button>
         </div>
       </SheetContent>

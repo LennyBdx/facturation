@@ -1,5 +1,6 @@
 "use server";
 
+import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
 import { parseCounter, validateNextValue } from "@/domain/numbering";
 import { isValidRetentionRate } from "@/domain/progress-billing";
@@ -92,7 +93,7 @@ export async function saveBillingSettingsAction(input: BillingSettingsInput): Pr
       defaultQuoteValidityDays: v.defaultQuoteValidityDays,
     },
   });
-  revalidatePath("/app/parametres");
+  revalidatePath(routes.settings.index);
   return { ok: true, message: "Numérotation et conditions enregistrées." };
 }
 
@@ -111,7 +112,7 @@ export async function saveDocumentSettingsAction(input: DocumentSettingsInput): 
       branding: { ...ctx.org.settings.branding, accentColor: parsed.data.accentColor.toLowerCase() },
     },
   });
-  revalidatePath("/app/parametres");
+  revalidatePath(routes.settings.index);
   return { ok: true, message: "Personnalisation enregistrée." };
 }
 

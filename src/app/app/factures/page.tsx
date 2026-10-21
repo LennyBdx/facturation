@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Plus, Receipt } from "lucide-react";
@@ -52,7 +53,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
         description="Statut de paiement et statut de la facture électronique, côte à côte."
         actions={
           <Button asChild>
-            <Link href="/app/factures/nouvelle">
+            <Link href={routes.invoices.new()}>
               <Plus aria-hidden />
               Nouvelle facture
             </Link>
@@ -67,7 +68,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
           description="Les factures se créent à partir d'un devis accepté : acompte, situation de travaux ou facture unique."
           action={
             <Button asChild>
-              <Link href="/app/factures/nouvelle">Créer une facture</Link>
+              <Link href={routes.invoices.new()}>Créer une facture</Link>
             </Button>
           }
         />
@@ -76,7 +77,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
           caption="Liste des factures émises"
           rows={rows}
           getKey={(r) => r.invoice.id}
-          href={(r) => `/app/factures/${r.invoice.id}`}
+          href={(r) => routes.invoices.show(r.invoice.id)}
           columns={[
             { header: "Numéro", cell: (r) => <span className="font-mono text-sm">{r.invoice.number ?? "Brouillon"}</span> },
             {

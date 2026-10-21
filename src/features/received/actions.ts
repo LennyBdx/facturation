@@ -1,5 +1,6 @@
 "use server";
 
+import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
 import type { ReceivedInvoiceAction } from "@/domain/lifecycle";
 import { type ActionResult, getContext } from "@/services/context";
@@ -16,8 +17,8 @@ const MESSAGES: Record<ReceivedInvoiceAction, string> = {
 export async function receivedInvoiceAction(id: string, action: ReceivedInvoiceAction, reason?: string): Promise<ActionResult> {
   try {
     await actOnReceivedInvoice(await getContext(), id, action, reason);
-    revalidatePath("/app/factures-recues");
-    revalidatePath(`/app/factures-recues/${id}`);
+    revalidatePath(routes.received.list());
+    revalidatePath(routes.received.show(id));
     return { ok: true, message: MESSAGES[action] };
   } catch (e) {
     if (e instanceof BusinessError) return { ok: false, error: e.message };
@@ -28,7 +29,7 @@ export async function receivedInvoiceAction(id: string, action: ReceivedInvoiceA
 export async function attachWorksiteAction(id: string, worksiteId: string): Promise<ActionResult> {
   try {
     await attachReceivedToWorksite(await getContext(), id, worksiteId || null);
-    revalidatePath(`/app/factures-recues/${id}`);
+    revalidatePath(routes.received.show(id));
     return { ok: true, message: worksiteId ? "Facture rattachée au chantier." : "Rattachement retiré." };
   } catch (e) {
     if (e instanceof BusinessError) return { ok: false, error: e.message };

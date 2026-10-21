@@ -1,5 +1,6 @@
 "use server";
 
+import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
 import type { ClientInput } from "@/data/types";
 import { fieldErrors } from "@/lib/validation";
@@ -33,6 +34,6 @@ export async function saveClient(id: string | null, input: ClientFormInput): Pro
   const { repos, orgId } = await getContext();
   const entity = toEntity(parsed.data);
   const client = id ? await repos.clients.update(orgId, id, entity) : await repos.clients.create(orgId, entity);
-  revalidatePath("/app/clients");
+  revalidatePath(routes.clients.list());
   return { ok: true, data: { id: client.id }, message: id ? "Client mis à jour." : "Client créé." };
 }

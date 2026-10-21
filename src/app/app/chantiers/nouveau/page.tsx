@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/app/page-header";
 import { WorksiteForm } from "@/features/worksites/worksite-form";
@@ -12,7 +13,7 @@ export default async function NewWorksitePage({ searchParams }: { searchParams: 
   const reference = `CH-${today.slice(0, 4)}-${String(worksites.length + 1).padStart(3, "0")}`;
   return (
     <>
-      <PageHeader title="Nouveau chantier" backHref="/app/chantiers" backLabel="Chantiers" />
+      <PageHeader title="Nouveau chantier" backHref={routes.worksites.list()} backLabel="Chantiers" />
       <WorksiteForm
         worksiteId={null}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))}

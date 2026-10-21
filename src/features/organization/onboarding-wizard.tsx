@@ -1,5 +1,6 @@
 "use client";
 
+import { routes } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -49,7 +50,7 @@ export function OnboardingWizard({ platforms }: { platforms: PlatformInfo[] }) {
     setFinishing(true);
     await new Promise((r) => setTimeout(r, 700));
     toast.success("Entreprise configurée (simulation) : bienvenue !");
-    router.push("/app/tableau-de-bord");
+    router.push(routes.dashboard);
   };
 
   return (

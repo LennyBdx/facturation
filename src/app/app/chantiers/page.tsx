@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { HardHat, Plus } from "lucide-react";
@@ -47,7 +48,7 @@ export default async function WorksitesPage({ searchParams }: { searchParams: Pr
         description="Suivi du marché, de l'avancement facturé et des retenues de garantie."
         actions={
           <Button asChild>
-            <Link href="/app/chantiers/nouveau">
+            <Link href={routes.worksites.new()}>
               <Plus aria-hidden />
               Nouveau chantier
             </Link>
@@ -67,7 +68,7 @@ export default async function WorksitesPage({ searchParams }: { searchParams: Pr
           description="Un chantier se crée aussi en un clic depuis un devis accepté."
           action={
             <Button asChild>
-              <Link href="/app/chantiers/nouveau">Créer un chantier</Link>
+              <Link href={routes.worksites.new()}>Créer un chantier</Link>
             </Button>
           }
         />
@@ -76,7 +77,7 @@ export default async function WorksitesPage({ searchParams }: { searchParams: Pr
           caption="Liste des chantiers"
           rows={worksites}
           getKey={(w) => w.id}
-          href={(w) => `/app/chantiers/${w.id}`}
+          href={(w) => routes.worksites.show(w.id)}
           columns={[
             { header: "Chantier", cell: (w) => w.name },
             { header: "Client", cell: (w) => clientName.get(w.clientId) },

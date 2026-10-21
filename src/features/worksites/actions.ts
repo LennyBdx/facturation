@@ -1,5 +1,6 @@
 "use server";
 
+import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
 import { toMoney } from "@/domain/money";
 import { fieldErrors } from "@/lib/validation";
@@ -23,13 +24,13 @@ export async function saveWorksite(id: string | null, input: WorksiteFormInput):
   const w = id
     ? await repos.worksites.update(orgId, id, entity)
     : await repos.worksites.create(orgId, { ...entity, retentionReleased: false });
-  revalidatePath("/app/chantiers");
+  revalidatePath(routes.worksites.list());
   return { ok: true, data: { id: w.id }, message: id ? "Chantier mis à jour." : "Chantier créé." };
 }
 
 export async function markRetentionReleased(id: string): Promise<ActionResult> {
   const { repos, orgId } = await getContext();
   await repos.worksites.update(orgId, id, { retentionReleased: true });
-  revalidatePath(`/app/chantiers/${id}`);
+  revalidatePath(routes.worksites.show(id));
   return { ok: true, message: "Retenue de garantie marquée comme récupérée." };
 }

@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -27,7 +28,7 @@ export default async function NewProgressInvoicePage({ searchParams }: { searchP
     <>
       <PageHeader
         title={`Situation n° ${(previous?.progress?.index ?? 0) + 1}`}
-        backHref={`/app/devis/${quote.id}`}
+        backHref={routes.quotes.show(quote.id)}
         backLabel={quote.number}
         description={
           <>
@@ -35,7 +36,7 @@ export default async function NewProgressInvoicePage({ searchParams }: { searchP
             {worksite ? (
               <>
                 {" · "}
-                <Link href={`/app/chantiers/${worksite.id}`} className="text-primary underline-offset-4 hover:underline">
+                <Link href={routes.worksites.show(worksite.id)} className="text-primary underline-offset-4 hover:underline">
                   {worksite.name}
                 </Link>
               </>

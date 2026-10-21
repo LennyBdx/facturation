@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
@@ -11,10 +12,10 @@ export default async function EditDraftPage({ params }: { params: Promise<{ id: 
   const { repos, orgId } = await getContext();
   const invoice = await repos.invoices.get(orgId, id);
   if (!invoice) notFound();
-  if (invoice.issuedAt) redirect(`/app/factures/${id}`);
+  if (invoice.issuedAt) redirect(routes.invoices.show(id));
   return (
     <>
-      <PageHeader title="Modifier le brouillon" description={invoice.title} backHref={`/app/factures/${id}`} backLabel="Brouillon" />
+      <PageHeader title="Modifier le brouillon" description={invoice.title} backHref={routes.invoices.show(id)} backLabel="Brouillon" />
       <DraftForm
         invoiceId={id}
         defaultValues={{

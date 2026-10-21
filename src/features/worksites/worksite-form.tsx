@@ -1,5 +1,6 @@
 "use client";
 
+import { routes } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,7 +31,7 @@ export function WorksiteForm({
       className="space-y-8"
       onSubmit={form.handleSubmit(async (values) => {
         const result = await saveWorksite(worksiteId, values);
-        if (applyActionResult(form, result)) router.push(`/app/chantiers/${result.data!.id}`);
+        if (applyActionResult(form, result)) router.push(routes.worksites.show(result.data!.id));
       })}
     >
       <FieldSet>
@@ -90,7 +91,7 @@ export function WorksiteForm({
         </div>
       </FieldSet>
 
-      <FormActions pending={form.formState.isSubmitting} submitLabel={worksiteId ? "Enregistrer" : "Créer le chantier"} cancelHref={worksiteId ? `/app/chantiers/${worksiteId}` : "/app/chantiers"} />
+      <FormActions pending={form.formState.isSubmitting} submitLabel={worksiteId ? "Enregistrer" : "Créer le chantier"} cancelHref={worksiteId ? routes.worksites.show(worksiteId) : routes.worksites.list()} />
     </form>
   );
 }

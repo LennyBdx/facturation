@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { FileText, Info, Receipt, Undo2, Wallet } from "lucide-react";
@@ -27,7 +28,7 @@ export default async function NewInvoicePage() {
       <PageHeader
         title="Nouvelle facture"
         description="Une facture part toujours d'un devis accepté : choisissez le devis et le type de facture."
-        backHref="/app/factures"
+        backHref={routes.invoices.list()}
         backLabel="Factures émises"
       />
       <div className="mb-6 grid gap-3 md:grid-cols-4">
@@ -52,7 +53,7 @@ export default async function NewInvoicePage() {
           description="Marquez un devis comme accepté pour pouvoir le facturer."
           action={
             <Button asChild>
-              <Link href="/app/devis?filtre=sent">Voir les devis envoyés</Link>
+              <Link href={routes.quotes.list({ filtre: "sent" })}>Voir les devis envoyés</Link>
             </Button>
           }
         />
@@ -70,7 +71,7 @@ export default async function NewInvoicePage() {
                 return (
                   <li key={q.id} className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="min-w-0">
-                      <Link href={`/app/devis/${q.id}`} className="font-medium text-primary underline-offset-4 hover:underline">
+                      <Link href={routes.quotes.show(q.id)} className="font-medium text-primary underline-offset-4 hover:underline">
                         {q.title}
                       </Link>
                       <p className="text-sm text-muted-foreground">
@@ -90,7 +91,7 @@ export default async function NewInvoicePage() {
                           </ActionButton>
                         ) : null}
                         <Button asChild size="sm">
-                          <Link href={`/app/factures/situation/nouvelle?devis=${q.id}`}>Situation</Link>
+                          <Link href={routes.invoices.newProgress(q.id)}>Situation</Link>
                         </Button>
                         {related.length === 0 ? (
                           <ActionButton variant="outline" size="sm" action={quoteToInvoiceAction.bind(null, q.id, "standard")}>

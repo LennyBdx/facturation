@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -43,12 +44,12 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
     <>
       <PageHeader
         title={quote.title}
-        backHref="/app/devis"
+        backHref={routes.quotes.list()}
         backLabel="Devis"
         description={
           <>
             <span className="font-mono">{quote.number}</span> ·{" "}
-            <Link href={`/app/clients/${quote.clientId}`} className="text-primary underline-offset-4 hover:underline">
+            <Link href={routes.clients.show(quote.clientId)} className="text-primary underline-offset-4 hover:underline">
               {client?.name}
             </Link>
           </>
@@ -62,14 +63,14 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
         actions={
           <>
             <Button asChild variant="outline">
-              <Link href={`/app/devis/${id}/apercu`}>
+              <Link href={routes.quotes.preview(id)}>
                 <Eye aria-hidden />
                 Aperçu
               </Link>
             </Button>
             {editable ? (
               <Button asChild variant="outline">
-                <Link href={`/app/devis/${id}/modifier`}>
+                <Link href={routes.quotes.edit(id)}>
                   <Pencil aria-hidden />
                   Modifier
                 </Link>
@@ -121,7 +122,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
             <>
               {worksite ? (
                 <Button asChild variant="outline">
-                  <Link href={`/app/chantiers/${worksite.id}`}>
+                  <Link href={routes.worksites.show(worksite.id)}>
                     <HardHat aria-hidden />
                     Voir le chantier
                   </Link>
@@ -139,7 +140,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
                 </ActionButton>
               ) : null}
               <Button asChild>
-                <Link href={`/app/factures/situation/nouvelle?devis=${id}`}>
+                <Link href={routes.invoices.newProgress(id)}>
                   <Receipt aria-hidden />
                   Situation de travaux
                 </Link>
@@ -230,7 +231,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
                 items={[
                   { label: "Date", value: formatDate(quote.issueDate) },
                   { label: "Valable jusqu'au", value: formatDate(quote.validUntil) },
-                  { label: "Chantier", value: worksite ? <Link className="text-primary underline-offset-4 hover:underline" href={`/app/chantiers/${worksite.id}`}>{worksite.name}</Link> : "Non rattaché" },
+                  { label: "Chantier", value: worksite ? <Link className="text-primary underline-offset-4 hover:underline" href={routes.worksites.show(worksite.id)}>{worksite.name}</Link> : "Non rattaché" },
                   { label: "Durée estimée", value: quote.estimatedDuration, hidden: !quote.estimatedDuration },
                   { label: "Notes", value: quote.notes, hidden: !quote.notes },
                 ]}

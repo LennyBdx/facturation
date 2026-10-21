@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { Inbox, Info } from "lucide-react";
 import { Amount } from "@/components/app/amount";
@@ -66,7 +67,7 @@ export default async function ReceivedInvoicesPage({ searchParams }: { searchPar
           caption="Factures fournisseurs reçues"
           rows={rows}
           getKey={(r) => r.id}
-          href={(r) => `/app/factures-recues/${r.id}`}
+          href={(r) => routes.received.show(r.id)}
           columns={[
             {
               header: "Fournisseur",

@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BackHome } from "@/features/auth/back-home";
@@ -16,7 +17,7 @@ export default function SignUpPage() {
       <SignUpForm />
       <p className="text-center text-sm text-muted-foreground">
         Déjà inscrit ?{" "}
-        <Link href="/connexion" className="font-medium text-primary underline-offset-4 hover:underline">
+        <Link href={routes.signIn} className="font-medium text-primary underline-offset-4 hover:underline">
           Se connecter
         </Link>
       </p>

@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/app/page-header";
 import { ClientForm } from "@/features/clients/client-form";
@@ -9,7 +10,7 @@ export default async function NewClientPage() {
   const { org } = await getContext();
   return (
     <>
-      <PageHeader title="Nouveau client" backHref="/app/clients" backLabel="Clients" />
+      <PageHeader title="Nouveau client" backHref={routes.clients.list()} backLabel="Clients" />
       <ClientForm
         clientId={null}
         defaultValues={{

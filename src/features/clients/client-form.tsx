@@ -1,5 +1,6 @@
 "use client";
 
+import { routes } from "@/config/routes";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,7 +33,7 @@ export function ClientForm({ clientId, defaultValues }: { clientId: string | nul
       className="space-y-8"
       onSubmit={form.handleSubmit(async (values) => {
         const result = await saveClient(clientId, values);
-        if (applyActionResult(form, result)) router.push(`/app/clients/${result.data!.id}`);
+        if (applyActionResult(form, result)) router.push(routes.clients.show(result.data!.id));
       })}
     >
       <FieldSet>
@@ -111,7 +112,7 @@ export function ClientForm({ clientId, defaultValues }: { clientId: string | nul
         </div>
       </FieldSet>
 
-      <FormActions pending={form.formState.isSubmitting} submitLabel={clientId ? "Enregistrer" : "Créer le client"} cancelHref={clientId ? `/app/clients/${clientId}` : "/app/clients"} />
+      <FormActions pending={form.formState.isSubmitting} submitLabel={clientId ? "Enregistrer" : "Créer le client"} cancelHref={clientId ? routes.clients.show(clientId) : routes.clients.list()} />
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { ArrowDown, CircleCheck, CircleDashed, CircleDot } from "lucide-react";
 import { DebugHeader } from "@/components/debug/debug-header";
@@ -42,7 +43,7 @@ export default function DebugTechPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <DebugHeader current="/debug/tech" />
+      <DebugHeader current={routes.debug.tech} />
       <main className="mx-auto max-w-6xl space-y-10 px-4 py-8 sm:px-6">
         <section aria-labelledby="intro-title" className="rounded-2xl border bg-card p-6">
           <h1 id="intro-title" className="text-2xl font-bold tracking-tight">

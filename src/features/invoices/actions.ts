@@ -1,5 +1,6 @@
 "use server";
 
+import { routes } from "@/config/routes";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { PaymentMethod } from "@/data/types";
@@ -33,7 +34,7 @@ const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date invalide.");
 export async function issueInvoiceAction(id: string): Promise<ActionResult> {
   return guard(async () => {
     const invoice = await issueInvoice(await getContext(), id);
-    revalidatePath("/app/factures");
+    revalidatePath(routes.invoices.list());
     return {
       ok: true,
       message: invoice.eInvoicing.platformInvoiceId
@@ -46,7 +47,7 @@ export async function issueInvoiceAction(id: string): Promise<ActionResult> {
 export async function resubmitInvoiceAction(id: string): Promise<ActionResult> {
   return guard(async () => {
     await resubmitInvoice(await getContext(), id);
-    revalidatePath(`/app/factures/${id}`);
+    revalidatePath(routes.invoices.show(id));
     return { ok: true, message: "Facture redéposée sur la plateforme agréée." };
   });
 }
@@ -60,8 +61,8 @@ export async function refreshInvoiceStatusAction(id: string): Promise<{ status: 
 export async function deleteDraftAction(id: string): Promise<ActionResult<{ redirectTo: string }>> {
   return guard(async () => {
     await deleteDraft(await getContext(), id);
-    revalidatePath("/app/factures");
-    return { ok: true, data: { redirectTo: "/app/factures" }, message: "Brouillon supprimé." };
+    revalidatePath(routes.invoices.list());
+    return { ok: true, data: { redirectTo: routes.invoices.list() }, message: "Brouillon supprimé." };
   });
 }
 
@@ -84,7 +85,7 @@ export async function recordPaymentAction(id: string, input: PaymentInput): Prom
       method: parsed.data.method as PaymentMethod,
       reference: parsed.data.reference || undefined,
     });
-    revalidatePath(`/app/factures/${id}`);
+    revalidatePath(routes.invoices.show(id));
     return {
       ok: true,
       message: invoice.eInvoicing.status === "cashed" ? "Paiement enregistré : facture soldée, encaissement déclaré à la plateforme." : "Paiement enregistré.",
@@ -97,7 +98,7 @@ export async function createCreditNoteAction(id: string, reason: string): Promis
   if (!r.success) return { ok: false, error: r.error.issues[0]!.message };
   return guard(async () => {
     const credit = await createCreditNote(await getContext(), id, r.data);
-    return { ok: true, data: { redirectTo: `/app/factures/${credit.id}` }, message: "Avoir créé en brouillon : vérifiez-le puis émettez-le." };
+    return { ok: true, data: { redirectTo: routes.invoices.show(credit.id) }, message: "Avoir créé en brouillon : vérifiez-le puis émettez-le." };
   });
 }
 
@@ -122,7 +123,7 @@ export async function updateDraftAction(id: string, input: DraftInput): Promise<
       orderReference: parsed.data.orderReference || undefined,
       notes: parsed.data.notes || undefined,
     });
-    revalidatePath(`/app/factures/${id}`);
+    revalidatePath(routes.invoices.show(id));
     return { ok: true, data: { id }, message: "Brouillon enregistré." };
   });
 }
@@ -138,7 +139,7 @@ export async function createProgressDraftAction(input: z.input<typeof progressSc
   if (!parsed.success) return { ok: false, error: "Avancement invalide : saisissez un pourcentage entre 0 et 100.", fieldErrors: fieldErrors(parsed.error) };
   return guard(async () => {
     const invoice = await createProgressDraft(await getContext(), parsed.data.quoteId, parsed.data.progress, parsed.data.issueDate);
-    revalidatePath("/app/factures");
-    return { ok: true, data: { redirectTo: `/app/factures/${invoice.id}` }, message: "Situation créée en brouillon : contrôlez-la puis émettez-la." };
+    revalidatePath(routes.invoices.list());
+    return { ok: true, data: { redirectTo: routes.invoices.show(invoice.id) }, message: "Situation créée en brouillon : contrôlez-la puis émettez-la." };
   });
 }

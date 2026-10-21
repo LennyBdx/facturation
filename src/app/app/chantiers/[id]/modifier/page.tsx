@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app/page-header";
@@ -13,7 +14,7 @@ export default async function EditWorksitePage({ params }: { params: Promise<{ i
   if (!w) notFound();
   return (
     <>
-      <PageHeader title={`Modifier — ${w.name}`} backHref={`/app/chantiers/${id}`} backLabel={w.name} />
+      <PageHeader title={`Modifier — ${w.name}`} backHref={routes.worksites.show(id)} backLabel={w.name} />
       <WorksiteForm
         worksiteId={w.id}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))}

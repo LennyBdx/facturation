@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -53,9 +54,9 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   const platform = goesThroughPlatform(client);
   const report = draft ? await complianceFor(ctx, invoice, client) : null;
   const fixHref: Record<ComplianceScope, { href: string; label: string }> = {
-    seller: { href: "/app/parametres/entreprise", label: "Compléter les informations de l'entreprise" },
-    buyer: { href: `/app/clients/${client.id}/modifier`, label: "Compléter la fiche client" },
-    invoice: { href: `/app/factures/${id}/modifier`, label: "Modifier le brouillon" },
+    seller: { href: routes.settings.company, label: "Compléter les informations de l'entreprise" },
+    buyer: { href: routes.clients.edit(client.id), label: "Compléter la fiche client" },
+    invoice: { href: routes.invoices.edit(id), label: "Modifier le brouillon" },
   };
   const lastEvent = invoice.eInvoicing.events.at(-1);
   const isProgress = !!invoice.progress;
@@ -69,17 +70,17 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             {invoice.progress ? ` n° ${invoice.progress.index}` : ""} <span className="font-mono text-xl text-muted-foreground">{invoice.number ?? "brouillon"}</span>
           </>
         }
-        backHref="/app/factures"
+        backHref={routes.invoices.list()}
         backLabel="Factures émises"
         description={
           <>
-            <Link href={`/app/clients/${client.id}`} className="text-primary underline-offset-4 hover:underline">
+            <Link href={routes.clients.show(client.id)} className="text-primary underline-offset-4 hover:underline">
               {client.name}
             </Link>
             {worksite ? (
               <>
                 {" · "}
-                <Link href={`/app/chantiers/${worksite.id}`} className="text-primary underline-offset-4 hover:underline">
+                <Link href={routes.worksites.show(worksite.id)} className="text-primary underline-offset-4 hover:underline">
                   {worksite.name}
                 </Link>
               </>
@@ -96,7 +97,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         actions={
           <>
             <Button asChild variant="outline">
-              <Link href={`/app/factures/${id}/apercu`}>
+              <Link href={routes.invoices.preview(id)}>
                 <Eye aria-hidden />
                 Aperçu
               </Link>
@@ -104,7 +105,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             {draft ? (
               <>
                 <Button asChild variant="outline">
-                  <Link href={`/app/factures/${id}/modifier`}>
+                  <Link href={routes.invoices.edit(id)}>
                     <Pencil aria-hidden />
                     Modifier
                   </Link>
@@ -153,10 +154,10 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             items={[
               { label: "Émission", value: formatDate(invoice.issueDate) },
               { label: "Échéance", value: invoice.kind === "credit_note" ? "—" : formatDate(invoice.dueDate) },
-              { label: "Devis", value: quote ? <Link className="text-primary underline-offset-4 hover:underline" href={`/app/devis/${quote.id}`}>{quote.number}</Link> : "—" },
+              { label: "Devis", value: quote ? <Link className="text-primary underline-offset-4 hover:underline" href={routes.quotes.show(quote.id)}>{quote.number}</Link> : "—" },
               { label: "Réf. marché / commande", value: invoice.orderReference },
-              { label: "Facture corrigée", value: corrected ? <Link className="text-primary underline-offset-4 hover:underline" href={`/app/factures/${corrected.id}`}>{corrected.number}</Link> : null, hidden: !corrected },
-              { label: "Annulée par l'avoir", value: creditNote ? <Link className="text-primary underline-offset-4 hover:underline" href={`/app/factures/${creditNote.id}`}>{creditNote.number ?? "brouillon"}</Link> : null, hidden: !creditNote },
+              { label: "Facture corrigée", value: corrected ? <Link className="text-primary underline-offset-4 hover:underline" href={routes.invoices.show(corrected.id)}>{corrected.number}</Link> : null, hidden: !corrected },
+              { label: "Annulée par l'avoir", value: creditNote ? <Link className="text-primary underline-offset-4 hover:underline" href={routes.invoices.show(creditNote.id)}>{creditNote.number ?? "brouillon"}</Link> : null, hidden: !creditNote },
               { label: "Avancement cumulé", value: invoice.progress ? formatPercent(invoice.progress.overallPercent) : null, hidden: !invoice.progress },
             ]}
           />
@@ -321,7 +322,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
                     {lastEvent?.comment ? <p>Motif : {lastEvent.comment}</p> : null}
                     <div className="flex flex-wrap gap-2">
                       <Button asChild size="sm" variant="outline">
-                        <Link href={`/app/clients/${client.id}/modifier`}>Corriger la fiche client</Link>
+                        <Link href={routes.clients.edit(client.id)}>Corriger la fiche client</Link>
                       </Button>
                       <ActionButton size="sm" action={resubmitInvoiceAction.bind(null, id)}>
                         <RotateCw aria-hidden />

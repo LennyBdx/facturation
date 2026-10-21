@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import {
@@ -41,13 +42,13 @@ export default async function DashboardPage() {
         actions={
           <>
             <Button asChild variant="outline">
-              <Link href="/app/devis/nouveau">
+              <Link href={routes.quotes.new()}>
                 <Plus aria-hidden />
                 Nouveau devis
               </Link>
             </Button>
             <Button asChild>
-              <Link href="/app/factures/nouvelle">
+              <Link href={routes.invoices.new()}>
                 <Plus aria-hidden />
                 Nouvelle facture
               </Link>
@@ -68,7 +69,7 @@ export default async function DashboardPage() {
               return (
                 <li key={inv.id}>
                   <Link
-                    href={`/app/factures/${inv.id}`}
+                    href={routes.invoices.show(inv.id)}
                     className="flex min-h-11 flex-col gap-1 rounded-md border bg-card p-3 hover:border-primary/40 sm:flex-row sm:items-center sm:gap-3"
                   >
                     <span className="flex items-center gap-2">
@@ -88,20 +89,20 @@ export default async function DashboardPage() {
       ) : null}
 
       <section aria-label="Indicateurs" className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <KpiCard label="Facturé ce mois-ci (HT)" value={<Amount value={k.billedThisMonth} />} icon={Receipt} href="/app/factures" emphasis="brand" />
+        <KpiCard label="Facturé ce mois-ci (HT)" value={<Amount value={k.billedThisMonth} />} icon={Receipt} href={routes.invoices.list()} emphasis="brand" />
         <KpiCard
           label="Reste à encaisser"
           value={<Amount value={k.outstanding} />}
           hint={`${k.outstandingCount} facture${k.outstandingCount > 1 ? "s" : ""} en attente de paiement`}
           icon={Wallet}
-          href="/app/factures?filtre=a-encaisser"
+          href={routes.invoices.list({ filtre: "a-encaisser" })}
         />
         <KpiCard
           label="Factures en retard"
           value={<Amount value={k.overdue} />}
           hint={k.overdueCount > 0 ? `${k.overdueCount} facture${k.overdueCount > 1 ? "s" : ""} à relancer` : "Aucun retard"}
           icon={AlarmClock}
-          href="/app/factures?filtre=overdue"
+          href={routes.invoices.list({ filtre: "overdue" })}
           emphasis={k.overdueCount > 0 ? "danger" : undefined}
         />
         <KpiCard
@@ -109,7 +110,7 @@ export default async function DashboardPage() {
           value={<Amount value={k.pendingQuotesAmount} />}
           hint={`${k.pendingQuotesCount} devis envoyé${k.pendingQuotesCount > 1 ? "s" : ""} (HT)`}
           icon={FileText}
-          href="/app/devis?filtre=sent"
+          href={routes.quotes.list({ filtre: "sent" })}
         />
         <KpiCard
           label="Retenues de garantie retenues"
@@ -124,7 +125,7 @@ export default async function DashboardPage() {
             )
           }
           icon={ShieldCheck}
-          href="/app/chantiers"
+          href={routes.worksites.list()}
           emphasis={k.retentionReleasable !== "0.00" ? "warning" : undefined}
         />
         <KpiCard
@@ -132,7 +133,7 @@ export default async function DashboardPage() {
           value={k.receivedToProcess}
           hint={<Amount value={k.receivedToProcessAmount} />}
           icon={Inbox}
-          href="/app/factures-recues?filtre=a-traiter"
+          href={routes.received.list({ filtre: "a-traiter" })}
         />
       </section>
 
@@ -142,7 +143,7 @@ export default async function DashboardPage() {
             <CardTitle className="text-lg">Dernières factures</CardTitle>
             <CardAction>
               <Button asChild variant="link" className="px-0">
-                <Link href="/app/factures">Tout voir</Link>
+                <Link href={routes.invoices.list()}>Tout voir</Link>
               </Button>
             </CardAction>
           </CardHeader>
@@ -150,7 +151,7 @@ export default async function DashboardPage() {
             <ul className="divide-y">
               {d.latestInvoices.map((inv) => (
                 <li key={inv.id}>
-                  <Link href={`/app/factures/${inv.id}`} className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+                  <Link href={routes.invoices.show(inv.id)} className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
                     <span className="flex items-start justify-between gap-3">
                       <span className="min-w-0">
                         <span className="block truncate font-medium">{d.clientName.get(inv.clientId)}</span>
@@ -177,7 +178,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-lg">Devis à relancer</CardTitle>
               <CardAction>
                 <Button asChild variant="link" className="px-0">
-                  <Link href="/app/devis?filtre=sent">Tout voir</Link>
+                  <Link href={routes.quotes.list({ filtre: "sent" })}>Tout voir</Link>
                 </Button>
               </CardAction>
             </CardHeader>
@@ -190,7 +191,7 @@ export default async function DashboardPage() {
                 <ul className="divide-y">
                   {d.quotesToFollowUp.map(({ quote, days }) => (
                     <li key={quote.id}>
-                      <Link href={`/app/devis/${quote.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+                      <Link href={routes.quotes.show(quote.id)} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
                         <span className="min-w-0">
                           <span className="block truncate font-medium">{quote.title}</span>
                           <span className="block truncate text-sm text-muted-foreground">
@@ -211,7 +212,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-lg">Chantiers en cours</CardTitle>
               <CardAction>
                 <Button asChild variant="link" className="px-0">
-                  <Link href="/app/chantiers">Tout voir</Link>
+                  <Link href={routes.worksites.list()}>Tout voir</Link>
                 </Button>
               </CardAction>
             </CardHeader>
@@ -221,7 +222,7 @@ export default async function DashboardPage() {
                   const pct = d.progressByWorksite.get(w.id) ?? "0.00";
                   return (
                     <li key={w.id}>
-                      <Link href={`/app/chantiers/${w.id}`} className="block space-y-1.5 rounded-md hover:bg-accent/30 sm:-mx-2 sm:px-2 sm:py-1">
+                      <Link href={routes.worksites.show(w.id)} className="block space-y-1.5 rounded-md hover:bg-accent/30 sm:-mx-2 sm:px-2 sm:py-1">
                         <span className="flex items-center justify-between gap-3">
                           <span className="truncate font-medium">{w.name}</span>
                           <span className="num shrink-0 text-sm text-muted-foreground">{formatPercent(pct)} facturé</span>
@@ -253,7 +254,7 @@ export default async function DashboardPage() {
                     .filter((r) => r.releasable)
                     .map((r) => (
                       <li key={r.worksite.id}>
-                        <Link href={`/app/chantiers/${r.worksite.id}`} className="flex min-h-11 items-center justify-between gap-3 py-3">
+                        <Link href={routes.worksites.show(r.worksite.id)} className="flex min-h-11 items-center justify-between gap-3 py-3">
                           <span className="min-w-0">
                             <span className="block truncate font-medium">{r.worksite.name}</span>
                             <span className="block text-sm text-muted-foreground">Libérable depuis le {formatDate(r.releaseDate)}</span>

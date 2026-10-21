@@ -1,5 +1,6 @@
 "use client";
 
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
@@ -63,7 +64,7 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link href="/app/tableau-de-bord" className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+        <Link href={routes.dashboard} className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
           <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground">
             <span className="size-3 rotate-45 rounded-[2px] bg-brand" />
           </span>
@@ -182,7 +183,7 @@ function UserMenu({ user }: { user: ShellUser }) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild className="min-h-11 md:min-h-9">
-                <Link href="/app/parametres/compte">
+                <Link href={routes.settings.account}>
                   <UserRound aria-hidden />
                   Mon compte
                 </Link>

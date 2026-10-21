@@ -1,3 +1,4 @@
+import { routes } from "@/config/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -50,12 +51,12 @@ export default async function WorksitePage({ params }: { params: Promise<{ id: s
     <>
       <PageHeader
         title={w.name}
-        backHref="/app/chantiers"
+        backHref={routes.worksites.list()}
         backLabel="Chantiers"
         description={
           <>
             {w.reference} · Client :{" "}
-            <Link href={`/app/clients/${w.clientId}`} className="text-primary underline-offset-4 hover:underline">
+            <Link href={routes.clients.show(w.clientId)} className="text-primary underline-offset-4 hover:underline">
               {client?.name}
             </Link>
           </>
@@ -70,21 +71,21 @@ export default async function WorksitePage({ params }: { params: Promise<{ id: s
         actions={
           <>
             <Button asChild variant="outline">
-              <Link href={`/app/chantiers/${id}/modifier`}>
+              <Link href={routes.worksites.edit(id)}>
                 <Pencil aria-hidden />
                 Modifier
               </Link>
             </Button>
             {acceptedQuote ? (
               <Button asChild>
-                <Link href={`/app/factures/situation/nouvelle?devis=${acceptedQuote.id}`}>
+                <Link href={routes.invoices.newProgress(acceptedQuote.id)}>
                   <Plus aria-hidden />
                   Nouvelle situation
                 </Link>
               </Button>
             ) : (
               <Button asChild>
-                <Link href={`/app/devis/nouveau?client=${w.clientId}&chantier=${id}`}>
+                <Link href={routes.quotes.new({ client: w.clientId, chantier: id })}>
                   <FilePlus2 aria-hidden />
                   Créer le devis
                 </Link>
@@ -162,7 +163,7 @@ export default async function WorksitePage({ params }: { params: Promise<{ id: s
                 <p className="text-sm text-muted-foreground">
                   Aucune situation émise.{" "}
                   {acceptedQuote ? (
-                    <Link href={`/app/factures/situation/nouvelle?devis=${acceptedQuote.id}`} className="text-primary underline-offset-4 hover:underline">
+                    <Link href={routes.invoices.newProgress(acceptedQuote.id)} className="text-primary underline-offset-4 hover:underline">
                       Créer la situation n° 1
                     </Link>
                   ) : null}
@@ -187,7 +188,7 @@ export default async function WorksitePage({ params }: { params: Promise<{ id: s
                           <TableRow key={s.id}>
                             <TableCell className="num">{s.progress!.index}</TableCell>
                             <TableCell>
-                              <Link href={`/app/factures/${s.id}`} className="font-medium text-primary underline-offset-4 hover:underline">
+                              <Link href={routes.invoices.show(s.id)} className="font-medium text-primary underline-offset-4 hover:underline">
                                 {s.number}
                               </Link>
                               <span className="block text-xs text-muted-foreground">{formatDate(s.issueDate)}</span>
@@ -216,7 +217,7 @@ export default async function WorksitePage({ params }: { params: Promise<{ id: s
                   <ul className="space-y-2 md:hidden">
                     {situations.map((s) => (
                       <li key={s.id}>
-                        <Link href={`/app/factures/${s.id}`} className="flex flex-col gap-1.5 rounded-md border p-3">
+                        <Link href={routes.invoices.show(s.id)} className="flex flex-col gap-1.5 rounded-md border p-3">
                           <span className="flex justify-between gap-2 font-medium">
                             Situation n° {s.progress!.index} — {s.number}
                             <Amount value={s.totals.netToPay} />

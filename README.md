@@ -66,6 +66,8 @@ Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec pl
 
 La page **`/debug/app`** liste toutes les fonctionnalités par page, avec leur état : « Fait », « Simulé » (présent mais sans back-end ni service réel) ou « À faire ». Elle donne aussi des barres d'avancement par zone et au global. L'inventaire est dans `src/content/debug-features.ts` et se met à jour à chaque évolution. La page n'est pas indexée.
 
+La page **`/debug/tech`** décrit la technique : stack, architecture en couches (ports et adaptateurs), application des principes SOLID (aujourd'hui et après correction), patterns de code, et une liste de bonnes pratiques Next.js marquées « Appliqué », « Partiel » ou « À faire ». Contenu : `src/content/debug-tech.ts`.
+
 ## Structure
 
 ```

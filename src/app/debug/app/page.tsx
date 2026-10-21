@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CircleCheck, CircleDashed, ExternalLink, FlaskConical } from "lucide-react";
+import { DebugHeader } from "@/components/debug/debug-header";
 import { ToneBadge } from "@/components/status/status-badge";
 import type { Tone } from "@/components/status/status-config";
-import { APP_NAME } from "@/config/app";
 import { AREAS, type FeatureItem, type FeatureStatus } from "@/content/debug-features";
 
 export const metadata: Metadata = {
@@ -45,24 +45,7 @@ export default function DebugAppPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="border-b bg-card">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-2 font-semibold">
-            <span aria-hidden className="flex size-8 items-center justify-center rounded-md bg-primary">
-              <span className="size-3 rotate-45 rounded-[2px] bg-brand" />
-            </span>
-            {APP_NAME} · suivi du projet
-          </div>
-          <nav aria-label="Accès rapides" className="flex gap-4 text-sm">
-            <Link href="/" className="text-primary underline-offset-4 hover:underline">
-              Site vitrine
-            </Link>
-            <Link href="/app" className="text-primary underline-offset-4 hover:underline">
-              Application
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <DebugHeader current="/debug/app" />
 
       <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
         <section aria-labelledby="global-title" className="rounded-2xl border bg-card p-6">

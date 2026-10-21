@@ -45,7 +45,11 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
       <div className="no-print">
         <PageHeader
           title={`Aperçu — ${label}`}
-          description={!invoice.issuedAt ? "Brouillon : le numéro définitif sera attribué à l'émission." : undefined}
+          description={
+            !invoice.issuedAt
+              ? "Brouillon : le numéro définitif sera attribué à l'émission."
+              : undefined
+          }
           backHref={routes.invoices.show(id)}
           backLabel={invoice.number ?? "Brouillon"}
           actions={<PrintButton />}
@@ -56,26 +60,68 @@ export default async function InvoicePreviewPage({ params }: { params: Promise<{
         number={invoice.number ?? "BROUILLON — non numérotée"}
         meta={[
           { label: "Date d'émission", value: formatDate(invoice.issueDate) },
-          ...(kindRules(invoice.kind).isReceivable ? [{ label: "Échéance", value: formatDate(invoice.dueDate) }] : []),
-          ...(invoice.orderReference ? [{ label: "Réf. commande", value: invoice.orderReference }] : []),
-          ...(invoice.progress ? [{ label: "Avancement cumulé", value: formatPercent(invoice.progress.overallPercent) }] : []),
+          ...(kindRules(invoice.kind).isReceivable
+            ? [{ label: "Échéance", value: formatDate(invoice.dueDate) }]
+            : []),
+          ...(invoice.orderReference
+            ? [{ label: "Réf. commande", value: invoice.orderReference }]
+            : []),
+          ...(invoice.progress
+            ? [
+                {
+                  label: "Avancement cumulé",
+                  value: formatPercent(invoice.progress.overallPercent),
+                },
+              ]
+            : []),
         ]}
         seller={{ ...seller, email: seller.contact.email, phone: seller.contact.phone }}
         sellerIdentity={sellerIdentityLine(seller, org.apeCode)}
-        buyer={{ ...buyer, extra: buyer.serviceCode ? [`Code service : ${buyer.serviceCode}`] : undefined }}
-        worksite={worksite ? { name: worksite.name, address: worksite.address, reference: worksite.marketReference } : null}
+        buyer={{
+          ...buyer,
+          extra: buyer.serviceCode ? [`Code service : ${buyer.serviceCode}`] : undefined,
+        }}
+        worksite={
+          worksite
+            ? {
+                name: worksite.name,
+                address: worksite.address,
+                reference: worksite.marketReference,
+              }
+            : null
+        }
         subject={invoice.title}
         sections={sections}
         vatBreakdown={t.vatBreakdown}
         totals={[
-          ...(invoice.progress ? [{ label: "Travaux de la période HT", value: addMoney(t.net, t.depositDeduction, t.discount) }] : []),
-          ...(t.discount !== "0.00" ? [{ label: "Remise", value: t.discount, negative: true }] : []),
-          ...(t.depositDeduction !== "0.00" ? [{ label: "Acompte déduit HT", value: t.depositDeduction, negative: true }] : []),
+          ...(invoice.progress
+            ? [
+                {
+                  label: "Travaux de la période HT",
+                  value: addMoney(t.net, t.depositDeduction, t.discount),
+                },
+              ]
+            : []),
+          ...(t.discount !== "0.00"
+            ? [{ label: "Remise", value: t.discount, negative: true }]
+            : []),
+          ...(t.depositDeduction !== "0.00"
+            ? [{ label: "Acompte déduit HT", value: t.depositDeduction, negative: true }]
+            : []),
           { label: "Total HT", value: t.net },
           { label: "Total TVA", value: t.vat },
-          { label: invoice.reverseCharge ? "Total (TVA autoliquidée)" : "Total TTC", value: t.gross },
-          ...(t.retention !== "0.00" ? [{ label: "Retenue de garantie", value: t.retention, negative: true }] : []),
-          { label: kindRules(invoice.kind).isReceivable ? "Net à payer" : "Montant de l'avoir", value: t.netToPay, strong: true },
+          {
+            label: invoice.reverseCharge ? "Total (TVA autoliquidée)" : "Total TTC",
+            value: t.gross,
+          },
+          ...(t.retention !== "0.00"
+            ? [{ label: "Retenue de garantie", value: t.retention, negative: true }]
+            : []),
+          {
+            label: kindRules(invoice.kind).isReceivable ? "Net à payer" : "Montant de l'avoir",
+            value: t.netToPay,
+            strong: true,
+          },
         ]}
         mentions={invoiceMentions({ invoice, seller, buyer, org, correctedInvoice: corrected })}
         accentColor={org.settings.branding.accentColor}

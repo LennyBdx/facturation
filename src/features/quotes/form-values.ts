@@ -33,7 +33,13 @@ export function quoteToFormValues(q: Quote): QuoteFormValues {
   };
 }
 
-export function emptyQuoteValues(org: Organization, today: string, clientId = "", worksiteId = "", reverseCharge = false): QuoteFormValues {
+export function emptyQuoteValues(
+  org: Organization,
+  today: string,
+  clientId = "",
+  worksiteId = "",
+  reverseCharge = false,
+): QuoteFormValues {
   return {
     clientId,
     worksiteId,
@@ -50,13 +56,25 @@ export function emptyQuoteValues(org: Organization, today: string, clientId = ""
       {
         id: "nouveau-lot-1",
         title: "Lot 1",
-        lines: [{ id: "nouvelle-ligne-1", description: "", quantity: "1", unit: "u", unitPrice: "", vatRate: "20.00" }],
+        lines: [
+          {
+            id: "nouvelle-ligne-1",
+            description: "",
+            quantity: "1",
+            unit: "u",
+            unitPrice: "",
+            vatRate: "20.00",
+          },
+        ],
       },
     ],
   };
 }
 
 /** Statut affiché : un devis envoyé dont la validité est dépassée apparaît « expiré ». */
-export function effectiveQuoteStatus(q: Pick<Quote, "status" | "validUntil">, today: string): QuoteStatus {
+export function effectiveQuoteStatus(
+  q: Pick<Quote, "status" | "validUntil">,
+  today: string,
+): QuoteStatus {
   return q.status === "sent" && q.validUntil < today ? "expired" : q.status;
 }

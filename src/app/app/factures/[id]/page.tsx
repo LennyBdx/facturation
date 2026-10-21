@@ -5,7 +5,11 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import { DetailList } from "@/components/app/detail-list";
 import { PageHeader } from "@/components/app/page-header";
 import { ActionButton } from "@/components/forms/action-button";
-import { LifecycleStatusBadge, PaymentStatusBadge, ToneBadge } from "@/components/status/status-badge";
+import {
+  LifecycleStatusBadge,
+  PaymentStatusBadge,
+  ToneBadge,
+} from "@/components/status/status-badge";
 import { INVOICE_KIND_LABELS } from "@/components/status/status-config";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,7 +43,9 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
     invoice.worksiteId ? repos.worksites.get(orgId, invoice.worksiteId) : null,
     invoice.quoteId ? repos.quotes.get(orgId, invoice.quoteId) : null,
     invoice.correctedInvoiceId ? repos.invoices.get(orgId, invoice.correctedInvoiceId) : null,
-    invoice.cancelledByCreditNoteId ? repos.invoices.get(orgId, invoice.cancelledByCreditNoteId) : null,
+    invoice.cancelledByCreditNoteId
+      ? repos.invoices.get(orgId, invoice.cancelledByCreditNoteId)
+      : null,
   ]);
   if (!client) notFound();
 
@@ -48,7 +54,11 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   const remaining = invoiceRemaining(invoice);
   const throughPlatform = goesThroughPlatform(client);
   const report = draft ? await complianceFor(ctx, invoice, client) : null;
-  const canCredit = can(role, "invoice:credit") && rules.canBeCredited && !invoice.cancelledByCreditNoteId && invoice.payments.length === 0;
+  const canCredit =
+    can(role, "invoice:credit") &&
+    rules.canBeCredited &&
+    !invoice.cancelledByCreditNoteId &&
+    invoice.payments.length === 0;
 
   return (
     <>
@@ -57,7 +67,9 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
           <>
             {INVOICE_KIND_LABELS[invoice.kind]}
             {invoice.progress ? ` n° ${invoice.progress.index}` : ""}{" "}
-            <span className="font-mono text-xl text-muted-foreground">{invoice.number ?? "brouillon"}</span>
+            <span className="font-mono text-xl text-muted-foreground">
+              {invoice.number ?? "brouillon"}
+            </span>
           </>
         }
         backHref={routes.invoices.list()}
@@ -80,7 +92,12 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         meta={
           <>
             <PaymentStatusBadge status={invoicePaymentStatus(invoice, today)} />
-            {!draft ? <LifecycleStatusBadge status={invoice.eInvoicing.status} outOfScope={!throughPlatform} /> : null}
+            {!draft ? (
+              <LifecycleStatusBadge
+                status={invoice.eInvoicing.status}
+                outOfScope={!throughPlatform}
+              />
+            ) : null}
             {invoice.reverseCharge ? <ToneBadge tone="pending">Autoliquidation</ToneBadge> : null}
           </>
         }
@@ -106,7 +123,8 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
                   action={deleteDraftAction.bind(null, id)}
                   confirm={{
                     title: "Supprimer ce brouillon ?",
-                    description: "Le brouillon n'a pas de numéro : sa suppression ne crée aucun trou de numérotation.",
+                    description:
+                      "Le brouillon n'a pas de numéro : sa suppression ne crée aucun trou de numérotation.",
                     confirmLabel: "Supprimer",
                     destructive: true,
                   }}
@@ -122,14 +140,29 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         }
       />
 
-      <InvoiceSummary invoice={invoice} remaining={remaining} quote={quote} corrected={corrected} creditNote={creditNote} />
+      <InvoiceSummary
+        invoice={invoice}
+        remaining={remaining}
+        quote={quote}
+        corrected={corrected}
+        creditNote={creditNote}
+      />
 
       {report ? (
         can(role, "invoice:issue") ? (
-          <CompliancePanel invoiceId={id} clientId={client.id} report={report} throughPlatform={throughPlatform} />
+          <CompliancePanel
+            invoiceId={id}
+            clientId={client.id}
+            report={report}
+            throughPlatform={throughPlatform}
+          />
         ) : (
-          <p role="status" className="mb-6 rounded-lg border border-info/25 bg-info-soft p-4 text-sm text-info">
-            Brouillon prêt à être vérifié : l&apos;émission est réservée aux administrateurs de l&apos;entreprise.
+          <p
+            role="status"
+            className="mb-6 rounded-lg border border-info/25 bg-info-soft p-4 text-sm text-info"
+          >
+            Brouillon prêt à être vérifié : l&apos;émission est réservée aux administrateurs de
+            l&apos;entreprise.
           </p>
         )
       ) : null}
@@ -137,10 +170,24 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           <InvoiceLinesCard invoice={invoice} />
-          {!draft && rules.isReceivable ? <PaymentsCard invoice={invoice} remaining={remaining} today={today} canRecord={can(role, "invoice:payment")} /> : null}
+          {!draft && rules.isReceivable ? (
+            <PaymentsCard
+              invoice={invoice}
+              remaining={remaining}
+              today={today}
+              canRecord={can(role, "invoice:payment")}
+            />
+          ) : null}
         </div>
         <div className="space-y-6">
-          {!draft ? <EInvoicingCard invoice={invoice} clientId={client.id} throughPlatform={throughPlatform} canResubmit={can(role, "invoice:issue")} /> : null}
+          {!draft ? (
+            <EInvoicingCard
+              invoice={invoice}
+              clientId={client.id}
+              throughPlatform={throughPlatform}
+              canResubmit={can(role, "invoice:issue")}
+            />
+          ) : null}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Client</CardTitle>
@@ -150,12 +197,24 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
                 columns={1}
                 items={[
                   { label: "Nom", value: invoice.buyer?.name ?? client.name },
-                  { label: "SIREN", value: invoice.buyer?.siren ?? client.siren, hidden: client.kind === "individual" },
-                  { label: "TVA", value: invoice.buyer?.vatNumber ?? client.vatNumber, hidden: client.kind === "individual" },
+                  {
+                    label: "SIREN",
+                    value: invoice.buyer?.siren ?? client.siren,
+                    hidden: client.kind === "individual",
+                  },
+                  {
+                    label: "TVA",
+                    value: invoice.buyer?.vatNumber ?? client.vatNumber,
+                    hidden: client.kind === "individual",
+                  },
                   { label: "Conditions", value: invoice.paymentTermsLabel },
                 ]}
               />
-              {!draft ? <p className="mt-3 text-xs text-muted-foreground">Données client figées à l&apos;émission.</p> : null}
+              {!draft ? (
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Données client figées à l&apos;émission.
+                </p>
+              ) : null}
             </CardContent>
           </Card>
         </div>

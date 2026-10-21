@@ -10,11 +10,18 @@ export const metadata: Metadata = { title: "Modifier le chantier" };
 export default async function EditWorksitePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { repos, orgId } = await getRequestContext();
-  const [w, clients] = await Promise.all([repos.worksites.get(orgId, id), repos.clients.list(orgId)]);
+  const [w, clients] = await Promise.all([
+    repos.worksites.get(orgId, id),
+    repos.clients.list(orgId),
+  ]);
   if (!w) notFound();
   return (
     <>
-      <PageHeader title={`Modifier — ${w.name}`} backHref={routes.worksites.show(id)} backLabel={w.name} />
+      <PageHeader
+        title={`Modifier — ${w.name}`}
+        backHref={routes.worksites.show(id)}
+        backLabel={w.name}
+      />
       <WorksiteForm
         worksiteId={w.id}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))}
@@ -22,7 +29,12 @@ export default async function EditWorksitePage({ params }: { params: Promise<{ i
           clientId: w.clientId,
           name: w.name,
           reference: w.reference,
-          address: { line1: w.address.line1, postalCode: w.address.postalCode, city: w.address.city, countryCode: "FR" },
+          address: {
+            line1: w.address.line1,
+            postalCode: w.address.postalCode,
+            city: w.address.city,
+            countryCode: "FR",
+          },
           startDate: w.startDate,
           endDate: w.endDate ?? "",
           status: w.status,

@@ -20,7 +20,10 @@ export default function SignInPage() {
       <SignInForm />
       <p className="text-center text-sm text-muted-foreground">
         Pas encore de compte ?{" "}
-        <Link href={routes.signUp} className="font-medium text-primary underline-offset-4 hover:underline">
+        <Link
+          href={routes.signUp}
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
           Créer un compte
         </Link>
       </p>

@@ -11,10 +11,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
     "format": "prettier --write .",
     "references": "node scripts/capture-references.mjs",
-    "screenshots": "node scripts/capture-app.mjs"
+    "screenshots": "node scripts/capture-app.mjs",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",

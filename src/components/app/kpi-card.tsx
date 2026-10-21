@@ -38,7 +38,10 @@ export function KpiCard({
   );
   const className = "flex flex-col gap-2 rounded-lg border bg-card p-4";
   return href ? (
-    <Link href={href} className={cn(className, "transition-colors hover:border-primary/40 hover:bg-accent/40")}>
+    <Link
+      href={href}
+      className={cn(className, "transition-colors hover:border-primary/40 hover:bg-accent/40")}
+    >
       {body}
     </Link>
   ) : (

@@ -37,15 +37,28 @@ describe("jeu de données fictives", () => {
     const kinds = new Set(seed.invoices.map((i) => i.kind));
     expect([...kinds].sort()).toEqual(["credit_note", "deposit", "final", "progress", "standard"]);
     const payment = new Set(seed.invoices.map((i) => invoicePaymentStatus(i, TODAY)));
-    for (const s of ["draft", "issued", "partially_paid", "paid", "overdue", "cancelled"]) expect(payment).toContain(s);
+    for (const s of ["draft", "issued", "partially_paid", "paid", "overdue", "cancelled"])
+      expect(payment).toContain(s);
     const lifecycle = new Set(seed.invoices.map((i) => i.eInvoicing.status));
-    for (const s of ["deposited", "made_available", "in_hand", "approved", "disputed", "suspended", "refused", "rejected", "cashed"]) {
+    for (const s of [
+      "deposited",
+      "made_available",
+      "in_hand",
+      "approved",
+      "disputed",
+      "suspended",
+      "refused",
+      "rejected",
+      "cashed",
+    ]) {
       expect(lifecycle).toContain(s);
     }
   });
 
   it("contient un chantier à 3 situations avec autoliquidation et retenue de garantie", () => {
-    const situations = seed.invoices.filter((i) => i.worksiteId === "ws-terrasses" && i.kind === "progress");
+    const situations = seed.invoices.filter(
+      (i) => i.worksiteId === "ws-terrasses" && i.kind === "progress",
+    );
     expect(situations.map((s) => s.progress!.index)).toEqual([1, 2, 3]);
     expect(situations.every((s) => s.reverseCharge && s.totals.vat === "0.00")).toBe(true);
     expect(sumMoney(situations.map((s) => s.totals.retention))).not.toBe("0.00");
@@ -67,7 +80,12 @@ describe("jeu de données fictives", () => {
     const client = seed.clients.find((c) => c.id === draft.clientId)!;
     const report = checkInvoiceCompliance({
       seller: org,
-      buyer: { ...client, address: client.billingAddress, isProfessional: true, isPublicBuyer: false },
+      buyer: {
+        ...client,
+        address: client.billingAddress,
+        isProfessional: true,
+        isPublicBuyer: false,
+      },
       invoice: { ...draft, mentionsRecoveryIndemnity: true, lines: draft.lines },
     });
     expect(report.issues.map((i) => i.id)).toContain("buyer.siren");

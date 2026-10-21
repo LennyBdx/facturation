@@ -15,13 +15,27 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} aria-labelledby={labelledBy} className={cn("py-16 md:py-24", tone === "card" && "border-y bg-card", className)}>
+    <section
+      id={id}
+      aria-labelledby={labelledBy}
+      className={cn("py-16 md:py-24", tone === "card" && "border-y bg-card", className)}
+    >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">{children}</div>
     </section>
   );
 }
 
-export function SectionHeading({ id, title, intro, align = "center" }: { id: string; title: string; intro?: string; align?: "center" | "left" }) {
+export function SectionHeading({
+  id,
+  title,
+  intro,
+  align = "center",
+}: {
+  id: string;
+  title: string;
+  intro?: string;
+  align?: "center" | "left";
+}) {
   return (
     <div className={cn("mb-10 max-w-2xl md:mb-14", align === "center" && "mx-auto text-center")}>
       <h2 id={id} className="text-3xl font-bold tracking-tight text-balance md:text-5xl">

@@ -19,9 +19,15 @@ import { billedProgress } from "@/services/dashboard";
 
 export const metadata: Metadata = { title: "Chantiers" };
 
-export default async function WorksitesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
+export default async function WorksitesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; filtre?: string }>;
+}) {
   const { q, filtre } = await searchParams;
-  const status = WORKSITE_STATUSES.includes(filtre as WorksiteStatus) ? (filtre as WorksiteStatus) : undefined;
+  const status = WORKSITE_STATUSES.includes(filtre as WorksiteStatus)
+    ? (filtre as WorksiteStatus)
+    : undefined;
   const { repos, orgId } = await getRequestContext();
   const [worksites, clients, invoices] = await Promise.all([
     repos.worksites.list(orgId, { search: q, status }),
@@ -35,7 +41,11 @@ export default async function WorksitesPage({ searchParams }: { searchParams: Pr
     const pct = progress.get(id) ?? "0.00";
     return (
       <span className="flex items-center gap-2">
-        <Progress value={Number(pct)} className="h-1.5 w-20 [&>*]:bg-brand" aria-label={`Avancement facturé ${formatPercent(pct)}`} />
+        <Progress
+          value={Number(pct)}
+          className="h-1.5 w-20 [&>*]:bg-brand"
+          aria-label={`Avancement facturé ${formatPercent(pct)}`}
+        />
         <span className="num text-sm">{formatPercent(pct)}</span>
       </span>
     );
@@ -59,12 +69,19 @@ export default async function WorksitesPage({ searchParams }: { searchParams: Pr
         searchLabel="Rechercher un chantier"
         searchPlaceholder="Nom, référence, ville…"
         filterLabel="Statut"
-        filterOptions={WORKSITE_STATUSES.map((s) => ({ value: s, label: WORKSITE_STATUS[s].label }))}
+        filterOptions={WORKSITE_STATUSES.map((s) => ({
+          value: s,
+          label: WORKSITE_STATUS[s].label,
+        }))}
       />
       {worksites.length === 0 ? (
         <EmptyState
           icon={HardHat}
-          title={q || status ? "Aucun chantier ne correspond à votre recherche." : "Aucun chantier pour l'instant."}
+          title={
+            q || status
+              ? "Aucun chantier ne correspond à votre recherche."
+              : "Aucun chantier pour l'instant."
+          }
           description="Un chantier se crée aussi en un clic depuis un devis accepté."
           action={
             <Button asChild>
@@ -91,7 +108,11 @@ export default async function WorksitesPage({ searchParams }: { searchParams: Pr
               ),
             },
             { header: "Avancement facturé", cell: (w) => progressCell(w.id) },
-            { header: "Marché HT", align: "right", cell: (w) => <Amount value={w.contractAmount} /> },
+            {
+              header: "Marché HT",
+              align: "right",
+              cell: (w) => <Amount value={w.contractAmount} />,
+            },
           ]}
           mobile={(w) => ({
             title: w.name,
@@ -101,7 +122,9 @@ export default async function WorksitesPage({ searchParams }: { searchParams: Pr
               <>
                 <WorksiteStatusBadge status={w.status} />
                 {w.reverseCharge ? <ToneBadge tone="pending">Autoliquidation</ToneBadge> : null}
-                <span className="num ml-auto text-sm text-muted-foreground">{formatPercent(progress.get(w.id) ?? "0")} facturé</span>
+                <span className="num ml-auto text-sm text-muted-foreground">
+                  {formatPercent(progress.get(w.id) ?? "0")} facturé
+                </span>
               </>
             ),
           })}

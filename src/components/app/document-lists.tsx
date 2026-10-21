@@ -1,7 +1,12 @@
 import { routes } from "@/config/routes";
 import Link from "next/link";
 import { Amount } from "@/components/app/amount";
-import { LifecycleStatusBadge, PaymentStatusBadge, QuoteStatusBadge, WorksiteStatusBadge } from "@/components/status/status-badge";
+import {
+  LifecycleStatusBadge,
+  PaymentStatusBadge,
+  QuoteStatusBadge,
+  WorksiteStatusBadge,
+} from "@/components/status/status-badge";
 import { INVOICE_KIND_LABELS } from "@/components/status/status-config";
 import type { Invoice, Quote, ReceivedInvoice, Worksite } from "@/data/types";
 import { formatDate } from "@/lib/format";
@@ -19,10 +24,15 @@ export function InvoiceMiniList({ invoices, today }: { invoices: Invoice[]; toda
     <ul className="divide-y">
       {invoices.map((i) => (
         <li key={i.id}>
-          <Link href={routes.invoices.show(i.id)} className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link
+            href={routes.invoices.show(i.id)}
+            className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2"
+          >
             <span className="flex items-start justify-between gap-3">
               <span className="min-w-0">
-                <span className="block truncate font-medium">{i.number ?? "Brouillon"} — {INVOICE_KIND_LABELS[i.kind]}</span>
+                <span className="block truncate font-medium">
+                  {i.number ?? "Brouillon"} — {INVOICE_KIND_LABELS[i.kind]}
+                </span>
                 <span className="block truncate text-sm text-muted-foreground">
                   {formatDate(i.issueDate)} · {i.title}
                 </span>
@@ -31,7 +41,12 @@ export function InvoiceMiniList({ invoices, today }: { invoices: Invoice[]; toda
             </span>
             <span className="flex flex-wrap gap-1.5">
               <PaymentStatusBadge status={invoicePaymentStatus(i, today)} />
-              {i.issuedAt ? <LifecycleStatusBadge status={i.eInvoicing.status} outOfScope={i.buyer?.kind === "individual"} /> : null}
+              {i.issuedAt ? (
+                <LifecycleStatusBadge
+                  status={i.eInvoicing.status}
+                  outOfScope={i.buyer?.kind === "individual"}
+                />
+              ) : null}
             </span>
           </Link>
         </li>
@@ -46,7 +61,10 @@ export function QuoteMiniList({ quotes }: { quotes: Quote[] }) {
     <ul className="divide-y">
       {quotes.map((q) => (
         <li key={q.id}>
-          <Link href={routes.quotes.show(q.id)} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link
+            href={routes.quotes.show(q.id)}
+            className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2"
+          >
             <span className="min-w-0">
               <span className="block truncate font-medium">{q.title}</span>
               <span className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -70,7 +88,10 @@ export function WorksiteMiniList({ worksites }: { worksites: Worksite[] }) {
     <ul className="divide-y">
       {worksites.map((w) => (
         <li key={w.id}>
-          <Link href={routes.worksites.show(w.id)} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link
+            href={routes.worksites.show(w.id)}
+            className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2"
+          >
             <span className="min-w-0">
               <span className="block truncate font-medium">{w.name}</span>
               <span className="block text-sm text-muted-foreground">
@@ -91,7 +112,10 @@ export function ReceivedMiniList({ invoices }: { invoices: ReceivedInvoice[] }) 
     <ul className="divide-y">
       {invoices.map((r) => (
         <li key={r.id}>
-          <Link href={routes.received.show(r.id)} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+          <Link
+            href={routes.received.show(r.id)}
+            className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2"
+          >
             <span className="min-w-0">
               <span className="block truncate font-medium">{r.supplier.name}</span>
               <span className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">

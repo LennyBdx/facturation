@@ -8,7 +8,10 @@ import type { ActionResult } from "@/lib/action-result";
  * Applique le résultat d'une Server Action à un formulaire : erreurs serveur
  * reportées sous chaque champ, toast de confirmation ou d'erreur.
  */
-export function applyActionResult<T extends FieldValues, R>(form: UseFormReturn<T>, result: ActionResult<R>): result is { ok: true; data?: R; message?: string } {
+export function applyActionResult<T extends FieldValues, R>(
+  form: UseFormReturn<T>,
+  result: ActionResult<R>,
+): result is { ok: true; data?: R; message?: string } {
   if (result.ok) {
     if (result.message) toast.success(result.message);
     return true;

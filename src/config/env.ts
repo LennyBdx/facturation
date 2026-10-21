@@ -22,11 +22,14 @@ const parsed = schema.safeParse({
 });
 
 if (!parsed.success) {
-  throw new Error(`Variables d'environnement invalides :\n${parsed.error.issues.map((i) => `- ${i.path.join(".")} : ${i.message}`).join("\n")}`);
+  throw new Error(
+    `Variables d'environnement invalides :\n${parsed.error.issues.map((i) => `- ${i.path.join(".")} : ${i.message}`).join("\n")}`,
+  );
 }
 
 export const env = {
   isProduction: parsed.data.NODE_ENV === "production",
   siteUrl: parsed.data.NEXT_PUBLIC_SITE_URL.replace(/\/$/, ""),
-  debugPagesEnabled: parsed.data.NODE_ENV !== "production" || parsed.data.ENABLE_DEBUG_PAGES === "true",
+  debugPagesEnabled:
+    parsed.data.NODE_ENV !== "production" || parsed.data.ENABLE_DEBUG_PAGES === "true",
 } as const;

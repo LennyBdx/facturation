@@ -36,7 +36,10 @@ export function SiteFooter() {
                   </li>
                 ) : (
                   <li key={l.label}>
-                    <Link href={l.href} className="inline-flex min-h-11 items-center text-sm text-primary-foreground/75 hover:text-primary-foreground md:min-h-8">
+                    <Link
+                      href={l.href}
+                      className="inline-flex min-h-11 items-center text-sm text-primary-foreground/75 hover:text-primary-foreground md:min-h-8"
+                    >
                       {l.label}
                     </Link>
                   </li>

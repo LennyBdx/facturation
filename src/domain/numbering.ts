@@ -19,7 +19,11 @@ export interface NumberingSeries {
   padding: number;
 }
 
-export function formatDocumentNumber(series: NumberingSeries, value: number, issueDate: string): string {
+export function formatDocumentNumber(
+  series: NumberingSeries,
+  value: number,
+  issueDate: string,
+): string {
   const year = issueDate.slice(0, 4);
   return `${series.prefix}-${year}-${String(value).padStart(series.padding, "0")}`;
 }
@@ -58,7 +62,11 @@ export interface ContinuityReport {
  * Vérifie qu'une liste de numéros émis forme une séquence continue sans trou ni doublon,
  * en partant de `firstValue` (1 par défaut).
  */
-export function checkContinuity(numbers: readonly string[], prefix: string, firstValue = 1): ContinuityReport {
+export function checkContinuity(
+  numbers: readonly string[],
+  prefix: string,
+  firstValue = 1,
+): ContinuityReport {
   const seen = new Map<number, string>();
   const duplicates: string[] = [];
   const invalid: string[] = [];
@@ -74,7 +82,12 @@ export function checkContinuity(numbers: readonly string[], prefix: string, firs
   const max = seen.size ? Math.max(...seen.keys()) : firstValue - 1;
   const gaps: number[] = [];
   for (let c = firstValue; c <= max; c++) if (!seen.has(c)) gaps.push(c);
-  return { ok: gaps.length === 0 && duplicates.length === 0 && invalid.length === 0, gaps, duplicates, invalid };
+  return {
+    ok: gaps.length === 0 && duplicates.length === 0 && invalid.length === 0,
+    gaps,
+    duplicates,
+    invalid,
+  };
 }
 
 /**

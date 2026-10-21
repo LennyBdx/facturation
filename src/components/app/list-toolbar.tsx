@@ -4,7 +4,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface FilterOption {
   value: string;
@@ -58,7 +64,10 @@ export function ListToolbar({
         <label htmlFor="list-search" className="sr-only">
           {searchLabel}
         </label>
-        <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+        />
         <Input
           id="list-search"
           type="search"
@@ -69,7 +78,10 @@ export function ListToolbar({
           autoComplete="off"
         />
         {pending ? (
-          <Loader2 aria-label="Chargement" className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+          <Loader2
+            aria-label="Chargement"
+            className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground"
+          />
         ) : null}
       </div>
       {filterOptions ? (

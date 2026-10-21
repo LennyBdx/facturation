@@ -15,7 +15,16 @@ import type { ProgressCumulative } from "@/domain/progress-billing";
 import type { Discount } from "@/domain/quote";
 import type { VatBreakdownLine, VatCategory } from "@/domain/vat";
 
-export type { Discount, LifecycleStatus, Money, NumberingSeries, Percent, Quantity, VatBreakdownLine, VatCategory };
+export type {
+  Discount,
+  LifecycleStatus,
+  Money,
+  NumberingSeries,
+  Percent,
+  Quantity,
+  VatBreakdownLine,
+  VatCategory,
+};
 
 export type ID = string;
 export type ISODate = string;
@@ -38,7 +47,16 @@ export interface Contact {
 
 // --- Organisation, utilisateurs, équipe ---------------------------------------
 
-export const LEGAL_FORMS = ["SAS", "SASU", "SARL", "EURL", "SA", "SNC", "EI", "Micro-entreprise"] as const;
+export const LEGAL_FORMS = [
+  "SAS",
+  "SASU",
+  "SARL",
+  "EURL",
+  "SA",
+  "SNC",
+  "EI",
+  "Micro-entreprise",
+] as const;
 export type LegalForm = (typeof LEGAL_FORMS)[number];
 
 export type EInvoicingConnectionStatus = "not_connected" | "pending" | "connected";
@@ -369,7 +387,12 @@ export interface Invoice {
   /** Facture d'acompte : pourcentage du marché. */
   depositPercent?: Percent;
   /** Situation : numéro, taux de retenue et cumul servant de base à la suivante. */
-  progress: { index: number; retentionRate: Percent; overallPercent: Percent; cumulative: ProgressCumulative } | null;
+  progress: {
+    index: number;
+    retentionRate: Percent;
+    overallPercent: Percent;
+    cumulative: ProgressCumulative;
+  } | null;
   lines: InvoiceLine[];
   totals: InvoiceTotals;
   /** Données figées à l'émission. */
@@ -385,7 +408,8 @@ export interface Invoice {
 
 // --- Factures reçues ----------------------------------------------------------
 
-export type ReceivedInvoiceCategory = "materials" | "equipment_rental" | "subcontracting" | "services" | "other";
+export type ReceivedInvoiceCategory =
+  "materials" | "equipment_rental" | "subcontracting" | "services" | "other";
 
 export interface ReceivedInvoiceLine {
   id: ID;
@@ -431,6 +455,9 @@ export interface ReceivedInvoice {
 
 export type ClientInput = Omit<Client, "id" | "organizationId" | "createdAt">;
 export type WorksiteInput = Omit<Worksite, "id" | "organizationId" | "createdAt">;
-export type QuoteInput = Omit<Quote, "id" | "organizationId" | "number" | "createdAt" | "updatedAt">;
+export type QuoteInput = Omit<
+  Quote,
+  "id" | "organizationId" | "number" | "createdAt" | "updatedAt"
+>;
 export type InvoiceInput = Omit<Invoice, "id" | "organizationId" | "createdAt" | "updatedAt">;
 export type InvitationInput = Pick<Invitation, "email" | "role" | "invitedByUserId">;

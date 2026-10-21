@@ -6,7 +6,14 @@
 import { computeFrVatNumber, luhnValid } from "@/domain/identifiers";
 import type { LifecycleStatus } from "@/domain/lifecycle";
 import { defaultCategoryForRate } from "@/domain/vat";
-import type { Address, LifecycleActor, LifecycleEvent, QuoteLine, QuoteSection, Unit } from "../types";
+import type {
+  Address,
+  LifecycleActor,
+  LifecycleEvent,
+  QuoteLine,
+  QuoteSection,
+  Unit,
+} from "../types";
 
 let counter = 0;
 /** Identifiant déterministe lisible (`prefix-0001`). */
@@ -45,8 +52,22 @@ export function address(line1: string, postalCode: string, city: string): Addres
   return { line1, postalCode, city, countryCode: "FR" };
 }
 
-export function line(description: string, quantity: string, unit: Unit, unitPrice: string, vatRate = "20.00"): QuoteLine {
-  return { id: mockId("ql"), description, quantity, unit, unitPrice, vatRate, vatCategory: defaultCategoryForRate(vatRate) };
+export function line(
+  description: string,
+  quantity: string,
+  unit: Unit,
+  unitPrice: string,
+  vatRate = "20.00",
+): QuoteLine {
+  return {
+    id: mockId("ql"),
+    description,
+    quantity,
+    unit,
+    unitPrice,
+    vatRate,
+    vatCategory: defaultCategoryForRate(vatRate),
+  };
 }
 
 export function section(title: string, lines: QuoteLine[]): QuoteSection {
@@ -58,7 +79,12 @@ export function at(date: string, time = "09:00"): string {
   return `${date}T${time}:00.000Z`;
 }
 
-type Step = [status: LifecycleStatus, hoursAfterStart: number, actor?: LifecycleActor, comment?: string];
+type Step = [
+  status: LifecycleStatus,
+  hoursAfterStart: number,
+  actor?: LifecycleActor,
+  comment?: string,
+];
 
 /** Frise d'événements du cycle de vie à partir d'une date de dépôt. */
 export function lifecycle(startDate: string, steps: Step[]): LifecycleEvent[] {

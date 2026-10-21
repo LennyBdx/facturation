@@ -16,7 +16,9 @@ import { PRODUCT_NAME, SITE_DESCRIPTION } from "@/config/site";
 import { hero } from "@/content/home";
 
 export const metadata: Metadata = {
-  title: { absolute: `${PRODUCT_NAME} — logiciel de devis et de situations de travaux pour le BTP` },
+  title: {
+    absolute: `${PRODUCT_NAME} — logiciel de devis et de situations de travaux pour le BTP`,
+  },
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
   openGraph: {
@@ -27,7 +29,11 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     url: "/",
   },
-  twitter: { card: "summary_large_image", title: `${PRODUCT_NAME} — ${hero.title}`, description: SITE_DESCRIPTION },
+  twitter: {
+    card: "summary_large_image",
+    title: `${PRODUCT_NAME} — ${hero.title}`,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function HomePage() {

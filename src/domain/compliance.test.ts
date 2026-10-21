@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { checkInvoiceCompliance, type ComplianceBuyer, type ComplianceInvoice, type ComplianceSeller } from "./compliance";
+import {
+  checkInvoiceCompliance,
+  type ComplianceBuyer,
+  type ComplianceInvoice,
+  type ComplianceSeller,
+} from "./compliance";
 import { computePaymentStatus } from "./lifecycle";
 
 const seller: ComplianceSeller = {
@@ -11,7 +16,11 @@ const seller: ComplianceSeller = {
   legalForm: "SAS",
   shareCapital: "10000.00",
   registration: "RCS Lyon",
-  decennialInsurance: { insurer: "Assureur Fictif", policyNumber: "DEC-001", coverageArea: "France métropolitaine" },
+  decennialInsurance: {
+    insurer: "Assureur Fictif",
+    policyNumber: "DEC-001",
+    coverageArea: "France métropolitaine",
+  },
 };
 
 const buyer: ComplianceBuyer = {
@@ -32,7 +41,15 @@ const invoice: ComplianceInvoice = {
   mentionsRecoveryIndemnity: true,
   reverseCharge: false,
   operationCategory: "services",
-  lines: [{ description: "Tableau électrique", quantity: "1", unitPrice: "1200.00", vatRate: "20.00", vatCategory: "S" }],
+  lines: [
+    {
+      description: "Tableau électrique",
+      quantity: "1",
+      unitPrice: "1200.00",
+      vatRate: "20.00",
+      vatCategory: "S",
+    },
+  ],
 };
 
 const ids = (r: ReturnType<typeof checkInvoiceCompliance>) => r.issues.map((i) => i.id);
@@ -52,15 +69,28 @@ describe("contrôle de conformité avant émission", () => {
   });
 
   it("n'exige pas de SIREN pour un particulier", () => {
-    const r = checkInvoiceCompliance({ seller, buyer: { ...buyer, siren: undefined, vatNumber: undefined, isProfessional: false }, invoice });
+    const r = checkInvoiceCompliance({
+      seller,
+      buyer: { ...buyer, siren: undefined, vatNumber: undefined, isProfessional: false },
+      invoice,
+    });
     expect(r.ok).toBe(true);
   });
 
   it("détecte adresse, TVA, échéance et mentions manquantes", () => {
     const r = checkInvoiceCompliance({
       seller: { ...seller, vatNumber: "", decennialInsurance: undefined },
-      buyer: { ...buyer, address: { line1: "", postalCode: "6900", city: "Lyon", countryCode: "FR" } },
-      invoice: { ...invoice, dueDate: undefined, latePenaltyRate: "", mentionsRecoveryIndemnity: false, operationCategory: undefined },
+      buyer: {
+        ...buyer,
+        address: { line1: "", postalCode: "6900", city: "Lyon", countryCode: "FR" },
+      },
+      invoice: {
+        ...invoice,
+        dueDate: undefined,
+        latePenaltyRate: "",
+        mentionsRecoveryIndemnity: false,
+        operationCategory: undefined,
+      },
     });
     expect(ids(r)).toEqual(
       expect.arrayContaining([
@@ -85,13 +115,21 @@ describe("contrôle de conformité avant émission", () => {
     const ok = checkInvoiceCompliance({
       seller,
       buyer,
-      invoice: { ...invoice, reverseCharge: true, lines: [{ ...invoice.lines[0]!, vatRate: "0.00", vatCategory: "AE" }] },
+      invoice: {
+        ...invoice,
+        reverseCharge: true,
+        lines: [{ ...invoice.lines[0]!, vatRate: "0.00", vatCategory: "AE" }],
+      },
     });
     expect(ok.ok).toBe(true);
   });
 
   it("exige la facture d'origine pour un avoir", () => {
-    const r = checkInvoiceCompliance({ seller, buyer, invoice: { ...invoice, kind: "credit_note" } });
+    const r = checkInvoiceCompliance({
+      seller,
+      buyer,
+      invoice: { ...invoice, kind: "credit_note" },
+    });
     expect(ids(r)).toContain("invoice.correctedInvoice");
   });
 
@@ -105,14 +143,27 @@ describe("contrôle de conformité avant émission", () => {
     const r = checkInvoiceCompliance({
       seller,
       buyer,
-      invoice: { ...invoice, dueDate: "2026-09-01", lines: [{ ...invoice.lines[0]!, description: " " }] },
+      invoice: {
+        ...invoice,
+        dueDate: "2026-09-01",
+        lines: [{ ...invoice.lines[0]!, description: " " }],
+      },
     });
-    expect(ids(r)).toEqual(expect.arrayContaining(["invoice.dueDate", "invoice.lines.0.description"]));
+    expect(ids(r)).toEqual(
+      expect.arrayContaining(["invoice.dueDate", "invoice.lines.0.description"]),
+    );
   });
 });
 
 describe("statut de paiement", () => {
-  const base = { issued: true, cancelled: false, amountDue: "1000.00", payments: [] as string[], dueDate: "2026-10-31", today: "2026-10-18" };
+  const base = {
+    issued: true,
+    cancelled: false,
+    amountDue: "1000.00",
+    payments: [] as string[],
+    dueDate: "2026-10-31",
+    today: "2026-10-18",
+  };
   it("dérive le statut", () => {
     expect(computePaymentStatus({ ...base, issued: false })).toBe("draft");
     expect(computePaymentStatus(base)).toBe("issued");

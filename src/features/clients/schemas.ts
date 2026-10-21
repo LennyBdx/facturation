@@ -11,7 +11,12 @@ import {
   vatNumberSchema,
 } from "@/lib/validation";
 
-export const CLIENT_KINDS = ["general_contractor", "private_owner", "individual", "public_buyer"] as const;
+export const CLIENT_KINDS = [
+  "general_contractor",
+  "private_owner",
+  "individual",
+  "public_buyer",
+] as const;
 
 export const clientSchema = z
   .object({
@@ -30,7 +35,10 @@ export const clientSchema = z
       .number({ error: "Délai de paiement : nombre de jours attendu." })
       .int("Délai de paiement : nombre entier de jours.")
       .min(0, "Le délai de paiement ne peut pas être négatif.")
-      .max(60, "Délai légal maximum : 60 jours date de facture (art. L441-10 du Code de commerce)."),
+      .max(
+        60,
+        "Délai légal maximum : 60 jours date de facture (art. L441-10 du Code de commerce).",
+      ),
     serviceCode: optionalText(60),
     notes: optionalText(1000),
   })
@@ -40,14 +48,28 @@ export const clientSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["siren"],
-        message: "Le SIREN est obligatoire pour un client professionnel (nécessaire à la facture électronique).",
+        message:
+          "Le SIREN est obligatoire pour un client professionnel (nécessaire à la facture électronique).",
       });
     }
     if (v.siret && v.siren && !v.siret.startsWith(v.siren)) {
-      ctx.addIssue({ code: "custom", path: ["siret"], message: "Le SIRET doit commencer par le SIREN du client." });
+      ctx.addIssue({
+        code: "custom",
+        path: ["siret"],
+        message: "Le SIRET doit commencer par le SIREN du client.",
+      });
     }
-    if (v.vatNumber && v.siren && v.vatNumber.startsWith("FR") && !validateVatNumber(v.vatNumber, v.siren).valid) {
-      ctx.addIssue({ code: "custom", path: ["vatNumber"], message: "Le numéro de TVA ne correspond pas au SIREN saisi." });
+    if (
+      v.vatNumber &&
+      v.siren &&
+      v.vatNumber.startsWith("FR") &&
+      !validateVatNumber(v.vatNumber, v.siren).valid
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["vatNumber"],
+        message: "Le numéro de TVA ne correspond pas au SIREN saisi.",
+      });
     }
   });
 

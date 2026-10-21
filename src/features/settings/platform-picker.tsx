@@ -10,7 +10,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { PlatformInfo } from "@/integrations/e-invoicing";
 import { connectPlatformAction, disconnectPlatformAction } from "./actions";
 
-export function PlatformPicker({ platforms, current, connected }: { platforms: PlatformInfo[]; current: string | null; connected: boolean }) {
+export function PlatformPicker({
+  platforms,
+  current,
+  connected,
+}: {
+  platforms: PlatformInfo[];
+  current: string | null;
+  connected: boolean;
+}) {
   const router = useRouter();
   const [choice, setChoice] = useState(current ?? "");
   const [pending, startTransition] = useTransition();
@@ -25,7 +33,12 @@ export function PlatformPicker({ platforms, current, connected }: { platforms: P
 
   return (
     <div className="space-y-4">
-      <RadioGroup value={choice} onValueChange={setChoice} aria-label="Plateforme agréée" className="gap-2">
+      <RadioGroup
+        value={choice}
+        onValueChange={setChoice}
+        aria-label="Plateforme agréée"
+        className="gap-2"
+      >
         {platforms.map((p) => (
           <Label
             key={p.id}
@@ -35,18 +48,27 @@ export function PlatformPicker({ platforms, current, connected }: { platforms: P
             <RadioGroupItem id={`pf-${p.id}`} value={p.id} className="mt-0.5" />
             <span>
               <span className="block font-medium">{p.name}</span>
-              <span className="block text-sm font-normal text-muted-foreground">{p.description}</span>
+              <span className="block text-sm font-normal text-muted-foreground">
+                {p.description}
+              </span>
             </span>
           </Label>
         ))}
       </RadioGroup>
       <div className="flex flex-wrap gap-2">
-        <Button disabled={!choice || pending || (connected && choice === current)} onClick={() => run(() => connectPlatformAction(choice))}>
+        <Button
+          disabled={!choice || pending || (connected && choice === current)}
+          onClick={() => run(() => connectPlatformAction(choice))}
+        >
           {pending ? <Loader2 aria-hidden className="animate-spin" /> : <Plug aria-hidden />}
           {connected && choice !== current ? "Changer de plateforme" : "Connecter"}
         </Button>
         {connected ? (
-          <Button variant="outline" disabled={pending} onClick={() => run(disconnectPlatformAction)}>
+          <Button
+            variant="outline"
+            disabled={pending}
+            onClick={() => run(disconnectPlatformAction)}
+          >
             <Unplug aria-hidden />
             Déconnecter
           </Button>

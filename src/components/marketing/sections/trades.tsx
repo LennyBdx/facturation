@@ -12,7 +12,10 @@ export function Trades() {
           const Icon = ICONS[t.icon] ?? HardHat;
           return (
             <li key={t.name} className="reveal rounded-2xl border bg-background p-5">
-              <span aria-hidden className="mb-3 flex size-10 items-center justify-center rounded-md bg-accent text-brand">
+              <span
+                aria-hidden
+                className="mb-3 flex size-10 items-center justify-center rounded-md bg-accent text-brand"
+              >
                 <Icon className="size-5" />
               </span>
               <h3 className="font-semibold">{t.name}</h3>

@@ -9,7 +9,9 @@ export default function NotFound() {
       <SearchX aria-hidden className="size-8 text-muted-foreground" />
       <div className="space-y-1">
         <h1 className="text-lg font-semibold">Élément introuvable</h1>
-        <p className="text-sm text-muted-foreground">Il a peut-être été supprimé ou appartient à une autre entreprise.</p>
+        <p className="text-sm text-muted-foreground">
+          Il a peut-être été supprimé ou appartient à une autre entreprise.
+        </p>
       </div>
       <Button asChild>
         <Link href={routes.dashboard}>Retour au tableau de bord</Link>

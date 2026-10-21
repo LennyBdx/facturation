@@ -17,12 +17,21 @@ export function Hero() {
     <section aria-labelledby="hero-title" className="overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mx-auto max-w-4xl text-center">
-          <h1 id="hero-title" className="text-4xl leading-[1.08] font-bold tracking-tight text-balance sm:text-6xl lg:text-7xl">
+          <h1
+            id="hero-title"
+            className="text-4xl leading-[1.08] font-bold tracking-tight text-balance sm:text-6xl lg:text-7xl"
+          >
             {withHighlight(hero.title, hero.titleHighlight)}
           </h1>
-          <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2" aria-label="Points forts">
+          <ul
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
+            aria-label="Points forts"
+          >
             {hero.tags.map((t) => (
-              <li key={t} className="inline-flex items-center gap-1.5 text-sm font-medium sm:text-base">
+              <li
+                key={t}
+                className="inline-flex items-center gap-1.5 text-sm font-medium sm:text-base"
+              >
                 <CircleCheck aria-hidden className="size-4 text-primary" />
                 {t}
               </li>
@@ -36,7 +45,12 @@ export function Hero() {
                 <ArrowRight aria-hidden />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="ghost" className="h-12 w-full rounded-full px-6 text-base sm:w-auto">
+            <Button
+              asChild
+              size="lg"
+              variant="ghost"
+              className="h-12 w-full rounded-full px-6 text-base sm:w-auto"
+            >
               <Link href="#fonctionnalites">{cta.secondary}</Link>
             </Button>
           </div>
@@ -44,7 +58,12 @@ export function Hero() {
 
         <div className="relative mx-auto mt-14 max-w-5xl md:mt-16">
           <div className="rounded-3xl bg-accent p-2 sm:p-4">
-            <DesktopFrame shot={hero.images.desktop} priority sizes="(min-width: 1024px) 64rem, 100vw" className="rounded-xl" />
+            <DesktopFrame
+              shot={hero.images.desktop}
+              priority
+              sizes="(min-width: 1024px) 64rem, 100vw"
+              className="rounded-xl"
+            />
           </div>
 
           <PhoneFrame
@@ -56,7 +75,9 @@ export function Hero() {
 
           <div className="absolute top-16 -right-3 hidden w-64 rounded-xl border bg-card p-4 shadow-xl md:block lg:-right-10">
             <p className="text-sm font-semibold">Facture électronique</p>
-            <p className="mb-3 text-xs text-muted-foreground">Situation n° 3 · suivi de la plateforme agréée</p>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Situation n° 3 · suivi de la plateforme agréée
+            </p>
             <ol className="space-y-2">
               {(["deposited", "approved", "cashed"] as const).map((s) => (
                 <li key={s} className="flex items-center justify-between gap-2">
@@ -73,7 +94,10 @@ export function Hero() {
             const Icon = ICONS[p.icon] ?? Check;
             return (
               <li key={p.text} className="flex items-center gap-3 sm:justify-center">
-                <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary">
+                <span
+                  aria-hidden
+                  className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary"
+                >
                   <Icon className="size-4" />
                 </span>
                 <span className="font-medium">{p.text}</span>

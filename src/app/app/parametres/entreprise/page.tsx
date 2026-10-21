@@ -9,9 +9,12 @@ export default async function CompanySettingsPage() {
   return (
     <section aria-labelledby="s-title" className="space-y-4">
       <div>
-        <h2 id="s-title" className="text-xl font-semibold">Informations de l&apos;entreprise</h2>
+        <h2 id="s-title" className="text-xl font-semibold">
+          Informations de l&apos;entreprise
+        </h2>
         <p className="text-sm text-muted-foreground">
-          Reprises sur vos devis et factures. Les factures déjà émises conservent les informations figées à leur émission.
+          Reprises sur vos devis et factures. Les factures déjà émises conservent les informations
+          figées à leur émission.
         </p>
       </div>
       <CompanySettingsForm
@@ -25,7 +28,12 @@ export default async function CompanySettingsPage() {
           apeCode: org.apeCode,
           registration: org.registration,
           activity: org.activity,
-          address: { line1: org.address.line1, postalCode: org.address.postalCode, city: org.address.city, countryCode: "FR" },
+          address: {
+            line1: org.address.line1,
+            postalCode: org.address.postalCode,
+            city: org.address.city,
+            countryCode: "FR",
+          },
           email: org.contact.email,
           phone: org.contact.phone,
           insurer: org.decennialInsurance.insurer,

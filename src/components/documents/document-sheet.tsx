@@ -100,7 +100,11 @@ export function DocumentSheet({
       <header className="flex flex-col gap-6 sm:flex-row sm:justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span aria-hidden className="flex size-10 items-center justify-center rounded-md text-lg font-bold text-paper-on-accent" style={{ background: "var(--accent-doc)" }}>
+            <span
+              aria-hidden
+              className="flex size-10 items-center justify-center rounded-md text-lg font-bold text-paper-on-accent"
+              style={{ background: "var(--accent-doc)" }}
+            >
               {seller.name.slice(0, 1)}
             </span>
             <span className="text-base font-semibold">{seller.name}</span>
@@ -122,7 +126,10 @@ export function DocumentSheet({
           </p>
         </div>
         <div className="sm:text-right">
-          <p className="text-2xl font-semibold tracking-tight" style={{ color: "var(--accent-doc)" }}>
+          <p
+            className="text-2xl font-semibold tracking-tight"
+            style={{ color: "var(--accent-doc)" }}
+          >
             {docLabel}
           </p>
           <p className="font-mono text-sm">{number}</p>
@@ -140,10 +147,14 @@ export function DocumentSheet({
       <section className="mt-8 grid gap-4 sm:grid-cols-2">
         {worksite ? (
           <div className="rounded-md border border-paper-border p-3">
-            <p className="text-xs font-semibold tracking-wide text-paper-muted uppercase">Chantier</p>
+            <p className="text-xs font-semibold tracking-wide text-paper-muted uppercase">
+              Chantier
+            </p>
             <p className="font-medium">{worksite.name}</p>
             <p className="text-paper-muted">{addr(worksite.address)}</p>
-            {worksite.reference ? <p className="text-paper-muted">Réf. marché : {worksite.reference}</p> : null}
+            {worksite.reference ? (
+              <p className="text-paper-muted">Réf. marché : {worksite.reference}</p>
+            ) : null}
           </div>
         ) : (
           <div />
@@ -152,8 +163,12 @@ export function DocumentSheet({
           <p className="text-xs font-semibold tracking-wide text-paper-muted uppercase">Client</p>
           <p className="font-medium">{buyer.name}</p>
           <p>{addr(buyer.address)}</p>
-          {buyer.siren ? <p className="text-paper-muted">SIREN {formatSiren(buyer.siren)}</p> : null}
-          {buyer.siret ? <p className="text-paper-muted">SIRET {formatSiret(buyer.siret)}</p> : null}
+          {buyer.siren ? (
+            <p className="text-paper-muted">SIREN {formatSiren(buyer.siren)}</p>
+          ) : null}
+          {buyer.siret ? (
+            <p className="text-paper-muted">SIRET {formatSiret(buyer.siret)}</p>
+          ) : null}
           {buyer.vatNumber ? <p className="text-paper-muted">TVA {buyer.vatNumber}</p> : null}
           {buyer.extra?.map((e) => (
             <p key={e} className="text-paper-muted">
@@ -171,30 +186,55 @@ export function DocumentSheet({
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[34rem] border-collapse">
           <thead>
-            <tr className="text-left text-xs text-paper-on-accent" style={{ background: "var(--accent-doc)" }}>
-              <th scope="col" className="px-2 py-2 font-medium">Désignation</th>
+            <tr
+              className="text-left text-xs text-paper-on-accent"
+              style={{ background: "var(--accent-doc)" }}
+            >
+              <th scope="col" className="px-2 py-2 font-medium">
+                Désignation
+              </th>
               {progressMode ? (
                 <>
-                  <th scope="col" className="px-2 py-2 text-right font-medium">Marché HT</th>
-                  <th scope="col" className="px-2 py-2 text-right font-medium">% préc.</th>
-                  <th scope="col" className="px-2 py-2 text-right font-medium">% cumul</th>
+                  <th scope="col" className="px-2 py-2 text-right font-medium">
+                    Marché HT
+                  </th>
+                  <th scope="col" className="px-2 py-2 text-right font-medium">
+                    % préc.
+                  </th>
+                  <th scope="col" className="px-2 py-2 text-right font-medium">
+                    % cumul
+                  </th>
                 </>
               ) : (
                 <>
-                  <th scope="col" className="px-2 py-2 text-right font-medium">Qté</th>
-                  <th scope="col" className="px-2 py-2 font-medium">Unité</th>
-                  <th scope="col" className="px-2 py-2 text-right font-medium">PU HT</th>
+                  <th scope="col" className="px-2 py-2 text-right font-medium">
+                    Qté
+                  </th>
+                  <th scope="col" className="px-2 py-2 font-medium">
+                    Unité
+                  </th>
+                  <th scope="col" className="px-2 py-2 text-right font-medium">
+                    PU HT
+                  </th>
                 </>
               )}
-              <th scope="col" className="px-2 py-2 text-right font-medium">TVA</th>
-              <th scope="col" className="px-2 py-2 text-right font-medium">{progressMode ? "HT période" : "Total HT"}</th>
+              <th scope="col" className="px-2 py-2 text-right font-medium">
+                TVA
+              </th>
+              <th scope="col" className="px-2 py-2 text-right font-medium">
+                {progressMode ? "HT période" : "Total HT"}
+              </th>
             </tr>
           </thead>
           {sections.map((s, si) => (
             <tbody key={si}>
               {s.title ? (
                 <tr>
-                  <th colSpan={6} scope="colgroup" className="border-b border-paper-border bg-paper-border/30 px-2 pt-3 pb-1 text-left font-semibold">
+                  <th
+                    colSpan={6}
+                    scope="colgroup"
+                    className="border-b border-paper-border bg-paper-border/30 px-2 pt-3 pb-1 text-left font-semibold"
+                  >
                     {s.title}
                   </th>
                 </tr>
@@ -204,9 +244,15 @@ export function DocumentSheet({
                   <td className="px-2 py-1.5">{l.description}</td>
                   {progressMode && l.progress ? (
                     <>
-                      <td className="num px-2 py-1.5 text-right">{formatMoney(l.progress.contractNet)}</td>
-                      <td className="num px-2 py-1.5 text-right">{formatPercent(l.progress.previousPercent)}</td>
-                      <td className="num px-2 py-1.5 text-right">{formatPercent(l.progress.currentPercent)}</td>
+                      <td className="num px-2 py-1.5 text-right">
+                        {formatMoney(l.progress.contractNet)}
+                      </td>
+                      <td className="num px-2 py-1.5 text-right">
+                        {formatPercent(l.progress.previousPercent)}
+                      </td>
+                      <td className="num px-2 py-1.5 text-right">
+                        {formatPercent(l.progress.currentPercent)}
+                      </td>
                     </>
                   ) : (
                     <>
@@ -215,7 +261,9 @@ export function DocumentSheet({
                       <td className="num px-2 py-1.5 text-right">{formatMoney(l.unitPrice)}</td>
                     </>
                   )}
-                  <td className="num px-2 py-1.5 text-right">{reverseCharge ? "AE" : formatVatRateLabel(l.vatRate)}</td>
+                  <td className="num px-2 py-1.5 text-right">
+                    {reverseCharge ? "AE" : formatVatRateLabel(l.vatRate)}
+                  </td>
                   <td className="num px-2 py-1.5 text-right">{formatMoney(l.net)}</td>
                 </tr>
               ))}
@@ -224,7 +272,9 @@ export function DocumentSheet({
                   <td colSpan={5} className="px-2 py-1.5 text-right text-paper-muted">
                     Sous-total {s.title}
                   </td>
-                  <td className="num px-2 py-1.5 text-right font-medium">{formatMoney(s.subtotal)}</td>
+                  <td className="num px-2 py-1.5 text-right font-medium">
+                    {formatMoney(s.subtotal)}
+                  </td>
                 </tr>
               ) : null}
             </tbody>
@@ -238,15 +288,23 @@ export function DocumentSheet({
             <caption className="mb-1 text-left font-semibold">Récapitulatif de TVA</caption>
             <thead className="text-paper-muted">
               <tr>
-                <th scope="col" className="py-1 text-left font-medium">Taux</th>
-                <th scope="col" className="py-1 text-right font-medium">Base HT</th>
-                <th scope="col" className="py-1 text-right font-medium">TVA</th>
+                <th scope="col" className="py-1 text-left font-medium">
+                  Taux
+                </th>
+                <th scope="col" className="py-1 text-right font-medium">
+                  Base HT
+                </th>
+                <th scope="col" className="py-1 text-right font-medium">
+                  TVA
+                </th>
               </tr>
             </thead>
             <tbody>
               {vatBreakdown.map((b) => (
                 <tr key={`${b.vatCategory}${b.vatRate}`} className="border-t border-paper-border">
-                  <td className="py-1">{b.vatCategory === "AE" ? "Autoliquidation" : formatVatRateLabel(b.vatRate)}</td>
+                  <td className="py-1">
+                    {b.vatCategory === "AE" ? "Autoliquidation" : formatVatRateLabel(b.vatRate)}
+                  </td>
                   <td className="num py-1 text-right">{formatMoney(b.base)}</td>
                   <td className="num py-1 text-right">{formatMoney(b.vat)}</td>
                 </tr>
@@ -258,7 +316,11 @@ export function DocumentSheet({
           {totals.map((t) => (
             <div
               key={t.label}
-              className={cn("flex justify-between gap-4", t.strong && "mt-1 rounded-md px-2 py-1.5 text-base font-semibold text-paper-on-accent")}
+              className={cn(
+                "flex justify-between gap-4",
+                t.strong &&
+                  "mt-1 rounded-md px-2 py-1.5 text-base font-semibold text-paper-on-accent",
+              )}
               style={t.strong ? { background: "var(--accent-doc)" } : undefined}
             >
               <dt className={t.strong ? undefined : "text-paper-muted"}>{t.label}</dt>

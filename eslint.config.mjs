@@ -37,7 +37,8 @@ const eslintConfig = defineConfig([
           patterns: [
             {
               group: ["@/*", "!@/domain/*", "next", "next/*", "react", "react-dom"],
-              message: "Le domaine reste pur : aucune dépendance vers les données, services, UI ou Next.js.",
+              message:
+                "Le domaine reste pur : aucune dépendance vers les données, services, UI ou Next.js.",
             },
           ],
         },
@@ -63,7 +64,10 @@ const eslintConfig = defineConfig([
   },
   {
     rules: {
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", destructuredArrayIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", destructuredArrayIgnorePattern: "^_" },
+      ],
     },
   },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "src/components/ui/**"]),

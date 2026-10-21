@@ -123,7 +123,11 @@ export interface ReceivedInvoiceRepository {
   get(organizationId: ID, id: ID): Promise<ReceivedInvoice | null>;
   /** Insère ou met à jour à partir des données de la plateforme agréée. */
   upsert(organizationId: ID, invoice: ReceivedInvoice): Promise<ReceivedInvoice>;
-  update(organizationId: ID, id: ID, patch: Partial<Omit<ReceivedInvoice, "id" | "organizationId">>): Promise<ReceivedInvoice>;
+  update(
+    organizationId: ID,
+    id: ID,
+    patch: Partial<Omit<ReceivedInvoice, "id" | "organizationId">>,
+  ): Promise<ReceivedInvoice>;
 }
 
 export interface Repositories {

@@ -27,7 +27,9 @@ export function InvoiceSummary({
   return (
     <section aria-label="Montant" className="mb-6 grid gap-3 sm:grid-cols-3">
       <div className="rounded-lg border bg-card p-4 sm:col-span-1">
-        <p className="text-sm text-muted-foreground">{rules.isReceivable ? "Net à payer" : "Montant de l'avoir"}</p>
+        <p className="text-sm text-muted-foreground">
+          {rules.isReceivable ? "Net à payer" : "Montant de l'avoir"}
+        </p>
         <p className="num text-3xl font-semibold tracking-tight">
           <Amount value={invoice.totals.netToPay} />
         </p>
@@ -80,7 +82,11 @@ export function InvoiceSummary({
               ) : null,
               hidden: !creditNote,
             },
-            { label: "Avancement cumulé", value: invoice.progress ? formatPercent(invoice.progress.overallPercent) : null, hidden: !invoice.progress },
+            {
+              label: "Avancement cumulé",
+              value: invoice.progress ? formatPercent(invoice.progress.overallPercent) : null,
+              hidden: !invoice.progress,
+            },
           ]}
         />
       </div>

@@ -18,16 +18,31 @@ export const metadata: Metadata = { title: "Factures reçues" };
 
 const FILTERS: { value: string; label: string; test: (r: ReceivedInvoice) => boolean }[] = [
   { value: "a-traiter", label: "À traiter", test: receivedNeedsAction },
-  { value: "approuvees", label: "Approuvées, à payer", test: (r) => r.status === "approved" || r.status === "partially_approved" },
-  { value: "litiges", label: "En litige ou suspendues", test: (r) => r.status === "disputed" || r.status === "suspended" },
+  {
+    value: "approuvees",
+    label: "Approuvées, à payer",
+    test: (r) => r.status === "approved" || r.status === "partially_approved",
+  },
+  {
+    value: "litiges",
+    label: "En litige ou suspendues",
+    test: (r) => r.status === "disputed" || r.status === "suspended",
+  },
   { value: "refusees", label: "Refusées", test: (r) => r.status === "refused" },
   { value: "payees", label: "Payées", test: (r) => r.status === "payment_sent" },
 ];
 
-export default async function ReceivedInvoicesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
+export default async function ReceivedInvoicesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; filtre?: string }>;
+}) {
   const { q, filtre } = await searchParams;
   const ctx = await getRequestContext();
-  const [all, worksites] = await Promise.all([ctx.repos.receivedInvoices.list(ctx.orgId, { search: q }), ctx.repos.worksites.list(ctx.orgId)]);
+  const [all, worksites] = await Promise.all([
+    ctx.repos.receivedInvoices.list(ctx.orgId, { search: q }),
+    ctx.repos.worksites.list(ctx.orgId),
+  ]);
   const worksiteName = new Map(worksites.map((w) => [w.id, w.name]));
   const filter = FILTERS.find((f) => f.value === filtre);
   const rows = filter ? all.filter(filter.test) : all;
@@ -40,9 +55,13 @@ export default async function ReceivedInvoicesPage({ searchParams }: { searchPar
         description="Factures de vos fournisseurs et sous-traitants, reçues via votre plateforme agréée."
       />
       {!connected ? (
-        <div role="status" className="mb-4 flex gap-2 rounded-lg border border-warning/30 bg-warning-soft p-3 text-sm text-warning">
+        <div
+          role="status"
+          className="mb-4 flex gap-2 rounded-lg border border-warning/30 bg-warning-soft p-3 text-sm text-warning"
+        >
           <Info aria-hidden className="mt-0.5 size-4 shrink-0" />
-          La connexion à votre plateforme agréée n&apos;est pas finalisée : les nouvelles factures n&apos;arrivent pas encore. Voir Paramètres → Facture électronique.
+          La connexion à votre plateforme agréée n&apos;est pas finalisée : les nouvelles factures
+          n&apos;arrivent pas encore. Voir Paramètres → Facture électronique.
         </div>
       ) : (
         <ReceivedSync />
@@ -56,7 +75,11 @@ export default async function ReceivedInvoicesPage({ searchParams }: { searchPar
       {rows.length === 0 ? (
         <EmptyState
           icon={Inbox}
-          title={q || filter ? "Aucune facture ne correspond à votre recherche." : "Aucune facture reçue pour l'instant."}
+          title={
+            q || filter
+              ? "Aucune facture ne correspond à votre recherche."
+              : "Aucune facture reçue pour l'instant."
+          }
           description="Les factures de vos fournisseurs arrivent ici automatiquement depuis la plateforme agréée."
         />
       ) : (
@@ -71,13 +94,28 @@ export default async function ReceivedInvoicesPage({ searchParams }: { searchPar
               cell: (r) => (
                 <span className="block max-w-60">
                   <span className="block truncate">{r.supplier.name}</span>
-                  <span className="block truncate font-mono text-xs text-muted-foreground">{r.number}</span>
+                  <span className="block truncate font-mono text-xs text-muted-foreground">
+                    {r.number}
+                  </span>
                 </span>
               ),
             },
-            { header: "Catégorie", cell: (r) => <span className="text-sm">{RECEIVED_CATEGORY_LABELS[r.category]}</span> },
-            { header: "Chantier", cell: (r) => <span className="line-clamp-1 text-sm">{r.worksiteId ? worksiteName.get(r.worksiteId) : "—"}</span> },
-            { header: "Échéance", cell: (r) => <span className="num">{formatDate(r.dueDate)}</span> },
+            {
+              header: "Catégorie",
+              cell: (r) => <span className="text-sm">{RECEIVED_CATEGORY_LABELS[r.category]}</span>,
+            },
+            {
+              header: "Chantier",
+              cell: (r) => (
+                <span className="line-clamp-1 text-sm">
+                  {r.worksiteId ? worksiteName.get(r.worksiteId) : "—"}
+                </span>
+              ),
+            },
+            {
+              header: "Échéance",
+              cell: (r) => <span className="num">{formatDate(r.dueDate)}</span>,
+            },
             {
               header: "Statut",
               cell: (r) => (

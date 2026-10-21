@@ -13,12 +13,21 @@ import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Équipe" };
 
-const ROLE_LABELS: Record<MemberRole, string> = { owner: "Propriétaire", admin: "Administrateur", member: "Membre" };
+const ROLE_LABELS: Record<MemberRole, string> = {
+  owner: "Propriétaire",
+  admin: "Administrateur",
+  member: "Membre",
+};
 
 export default async function TeamPage() {
   const ctx = await getRequestContext();
-  const [members, invitations] = await Promise.all([ctx.repos.memberships.listByOrganization(ctx.orgId), ctx.repos.invitations.list(ctx.orgId)]);
-  const users = new Map((await ctx.repos.users.listByIds(members.map((m) => m.userId))).map((u) => [u.id, u]));
+  const [members, invitations] = await Promise.all([
+    ctx.repos.memberships.listByOrganization(ctx.orgId),
+    ctx.repos.invitations.list(ctx.orgId),
+  ]);
+  const users = new Map(
+    (await ctx.repos.users.listByIds(members.map((m) => m.userId))).map((u) => [u.id, u]),
+  );
   const canManage = can(ctx.role, "team:manage");
   const now = new Date(`${ctx.today}T12:00:00Z`).toISOString();
 
@@ -37,15 +46,26 @@ export default async function TeamPage() {
                   const u = users.get(m.userId)!;
                   const name = `${u.firstName} ${u.lastName}`;
                   return (
-                    <li key={m.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <li
+                      key={m.id}
+                      className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
                       <div className="flex items-center gap-3">
-                        <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent font-semibold text-accent-foreground">
+                        <span
+                          aria-hidden
+                          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent font-semibold text-accent-foreground"
+                        >
                           {initials(u.firstName, u.lastName)}
                         </span>
                         <div className="min-w-0">
                           <p className="font-medium">
                             {name}
-                            {u.id === ctx.user.id ? <span className="text-sm font-normal text-muted-foreground"> (vous)</span> : null}
+                            {u.id === ctx.user.id ? (
+                              <span className="text-sm font-normal text-muted-foreground">
+                                {" "}
+                                (vous)
+                              </span>
+                            ) : null}
                           </p>
                           <p className="truncate text-sm text-muted-foreground">
                             {u.jobTitle ? `${u.jobTitle} · ` : ""}
@@ -56,7 +76,9 @@ export default async function TeamPage() {
                       {canManage && m.role !== "owner" && u.id !== ctx.user.id ? (
                         <RoleSelect membershipId={m.id} role={m.role} name={name} />
                       ) : (
-                        <ToneBadge tone={m.role === "owner" ? "info" : "neutral"}>{ROLE_LABELS[m.role]}</ToneBadge>
+                        <ToneBadge tone={m.role === "owner" ? "info" : "neutral"}>
+                          {ROLE_LABELS[m.role]}
+                        </ToneBadge>
                       )}
                     </li>
                   );
@@ -67,7 +89,9 @@ export default async function TeamPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Invitations en attente ({invitations.length})</CardTitle>
+              <CardTitle className="text-lg">
+                Invitations en attente ({invitations.length})
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {invitations.length === 0 ? (
@@ -77,7 +101,10 @@ export default async function TeamPage() {
                   {invitations.map((inv) => {
                     const expired = inv.expiresAt < now;
                     return (
-                      <li key={inv.id} className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+                      <li
+                        key={inv.id}
+                        className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
+                      >
                         <div className="min-w-0">
                           <p className="truncate font-medium">{inv.email}</p>
                           <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -96,7 +123,12 @@ export default async function TeamPage() {
                             variant="ghost"
                             size="sm"
                             action={revokeInvitationAction.bind(null, inv.id)}
-                            confirm={{ title: "Annuler l'invitation ?", description: `Le lien envoyé à ${inv.email} ne fonctionnera plus.`, confirmLabel: "Annuler l'invitation", destructive: true }}
+                            confirm={{
+                              title: "Annuler l'invitation ?",
+                              description: `Le lien envoyé à ${inv.email} ne fonctionnera plus.`,
+                              confirmLabel: "Annuler l'invitation",
+                              destructive: true,
+                            }}
                           >
                             <X aria-hidden />
                             Annuler
@@ -116,7 +148,10 @@ export default async function TeamPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Inviter une personne</CardTitle>
-                <CardDescription>Conducteur de travaux, assistante, associé… Prototype : aucun e-mail n&apos;est envoyé.</CardDescription>
+                <CardDescription>
+                  Conducteur de travaux, assistante, associé… Prototype : aucun e-mail n&apos;est
+                  envoyé.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <InviteForm />
@@ -131,15 +166,21 @@ export default async function TeamPage() {
               <dl className="space-y-3 text-sm">
                 <div>
                   <dt className="font-medium">Propriétaire</dt>
-                  <dd className="text-muted-foreground">Tous les droits, abonnement et suppression de l&apos;entreprise.</dd>
+                  <dd className="text-muted-foreground">
+                    Tous les droits, abonnement et suppression de l&apos;entreprise.
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-medium">Administrateur</dt>
-                  <dd className="text-muted-foreground">Gère l&apos;équipe, les paramètres et émet les factures.</dd>
+                  <dd className="text-muted-foreground">
+                    Gère l&apos;équipe, les paramètres et émet les factures.
+                  </dd>
                 </div>
                 <div>
                   <dt className="font-medium">Membre</dt>
-                  <dd className="text-muted-foreground">Crée devis, situations et chantiers ; consulte les factures.</dd>
+                  <dd className="text-muted-foreground">
+                    Crée devis, situations et chantiers ; consulte les factures.
+                  </dd>
                 </div>
               </dl>
             </CardContent>

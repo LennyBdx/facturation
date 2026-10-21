@@ -11,7 +11,15 @@ import { ErrorText } from "./shared";
 import type { QuoteEditorState } from "./use-quote-editor";
 
 /** Un lot : titre, sous-total, repli, lignes et ajout de ligne. */
-export function QuoteSectionCard({ editor, section, si }: { editor: QuoteEditorState; section: DraftSection; si: number }) {
+export function QuoteSectionCard({
+  editor,
+  section,
+  si,
+}: {
+  editor: QuoteEditorState;
+  section: DraftSection;
+  si: number;
+}) {
   const { errors, totals, collapsed, values, actions } = editor;
   const isCollapsed = collapsed[section.id];
 
@@ -26,7 +34,10 @@ export function QuoteSectionCard({ editor, section, si }: { editor: QuoteEditorS
           aria-expanded={!isCollapsed}
           onClick={() => actions.toggleSection(section.id)}
         >
-          <ChevronDown aria-hidden className={cn("transition-transform", isCollapsed && "-rotate-90")} />
+          <ChevronDown
+            aria-hidden
+            className={cn("transition-transform", isCollapsed && "-rotate-90")}
+          />
         </Button>
         <div className="min-w-0 flex-1">
           <Input
@@ -39,10 +50,20 @@ export function QuoteSectionCard({ editor, section, si }: { editor: QuoteEditorS
           <ErrorText errors={errors} path={`sections.${si}.title`} />
         </div>
         <span className="num text-sm text-muted-foreground">
-          Sous-total <Amount value={totals.sectionSubtotals[section.id]} className="font-semibold text-foreground" />
+          Sous-total{" "}
+          <Amount
+            value={totals.sectionSubtotals[section.id]}
+            className="font-semibold text-foreground"
+          />
         </span>
         {values.sections.length > 1 ? (
-          <Button type="button" variant="ghost" size="icon-sm" aria-label={`Supprimer le lot ${section.title}`} onClick={() => actions.removeSection(si)}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={`Supprimer le lot ${section.title}`}
+            onClick={() => actions.removeSection(si)}
+          >
             <Trash2 aria-hidden />
           </Button>
         ) : null}
@@ -75,7 +96,12 @@ export function QuoteSectionCard({ editor, section, si }: { editor: QuoteEditorS
               />
             ))}
           </ol>
-          <Button type="button" variant="outline" className="mt-3 w-full border-dashed @3xl:w-auto" onClick={() => actions.addLine(si)}>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3 w-full border-dashed @3xl:w-auto"
+            onClick={() => actions.addLine(si)}
+          >
             <Plus aria-hidden />
             Ajouter une ligne
           </Button>

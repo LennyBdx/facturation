@@ -10,7 +10,11 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
-        <Link href={routes.home} className="flex min-h-11 items-center gap-2 font-semibold tracking-tight" aria-label={`${PRODUCT_NAME}, accueil`}>
+        <Link
+          href={routes.home}
+          className="flex min-h-11 items-center gap-2 font-semibold tracking-tight"
+          aria-label={`${PRODUCT_NAME}, accueil`}
+        >
           <span aria-hidden className="size-3 rotate-45 rounded-[2px] bg-brand" />
           <span className="truncate">{PRODUCT_NAME}</span>
         </Link>
@@ -18,7 +22,10 @@ export function SiteHeader() {
           <ul className="flex items-center gap-1">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+                <Link
+                  href={item.href}
+                  className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
                   {item.label}
                 </Link>
               </li>

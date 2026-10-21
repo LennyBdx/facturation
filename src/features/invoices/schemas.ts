@@ -20,7 +20,10 @@ export const draftSchema = z
     orderReference: optionalText(80),
     notes: optionalText(1000),
   })
-  .refine((v) => v.dueDate >= v.issueDate, { path: ["dueDate"], message: "L'échéance doit suivre la date d'émission." });
+  .refine((v) => v.dueDate >= v.issueDate, {
+    path: ["dueDate"],
+    message: "L'échéance doit suivre la date d'émission.",
+  });
 export type DraftInput = z.input<typeof draftSchema>;
 
 export const progressSchema = z.object({

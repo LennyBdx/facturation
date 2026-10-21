@@ -3,7 +3,8 @@ import { UNITS } from "@/data/types";
 import { VAT_RATES } from "@/domain/vat";
 import { decimalString, optionalText, requiredText } from "@/lib/validation";
 
-const isoDate = (label: string) => z.string().regex(/^\d{4}-\d{2}-\d{2}$/, `${label} : date invalide.`);
+const isoDate = (label: string) =>
+  z.string().regex(/^\d{4}-\d{2}-\d{2}$/, `${label} : date invalide.`);
 
 export const quoteLineSchema = z.object({
   id: z.string().min(1),
@@ -37,15 +38,33 @@ export const quoteSchema = z
   })
   .superRefine((v, ctx) => {
     if (v.validUntil < v.issueDate) {
-      ctx.addIssue({ code: "custom", path: ["validUntil"], message: "La date de validité doit suivre la date du devis." });
+      ctx.addIssue({
+        code: "custom",
+        path: ["validUntil"],
+        message: "La date de validité doit suivre la date du devis.",
+      });
     }
     if (v.sections.every((s) => s.lines.length === 0)) {
-      ctx.addIssue({ code: "custom", path: ["sections"], message: "Ajoutez au moins une ligne au devis." });
+      ctx.addIssue({
+        code: "custom",
+        path: ["sections"],
+        message: "Ajoutez au moins une ligne au devis.",
+      });
     }
     if (v.discountKind !== "none") {
       const n = Number(v.discountValue.replace(",", "."));
-      if (!Number.isFinite(n) || n < 0) ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Remise : nombre positif attendu." });
-      else if (v.discountKind === "percent" && n > 100) ctx.addIssue({ code: "custom", path: ["discountValue"], message: "Remise : 100 % maximum." });
+      if (!Number.isFinite(n) || n < 0)
+        ctx.addIssue({
+          code: "custom",
+          path: ["discountValue"],
+          message: "Remise : nombre positif attendu.",
+        });
+      else if (v.discountKind === "percent" && n > 100)
+        ctx.addIssue({
+          code: "custom",
+          path: ["discountValue"],
+          message: "Remise : 100 % maximum.",
+        });
     }
   });
 

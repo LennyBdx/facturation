@@ -6,7 +6,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="grid min-h-dvh lg:grid-cols-[1fr_minmax(0,32rem)]">
       <aside className="hidden flex-col justify-between bg-primary p-10 text-primary-foreground lg:flex">
         <div className="flex items-center gap-2 text-lg font-semibold">
-          <span aria-hidden className="flex size-9 items-center justify-center rounded-md bg-primary-foreground/10">
+          <span
+            aria-hidden
+            className="flex size-9 items-center justify-center rounded-md bg-primary-foreground/10"
+          >
             <span className="size-3 rotate-45 rounded-[2px] bg-brand" />
           </span>
           {APP_NAME}

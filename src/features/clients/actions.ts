@@ -26,11 +26,24 @@ function toEntity(v: ClientFormOutput): ClientInput {
   };
 }
 
-export async function saveClient(id: string | null, input: ClientFormInput): Promise<ActionResult<{ id: string }>> {
-  return runAction({ permission: "client:write", schema: clientSchema }, input, async ({ repos, orgId }, data) => {
-    const entity = toEntity(data);
-    const client = id ? await repos.clients.update(orgId, id, entity) : await repos.clients.create(orgId, entity);
-    revalidatePath(routes.clients.list());
-    return { ok: true, data: { id: client.id }, message: id ? "Client mis à jour." : "Client créé." };
-  });
+export async function saveClient(
+  id: string | null,
+  input: ClientFormInput,
+): Promise<ActionResult<{ id: string }>> {
+  return runAction(
+    { permission: "client:write", schema: clientSchema },
+    input,
+    async ({ repos, orgId }, data) => {
+      const entity = toEntity(data);
+      const client = id
+        ? await repos.clients.update(orgId, id, entity)
+        : await repos.clients.create(orgId, entity);
+      revalidatePath(routes.clients.list());
+      return {
+        ok: true,
+        data: { id: client.id },
+        message: id ? "Client mis à jour." : "Client créé.",
+      };
+    },
+  );
 }

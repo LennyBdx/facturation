@@ -10,7 +10,17 @@ import { resubmitInvoiceAction } from "../actions";
 import { LifecyclePoller } from "../invoice-widgets";
 
 /** Cycle de vie de la facture électronique : alertes selon le statut, suivi en direct, frise. */
-export function EInvoicingCard({ invoice, clientId, throughPlatform, canResubmit }: { invoice: Invoice; clientId: string; throughPlatform: boolean; canResubmit: boolean }) {
+export function EInvoicingCard({
+  invoice,
+  clientId,
+  throughPlatform,
+  canResubmit,
+}: {
+  invoice: Invoice;
+  clientId: string;
+  throughPlatform: boolean;
+  canResubmit: boolean;
+}) {
   const { status, events, platformInvoiceId } = invoice.eInvoicing;
   const lastEvent = events.at(-1);
   return (
@@ -27,10 +37,14 @@ export function EInvoicingCard({ invoice, clientId, throughPlatform, canResubmit
       </CardHeader>
       <CardContent className="space-y-4">
         {status === "rejected" ? (
-          <div role="alert" className="space-y-3 rounded-md border border-danger/30 bg-danger-soft p-3 text-sm text-danger">
+          <div
+            role="alert"
+            className="space-y-3 rounded-md border border-danger/30 bg-danger-soft p-3 text-sm text-danger"
+          >
             <p>
-              <strong>Rejetée par la plateforme</strong> : la facture n&apos;a pas été transmise et n&apos;existe pas fiscalement. Corrigez la donnée en cause
-              puis redéposez-la (même numéro).
+              <strong>Rejetée par la plateforme</strong> : la facture n&apos;a pas été transmise et
+              n&apos;existe pas fiscalement. Corrigez la donnée en cause puis redéposez-la (même
+              numéro).
             </p>
             {lastEvent?.comment ? <p>Motif : {lastEvent.comment}</p> : null}
             <div className="flex flex-wrap gap-2">
@@ -47,19 +61,31 @@ export function EInvoicingCard({ invoice, clientId, throughPlatform, canResubmit
           </div>
         ) : null}
         {status === "refused" ? (
-          <div role="alert" className="rounded-md border border-danger/30 bg-danger-soft p-3 text-sm text-danger">
-            <strong>Refusée par le client</strong> : la facture existe fiscalement ; annulez-la par un avoir puis émettez une facture corrigée.
+          <div
+            role="alert"
+            className="rounded-md border border-danger/30 bg-danger-soft p-3 text-sm text-danger"
+          >
+            <strong>Refusée par le client</strong> : la facture existe fiscalement ; annulez-la par
+            un avoir puis émettez une facture corrigée.
             {lastEvent?.comment ? <p className="mt-1">Motif : {lastEvent.comment}</p> : null}
           </div>
         ) : null}
         {status === "disputed" || status === "suspended" ? (
-          <div role="alert" className="rounded-md border border-warning/30 bg-warning-soft p-3 text-sm text-warning">
-            <strong>{status === "disputed" ? "En litige" : "Suspendue"}</strong> : votre client attend une réponse ou un complément.
+          <div
+            role="alert"
+            className="rounded-md border border-warning/30 bg-warning-soft p-3 text-sm text-warning"
+          >
+            <strong>{status === "disputed" ? "En litige" : "Suspendue"}</strong> : votre client
+            attend une réponse ou un complément.
             {lastEvent?.comment ? <p className="mt-1">« {lastEvent.comment} »</p> : null}
           </div>
         ) : null}
         <LifecyclePoller invoiceId={invoice.id} status={status} eventCount={events.length} />
-        {events.length > 0 ? <LifecycleTimeline events={events} /> : <p className="text-sm text-muted-foreground">Aucun événement de cycle de vie.</p>}
+        {events.length > 0 ? (
+          <LifecycleTimeline events={events} />
+        ) : (
+          <p className="text-sm text-muted-foreground">Aucun événement de cycle de vie.</p>
+        )}
       </CardContent>
     </Card>
   );

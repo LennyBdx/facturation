@@ -11,7 +11,14 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { getRepositories } from "./index";
-import type { ClientFilter, InvoiceFilter, QuoteFilter, ReceivedInvoiceFilter, Repositories, WorksiteFilter } from "./repositories";
+import type {
+  ClientFilter,
+  InvoiceFilter,
+  QuoteFilter,
+  ReceivedInvoiceFilter,
+  Repositories,
+  WorksiteFilter,
+} from "./repositories";
 
 export const orgCacheTag = (organizationId: string) => `org:${organizationId}`;
 

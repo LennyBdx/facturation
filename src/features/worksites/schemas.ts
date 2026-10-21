@@ -3,7 +3,8 @@ import { addressSchema, decimalString, optionalText, requiredText } from "@/lib/
 
 export const WORKSITE_STATUSES = ["planned", "in_progress", "completed", "closed"] as const;
 
-const isoDate = (label: string) => z.string().regex(/^\d{4}-\d{2}-\d{2}$/, `${label} : date invalide.`);
+const isoDate = (label: string) =>
+  z.string().regex(/^\d{4}-\d{2}-\d{2}$/, `${label} : date invalide.`);
 
 export const worksiteSchema = z
   .object({
@@ -24,7 +25,11 @@ export const worksiteSchema = z
   })
   .superRefine((v, ctx) => {
     if (v.endDate && v.endDate < v.startDate) {
-      ctx.addIssue({ code: "custom", path: ["endDate"], message: "La date de fin doit être postérieure à la date de début." });
+      ctx.addIssue({
+        code: "custom",
+        path: ["endDate"],
+        message: "La date de fin doit être postérieure à la date de début.",
+      });
     }
     if (v.reverseCharge && !v.isSubcontracting) {
       ctx.addIssue({

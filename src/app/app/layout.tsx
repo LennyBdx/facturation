@@ -53,11 +53,17 @@ async function AppShell({ children }: { children: React.ReactNode }) {
       />
       <SidebarInset className="min-w-0">
         <header className="no-print sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur md:h-12">
-          <SidebarTrigger className="-ml-1 hidden md:inline-flex" aria-label="Replier ou déplier le menu" />
+          <SidebarTrigger
+            className="-ml-1 hidden md:inline-flex"
+            aria-label="Replier ou déplier le menu"
+          />
           <span className="font-semibold md:hidden">{APP_NAME}</span>
           <span className="ml-auto truncate text-sm text-muted-foreground">{ctx.org.name}</span>
         </header>
-        <main id="contenu" className="mx-auto w-full max-w-7xl flex-1 px-4 pt-4 pb-24 md:px-6 md:pt-6 md:pb-10">
+        <main
+          id="contenu"
+          className="mx-auto w-full max-w-7xl flex-1 px-4 pt-4 pb-24 md:px-6 md:pt-6 md:pb-10"
+        >
           {children}
         </main>
       </SidebarInset>

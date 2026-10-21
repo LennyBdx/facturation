@@ -5,7 +5,12 @@ import { redirect } from "next/navigation";
 import { routes } from "@/config/routes";
 import { DEMO_USER_ID } from "@/config/app";
 import { listCurrentUserOrganizations } from "@/lib/session";
-import { ACTIVE_ORG_COOKIE, safeNextPath, SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from "@/lib/session-cookie";
+import {
+  ACTIVE_ORG_COOKIE,
+  safeNextPath,
+  SESSION_COOKIE,
+  SESSION_COOKIE_OPTIONS,
+} from "@/lib/session-cookie";
 
 /**
  * Ouvre la session de démonstration puis redirige.

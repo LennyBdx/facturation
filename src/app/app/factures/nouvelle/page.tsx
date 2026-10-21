@@ -33,10 +33,26 @@ export default async function NewInvoicePage() {
       />
       <div className="mb-6 grid gap-3 md:grid-cols-4">
         {[
-          { icon: Wallet, title: "Facture d'acompte", text: "Pourcentage du marché demandé à la commande, déduit ensuite des situations." },
-          { icon: Receipt, title: "Situation de travaux", text: "Avancement cumulé par ligne, acomptes déduits, retenue de garantie." },
-          { icon: FileText, title: "Facture unique", text: "Petits travaux : tout le devis facturé en une fois." },
-          { icon: Undo2, title: "Avoir", text: "Depuis la fiche d'une facture émise : seule façon de la corriger." },
+          {
+            icon: Wallet,
+            title: "Facture d'acompte",
+            text: "Pourcentage du marché demandé à la commande, déduit ensuite des situations.",
+          },
+          {
+            icon: Receipt,
+            title: "Situation de travaux",
+            text: "Avancement cumulé par ligne, acomptes déduits, retenue de garantie.",
+          },
+          {
+            icon: FileText,
+            title: "Facture unique",
+            text: "Petits travaux : tout le devis facturé en une fois.",
+          },
+          {
+            icon: Undo2,
+            title: "Avoir",
+            text: "Depuis la fiche d'une facture émise : seule façon de la corriger.",
+          },
         ].map((t) => (
           <div key={t.title} className="rounded-lg border bg-card p-4">
             <t.icon aria-hidden className="mb-2 size-5 text-brand" />
@@ -66,17 +82,31 @@ export default async function NewInvoicePage() {
             <ul className="divide-y">
               {quotes.map((q) => {
                 const related = invoices.filter((i) => i.quoteId === q.id);
-                const hasDeposit = related.some((i) => i.kind === "deposit" && !i.cancelledByCreditNoteId);
-                const fullyBilled = related.some((i) => (i.kind === "final" || i.kind === "standard") && !i.cancelledByCreditNoteId);
+                const hasDeposit = related.some(
+                  (i) => i.kind === "deposit" && !i.cancelledByCreditNoteId,
+                );
+                const fullyBilled = related.some(
+                  (i) =>
+                    (i.kind === "final" || i.kind === "standard") && !i.cancelledByCreditNoteId,
+                );
                 return (
-                  <li key={q.id} className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
+                  <li
+                    key={q.id}
+                    className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between"
+                  >
                     <div className="min-w-0">
-                      <Link href={routes.quotes.show(q.id)} className="font-medium text-primary underline-offset-4 hover:underline">
+                      <Link
+                        href={routes.quotes.show(q.id)}
+                        className="font-medium text-primary underline-offset-4 hover:underline"
+                      >
                         {q.title}
                       </Link>
                       <p className="text-sm text-muted-foreground">
-                        {q.number} · {clientName.get(q.clientId)} · <Amount value={quoteTotals(q).net} /> HT
-                        {related.length ? ` · ${related.length} facture${related.length > 1 ? "s" : ""}` : ""}
+                        {q.number} · {clientName.get(q.clientId)} ·{" "}
+                        <Amount value={quoteTotals(q).net} /> HT
+                        {related.length
+                          ? ` · ${related.length} facture${related.length > 1 ? "s" : ""}`
+                          : ""}
                       </p>
                     </div>
                     {fullyBilled ? (
@@ -86,7 +116,11 @@ export default async function NewInvoicePage() {
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {!hasDeposit && related.length === 0 ? (
-                          <ActionButton variant="outline" size="sm" action={quoteToInvoiceAction.bind(null, q.id, "deposit")}>
+                          <ActionButton
+                            variant="outline"
+                            size="sm"
+                            action={quoteToInvoiceAction.bind(null, q.id, "deposit")}
+                          >
                             Acompte
                           </ActionButton>
                         ) : null}
@@ -94,7 +128,11 @@ export default async function NewInvoicePage() {
                           <Link href={routes.invoices.newProgress(q.id)}>Situation</Link>
                         </Button>
                         {related.length === 0 ? (
-                          <ActionButton variant="outline" size="sm" action={quoteToInvoiceAction.bind(null, q.id, "standard")}>
+                          <ActionButton
+                            variant="outline"
+                            size="sm"
+                            action={quoteToInvoiceAction.bind(null, q.id, "standard")}
+                          >
                             Facture unique
                           </ActionButton>
                         ) : null}

@@ -19,7 +19,10 @@ export const SETTINGS_SECTIONS = [
 export function SettingsNav() {
   const pathname = usePathname();
   return (
-    <nav aria-label="Sections des paramètres" className="-mx-4 overflow-x-auto px-4 md:mx-0 md:overflow-visible md:px-0">
+    <nav
+      aria-label="Sections des paramètres"
+      className="-mx-4 overflow-x-auto px-4 md:mx-0 md:overflow-visible md:px-0"
+    >
       <ul className="flex gap-1 md:flex-col">
         {SETTINGS_SECTIONS.map((s) => {
           const active = pathname === s.href;
@@ -30,7 +33,9 @@ export function SettingsNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex min-h-11 items-center rounded-md px-3 text-sm whitespace-nowrap md:min-h-9",
-                  active ? "bg-accent font-medium text-accent-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  active
+                    ? "bg-accent font-medium text-accent-foreground"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
                 {s.label}

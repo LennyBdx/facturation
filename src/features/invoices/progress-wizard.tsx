@@ -12,7 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import type { Quote } from "@/data/types";
 import { Dec, parseDecimalInput } from "@/domain/money";
-import { computeProgressInvoice, type ProgressCumulative, type ProgressInvoiceResult } from "@/domain/progress-billing";
+import {
+  computeProgressInvoice,
+  type ProgressCumulative,
+  type ProgressInvoiceResult,
+} from "@/domain/progress-billing";
 import { formatVatRateLabel, REVERSE_CHARGE_MENTION } from "@/domain/vat";
 import { formatPercent } from "@/lib/format";
 import { createProgressDraftAction } from "./actions";
@@ -33,7 +37,9 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
   const [issueDate, setIssueDate] = useState(today);
   const lines = quote.sections.flatMap((s) => s.lines.map((l) => ({ ...l, sectionId: s.id })));
   const prevPct = (id: string) => previous?.percentByLine[id] ?? "0.00";
-  const [inputs, setInputs] = useState<Record<string, string>>(() => Object.fromEntries(lines.map((l) => [l.id, pctToInput(prevPct(l.id))])));
+  const [inputs, setInputs] = useState<Record<string, string>>(() =>
+    Object.fromEntries(lines.map((l) => [l.id, pctToInput(prevPct(l.id))])),
+  );
 
   const lineErrors = useMemo(() => {
     const out: Record<string, string> = {};
@@ -42,7 +48,9 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
       if (parsed === null) out[l.id] = "Pourcentage attendu (ex. 45).";
       else if (Number(parsed) > 100) out[l.id] = "100 % maximum.";
       else if (Number(parsed) < 0) out[l.id] = "Valeur positive attendue.";
-      else if (new Dec(parsed).lessThan(prevPct(l.id))) out[l.id] = `Ne peut pas être inférieur au cumul précédent (${formatPercent(prevPct(l.id))}).`;
+      else if (new Dec(parsed).lessThan(prevPct(l.id)))
+        out[l.id] =
+          `Ne peut pas être inférieur au cumul précédent (${formatPercent(prevPct(l.id))}).`;
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,7 +70,12 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
 
   const byLine = new Map(result?.lines.map((l) => [l.lineId, l]) ?? []);
   const setSection = (sectionId: string, value: string) =>
-    setInputs((cur) => ({ ...cur, ...Object.fromEntries(lines.filter((l) => l.sectionId === sectionId).map((l) => [l.id, value])) }));
+    setInputs((cur) => ({
+      ...cur,
+      ...Object.fromEntries(
+        lines.filter((l) => l.sectionId === sectionId).map((l) => [l.id, value]),
+      ),
+    }));
 
   const submit = () => {
     if (!result) {
@@ -95,13 +108,26 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
         <div className="flex flex-wrap items-end gap-4 rounded-lg border bg-card p-4">
           <div>
             <Label htmlFor="p-date">Date de la situation</Label>
-            <Input id="p-date" type="date" className="mt-1.5 w-48" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
+            <Input
+              id="p-date"
+              type="date"
+              className="mt-1.5 w-48"
+              value={issueDate}
+              onChange={(e) => setIssueDate(e.target.value)}
+            />
           </div>
-          <Button type="button" variant="outline" onClick={() => setInputs(Object.fromEntries(lines.map((l) => [l.id, "100"])))}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setInputs(Object.fromEntries(lines.map((l) => [l.id, "100"])))}
+          >
             <CheckCheck aria-hidden />
             Tout à 100 % (solde)
           </Button>
-          <p className="text-sm text-muted-foreground">Saisissez l&apos;avancement <strong>cumulé</strong> depuis le début du chantier, ligne par ligne.</p>
+          <p className="text-sm text-muted-foreground">
+            Saisissez l&apos;avancement <strong>cumulé</strong> depuis le début du chantier, ligne
+            par ligne.
+          </p>
         </div>
 
         {quote.sections.map((s) => (
@@ -134,13 +160,17 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
                 const err = lineErrors[l.id];
                 const id = `pct-${l.id}`;
                 return (
-                  <li key={l.id} className="grid gap-3 p-3 md:grid-cols-[minmax(0,1fr)_8rem_7rem_8rem] md:items-center">
+                  <li
+                    key={l.id}
+                    className="grid gap-3 p-3 md:grid-cols-[minmax(0,1fr)_8rem_7rem_8rem] md:items-center"
+                  >
                     <div className="min-w-0">
                       <label htmlFor={id} className="block font-medium">
                         {l.description}
                       </label>
                       <span className="text-sm text-muted-foreground">
-                        Marché <Amount value={r?.contractNet ?? "0"} /> HT · précédent {formatPercent(prevPct(l.id))}
+                        Marché <Amount value={r?.contractNet ?? "0"} /> HT · précédent{" "}
+                        {formatPercent(prevPct(l.id))}
                       </span>
                     </div>
                     <div>
@@ -154,16 +184,26 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
                           aria-describedby={err ? `${id}-err` : undefined}
                           className="text-right"
                         />
-                        <span aria-hidden className="text-sm text-muted-foreground">%</span>
+                        <span aria-hidden className="text-sm text-muted-foreground">
+                          %
+                        </span>
                       </div>
                     </div>
-                    <Progress value={Number(parseDecimalInput(inputs[l.id] ?? "") ?? 0)} className="h-1.5 [&>*]:bg-brand" aria-hidden />
+                    <Progress
+                      value={Number(parseDecimalInput(inputs[l.id] ?? "") ?? 0)}
+                      className="h-1.5 [&>*]:bg-brand"
+                      aria-hidden
+                    />
                     <p className="num text-right text-sm">
                       <span className="text-muted-foreground md:hidden">Période : </span>
                       <Amount value={r?.periodAmount ?? "0"} className="font-medium" />
                     </p>
                     {err ? (
-                      <p id={`${id}-err`} role="alert" className="text-sm text-destructive md:col-span-4">
+                      <p
+                        id={`${id}-err`}
+                        role="alert"
+                        className="text-sm text-destructive md:col-span-4"
+                      >
                         {err}
                       </p>
                     ) : null}
@@ -188,18 +228,48 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
                     <span className="text-muted-foreground">Avancement global</span>
                     <span className="num font-medium">{formatPercent(result.overallPercent)}</span>
                   </div>
-                  <Progress value={Number(result.overallPercent)} className="mt-1.5 h-2 [&>*]:bg-brand" aria-label={`Avancement global ${formatPercent(result.overallPercent)}`} />
+                  <Progress
+                    value={Number(result.overallPercent)}
+                    className="mt-1.5 h-2 [&>*]:bg-brand"
+                    aria-label={`Avancement global ${formatPercent(result.overallPercent)}`}
+                  />
                 </div>
                 <dl className="space-y-1.5 text-sm">
                   <Row label="Travaux de la période HT" value={result.periodWorksGrossNet} />
-                  {result.periodDiscount !== "0.00" ? <Row label="Remise" value={result.periodDiscount} negative /> : null}
-                  {result.periodDepositDeduction !== "0.00" ? <Row label="Acompte déduit (HT)" value={result.periodDepositDeduction} negative /> : null}
+                  {result.periodDiscount !== "0.00" ? (
+                    <Row label="Remise" value={result.periodDiscount} negative />
+                  ) : null}
+                  {result.periodDepositDeduction !== "0.00" ? (
+                    <Row
+                      label="Acompte déduit (HT)"
+                      value={result.periodDepositDeduction}
+                      negative
+                    />
+                  ) : null}
                   <Row label="Total HT" value={result.net} strong />
                   {result.vatBreakdown.map((b) => (
-                    <Row key={`${b.vatCategory}${b.vatRate}`} label={b.vatCategory === "AE" ? "TVA autoliquidée" : `TVA ${formatVatRateLabel(b.vatRate)}`} value={b.vat} />
+                    <Row
+                      key={`${b.vatCategory}${b.vatRate}`}
+                      label={
+                        b.vatCategory === "AE"
+                          ? "TVA autoliquidée"
+                          : `TVA ${formatVatRateLabel(b.vatRate)}`
+                      }
+                      value={b.vat}
+                    />
                   ))}
-                  <Row label={quote.reverseCharge ? "Total (autoliquidation)" : "Total TTC"} value={result.gross} strong />
-                  {result.periodRetention !== "0.00" ? <Row label={`Retenue de garantie ${formatPercent(result.retentionRate)}`} value={result.periodRetention} negative /> : null}
+                  <Row
+                    label={quote.reverseCharge ? "Total (autoliquidation)" : "Total TTC"}
+                    value={result.gross}
+                    strong
+                  />
+                  {result.periodRetention !== "0.00" ? (
+                    <Row
+                      label={`Retenue de garantie ${formatPercent(result.retentionRate)}`}
+                      value={result.periodRetention}
+                      negative
+                    />
+                  ) : null}
                   <div className="flex justify-between border-t pt-2 text-base font-semibold">
                     <dt>Net à payer</dt>
                     <dd>
@@ -207,7 +277,11 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
                     </dd>
                   </div>
                 </dl>
-                {quote.reverseCharge ? <p className="rounded-md bg-pending-soft p-2 text-xs text-pending">{REVERSE_CHARGE_MENTION}</p> : null}
+                {quote.reverseCharge ? (
+                  <p className="rounded-md bg-pending-soft p-2 text-xs text-pending">
+                    {REVERSE_CHARGE_MENTION}
+                  </p>
+                ) : null}
               </>
             ) : (
               <p role="status" className="text-sm text-destructive">
@@ -225,7 +299,17 @@ export function ProgressWizard({ quote, previous, depositNet, retentionRate, tod
   );
 }
 
-function Row({ label, value, negative, strong }: { label: string; value: string; negative?: boolean; strong?: boolean }) {
+function Row({
+  label,
+  value,
+  negative,
+  strong,
+}: {
+  label: string;
+  value: string;
+  negative?: boolean;
+  strong?: boolean;
+}) {
   return (
     <div className={strong ? "flex justify-between font-medium" : "flex justify-between"}>
       <dt className={strong ? undefined : "text-muted-foreground"}>{label}</dt>

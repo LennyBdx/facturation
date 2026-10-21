@@ -10,7 +10,11 @@ import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Nouvelle situation de travaux" };
 
-export default async function NewProgressInvoicePage({ searchParams }: { searchParams: Promise<{ devis?: string }> }) {
+export default async function NewProgressInvoicePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ devis?: string }>;
+}) {
   const { devis } = await searchParams;
   if (!devis) notFound();
   const { repos, orgId, today } = await getRequestContext();
@@ -22,7 +26,8 @@ export default async function NewProgressInvoicePage({ searchParams }: { searchP
     repos.invoices.list(orgId, { quoteId: quote.id }),
   ]);
   const previous = lastProgressInvoice(invoices, quote.id);
-  const retentionRate = worksite && !worksite.retentionReplacedByBond ? worksite.retentionRate : "0.00";
+  const retentionRate =
+    worksite && !worksite.retentionReplacedByBond ? worksite.retentionRate : "0.00";
 
   return (
     <>
@@ -36,7 +41,10 @@ export default async function NewProgressInvoicePage({ searchParams }: { searchP
             {worksite ? (
               <>
                 {" · "}
-                <Link href={routes.worksites.show(worksite.id)} className="text-primary underline-offset-4 hover:underline">
+                <Link
+                  href={routes.worksites.show(worksite.id)}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
                   {worksite.name}
                 </Link>
               </>
@@ -46,7 +54,12 @@ export default async function NewProgressInvoicePage({ searchParams }: { searchP
         }
       />
       <ProgressWizard
-        quote={{ id: quote.id, sections: quote.sections, discount: quote.discount, reverseCharge: quote.reverseCharge }}
+        quote={{
+          id: quote.id,
+          sections: quote.sections,
+          discount: quote.discount,
+          reverseCharge: quote.reverseCharge,
+        }}
         previous={previous?.progress?.cumulative ?? null}
         depositNet={depositNetForQuote(invoices, quote.id)}
         retentionRate={retentionRate}

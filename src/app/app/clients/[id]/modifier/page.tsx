@@ -14,7 +14,11 @@ export default async function EditClientPage({ params }: { params: Promise<{ id:
   if (!client) notFound();
   return (
     <>
-      <PageHeader title={`Modifier — ${client.name}`} backHref={routes.clients.show(id)} backLabel={client.name} />
+      <PageHeader
+        title={`Modifier — ${client.name}`}
+        backHref={routes.clients.show(id)}
+        backLabel={client.name}
+      />
       <ClientForm
         clientId={client.id}
         defaultValues={{
@@ -23,8 +27,18 @@ export default async function EditClientPage({ params }: { params: Promise<{ id:
           siren: client.siren ?? "",
           siret: client.siret ?? "",
           vatNumber: client.vatNumber ?? "",
-          billingAddress: { line1: client.billingAddress.line1, line2: client.billingAddress.line2 ?? "", postalCode: client.billingAddress.postalCode, city: client.billingAddress.city, countryCode: "FR" },
-          contact: { name: client.contact.name ?? "", email: client.contact.email ?? "", phone: client.contact.phone ?? "" },
+          billingAddress: {
+            line1: client.billingAddress.line1,
+            line2: client.billingAddress.line2 ?? "",
+            postalCode: client.billingAddress.postalCode,
+            city: client.billingAddress.city,
+            countryCode: "FR",
+          },
+          contact: {
+            name: client.contact.name ?? "",
+            email: client.contact.email ?? "",
+            phone: client.contact.phone ?? "",
+          },
           paymentTermsDays: client.paymentTermsDays,
           serviceCode: client.serviceCode ?? "",
           notes: client.notes ?? "",

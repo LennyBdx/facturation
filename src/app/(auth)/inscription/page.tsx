@@ -12,12 +12,17 @@ export default function SignUpPage() {
       <BackHome />
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Créer un compte</h1>
-        <p className="text-muted-foreground">Quelques informations, puis nous configurerons votre entreprise.</p>
+        <p className="text-muted-foreground">
+          Quelques informations, puis nous configurerons votre entreprise.
+        </p>
       </div>
       <SignUpForm />
       <p className="text-center text-sm text-muted-foreground">
         Déjà inscrit ?{" "}
-        <Link href={routes.signIn} className="font-medium text-primary underline-offset-4 hover:underline">
+        <Link
+          href={routes.signIn}
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
           Se connecter
         </Link>
       </p>

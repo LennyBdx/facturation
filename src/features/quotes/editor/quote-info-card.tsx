@@ -43,13 +43,19 @@ export function QuoteInfoCard({
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">
-          Informations {number ? <span className="font-mono text-sm text-muted-foreground">· {number}</span> : null}
+          Informations{" "}
+          {number ? (
+            <span className="font-mono text-sm text-muted-foreground">· {number}</span>
+          ) : null}
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <Label htmlFor="q-title">
-            Objet du devis <span aria-hidden className="text-destructive">*</span>
+            Objet du devis{" "}
+            <span aria-hidden className="text-destructive">
+              *
+            </span>
           </Label>
           <Input
             id="q-title"
@@ -64,7 +70,10 @@ export function QuoteInfoCard({
         </div>
         <div>
           <Label htmlFor="q-client">
-            Client <span aria-hidden className="text-destructive">*</span>
+            Client{" "}
+            <span aria-hidden className="text-destructive">
+              *
+            </span>
           </Label>
           <select
             id="q-client"
@@ -89,10 +98,19 @@ export function QuoteInfoCard({
             id="q-worksite"
             className={cn(nativeSelect, "mt-1.5")}
             value={values.worksiteId}
-            onChange={(e) => actions.selectWorksite(e.target.value, worksites.find((x) => x.id === e.target.value)?.reverseCharge)}
+            onChange={(e) =>
+              actions.selectWorksite(
+                e.target.value,
+                worksites.find((x) => x.id === e.target.value)?.reverseCharge,
+              )
+            }
             disabled={!values.clientId}
           >
-            <option value="">{clientWorksites.length ? "Aucun (à créer plus tard)" : "Aucun chantier pour ce client"}</option>
+            <option value="">
+              {clientWorksites.length
+                ? "Aucun (à créer plus tard)"
+                : "Aucun chantier pour ce client"}
+            </option>
             {clientWorksites.map((w) => (
               <option key={w.id} value={w.id}>
                 {w.name}
@@ -102,7 +120,13 @@ export function QuoteInfoCard({
         </div>
         <div>
           <Label htmlFor="q-date">Date du devis</Label>
-          <Input id="q-date" type="date" className="mt-1.5" value={values.issueDate} onChange={(e) => actions.setField("issueDate", e.target.value)} />
+          <Input
+            id="q-date"
+            type="date"
+            className="mt-1.5"
+            value={values.issueDate}
+            onChange={(e) => actions.setField("issueDate", e.target.value)}
+          />
         </div>
         <div>
           <Label htmlFor="q-valid">Valable jusqu&apos;au</Label>
@@ -126,7 +150,10 @@ export function QuoteInfoCard({
             aria-controls="q-options"
             onClick={actions.toggleOptions}
           >
-            <ChevronDown aria-hidden className={cn("size-4 transition-transform", optionsOpen && "rotate-180")} />
+            <ChevronDown
+              aria-hidden
+              className={cn("size-4 transition-transform", optionsOpen && "rotate-180")}
+            />
             Remise, acompte, autoliquidation et notes
           </button>
           {optionsOpen ? (
@@ -138,7 +165,12 @@ export function QuoteInfoCard({
                     id="q-discount-kind"
                     className={cn(nativeSelect, "w-36")}
                     value={values.discountKind}
-                    onChange={(e) => actions.setField("discountKind", e.target.value as QuoteFormValues["discountKind"])}
+                    onChange={(e) =>
+                      actions.setField(
+                        "discountKind",
+                        e.target.value as QuoteFormValues["discountKind"],
+                      )
+                    }
                   >
                     <option value="none">Aucune</option>
                     <option value="percent">En %</option>
@@ -146,7 +178,11 @@ export function QuoteInfoCard({
                   </select>
                   {values.discountKind !== "none" ? (
                     <Input
-                      aria-label={values.discountKind === "percent" ? "Remise en pourcentage" : "Remise en euros hors taxes"}
+                      aria-label={
+                        values.discountKind === "percent"
+                          ? "Remise en pourcentage"
+                          : "Remise en euros hors taxes"
+                      }
                       inputMode="decimal"
                       value={values.discountValue}
                       onChange={(e) => actions.setField("discountValue", e.target.value)}
@@ -173,9 +209,15 @@ export function QuoteInfoCard({
               <div className="flex items-start justify-between gap-4 rounded-lg border p-3 sm:col-span-2">
                 <div>
                   <Label htmlFor="q-reverse">Autoliquidation de la TVA (sous-traitance)</Label>
-                  <p className="text-sm text-muted-foreground">Aucune TVA facturée ; la mention légale est ajoutée au devis.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Aucune TVA facturée ; la mention légale est ajoutée au devis.
+                  </p>
                 </div>
-                <Switch id="q-reverse" checked={values.reverseCharge} onCheckedChange={(c) => actions.setField("reverseCharge", c)} />
+                <Switch
+                  id="q-reverse"
+                  checked={values.reverseCharge}
+                  onCheckedChange={(c) => actions.setField("reverseCharge", c)}
+                />
               </div>
               <div>
                 <Label htmlFor="q-duration">Durée estimée des travaux</Label>
@@ -189,7 +231,13 @@ export function QuoteInfoCard({
               </div>
               <div className="sm:col-span-2">
                 <Label htmlFor="q-notes">Notes et conditions particulières</Label>
-                <Textarea id="q-notes" className="mt-1.5" rows={3} value={values.notes ?? ""} onChange={(e) => actions.setField("notes", e.target.value)} />
+                <Textarea
+                  id="q-notes"
+                  className="mt-1.5"
+                  rows={3}
+                  value={values.notes ?? ""}
+                  onChange={(e) => actions.setField("notes", e.target.value)}
+                />
               </div>
             </div>
           ) : null}

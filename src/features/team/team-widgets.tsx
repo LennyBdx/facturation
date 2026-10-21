@@ -19,7 +19,11 @@ export const ROLE_OPTIONS = [
 
 export function InviteForm() {
   const router = useRouter();
-  const form = useForm<InviteInput>({ resolver: zodResolver(inviteSchema), defaultValues: { email: "", role: "member" }, mode: "onBlur" });
+  const form = useForm<InviteInput>({
+    resolver: zodResolver(inviteSchema),
+    defaultValues: { email: "", role: "member" },
+    mode: "onBlur",
+  });
   return (
     <form
       noValidate
@@ -32,17 +36,42 @@ export function InviteForm() {
         }
       })}
     >
-      <TextField control={form.control} name="email" label="Adresse e-mail" type="email" autoComplete="off" required />
-      <SelectField control={form.control} name="role" label="Rôle" required options={ROLE_OPTIONS} />
+      <TextField
+        control={form.control}
+        name="email"
+        label="Adresse e-mail"
+        type="email"
+        autoComplete="off"
+        required
+      />
+      <SelectField
+        control={form.control}
+        name="role"
+        label="Rôle"
+        required
+        options={ROLE_OPTIONS}
+      />
       <Button type="submit" className="sm:mt-6" disabled={form.formState.isSubmitting}>
-        {form.formState.isSubmitting ? <Loader2 aria-hidden className="animate-spin" /> : <UserPlus aria-hidden />}
+        {form.formState.isSubmitting ? (
+          <Loader2 aria-hidden className="animate-spin" />
+        ) : (
+          <UserPlus aria-hidden />
+        )}
         Inviter
       </Button>
     </form>
   );
 }
 
-export function RoleSelect({ membershipId, role, name }: { membershipId: string; role: "admin" | "member"; name: string }) {
+export function RoleSelect({
+  membershipId,
+  role,
+  name,
+}: {
+  membershipId: string;
+  role: "admin" | "member";
+  name: string;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   return (

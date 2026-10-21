@@ -30,7 +30,9 @@ export function useQuoteEditor({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const [optionsOpen, setOptionsOpen] = useState(initial.discountKind !== "none" || initial.reverseCharge || initial.depositPercent !== "0");
+  const [optionsOpen, setOptionsOpen] = useState(
+    initial.discountKind !== "none" || initial.reverseCharge || initial.depositPercent !== "0",
+  );
   const [pending, startTransition] = useTransition();
 
   // Focus clavier : champs « désignation » par ligne ; une nouvelle ligne est focalisée dès son montage.
@@ -67,28 +69,36 @@ export function useQuoteEditor({
   };
 
   const addLine = (si: number) => {
-    const line = draft.emptyLine(values.sections[si]?.lines.at(-1)?.vatRate ?? defaultVatRate, newId());
+    const line = draft.emptyLine(
+      values.sections[si]?.lines.at(-1)?.vatRate ?? defaultVatRate,
+      newId(),
+    );
     update((v) => draft.insertLine(v, si, line));
     focusLine(line.id);
   };
 
   const actions = {
-    setField: <K extends keyof QuoteFormValues>(key: K, value: QuoteFormValues[K]) => update((v) => ({ ...v, [key]: value })),
+    setField: <K extends keyof QuoteFormValues>(key: K, value: QuoteFormValues[K]) =>
+      update((v) => ({ ...v, [key]: value })),
     selectClient: (clientId: string) => update((v) => ({ ...v, clientId, worksiteId: "" })),
     selectWorksite: (worksiteId: string, reverseCharge?: boolean) =>
       update((v) => ({ ...v, worksiteId, reverseCharge: reverseCharge ?? v.reverseCharge })),
-    setLine: (si: number, li: number, patch: Partial<draft.DraftLine>) => update((v) => draft.updateLine(v, si, li, patch)),
+    setLine: (si: number, li: number, patch: Partial<draft.DraftLine>) =>
+      update((v) => draft.updateLine(v, si, li, patch)),
     addLine,
     removeLine: (si: number, li: number) => update((v) => draft.removeLine(v, si, li)),
     duplicateLine: (si: number, li: number) => {
       const copy = { ...values.sections[si]!.lines[li]!, id: newId() };
       update((v) => draft.insertLine(v, si, copy, li));
     },
-    moveLine: (si: number, li: number, dir: -1 | 1) => update((v) => draft.moveLine(v, si, li, dir)),
+    moveLine: (si: number, li: number, dir: -1 | 1) =>
+      update((v) => draft.moveLine(v, si, li, dir)),
     renameSection: (si: number, title: string) => update((v) => draft.renameSection(v, si, title)),
     addSection: () => {
       const line = draft.emptyLine(defaultVatRate, newId());
-      update((v) => draft.addSection(v, { id: newId(), title: `Lot ${v.sections.length + 1}`, lines: [line] }));
+      update((v) =>
+        draft.addSection(v, { id: newId(), title: `Lot ${v.sections.length + 1}`, lines: [line] }),
+      );
       focusLine(line.id);
     },
     removeSection: (si: number) => update((v) => draft.removeSection(v, si)),
@@ -110,8 +120,12 @@ export function useQuoteEditor({
   const submit = () => {
     setSubmitted(true);
     if (!validate(values)) {
-      toast.error("Le devis contient des erreurs : elles sont indiquées sous les champs concernés.");
-      requestAnimationFrame(() => document.querySelector<HTMLElement>("[aria-invalid=true]")?.focus());
+      toast.error(
+        "Le devis contient des erreurs : elles sont indiquées sous les champs concernés.",
+      );
+      requestAnimationFrame(() =>
+        document.querySelector<HTMLElement>("[aria-invalid=true]")?.focus(),
+      );
       return;
     }
     startTransition(async () => {

@@ -11,7 +11,13 @@ import {
   ZERO,
 } from "./money";
 import { discountAmountOf, type Discount, lineNet, type PricedSection } from "./quote";
-import { applyReverseCharge, groupByVat, totalsOfBreakdown, type VatBreakdownLine, vatOn } from "./vat";
+import {
+  applyReverseCharge,
+  groupByVat,
+  totalsOfBreakdown,
+  type VatBreakdownLine,
+  vatOn,
+} from "./vat";
 
 /**
  * Facturation à l'avancement (situations de travaux).
@@ -104,7 +110,8 @@ export interface ProgressInvoiceResult {
 
 export class ProgressBillingError extends Error {}
 
-const vatKey = (b: Pick<VatBreakdownLine, "vatCategory" | "vatRate">) => `${b.vatCategory}|${b.vatRate}`;
+const vatKey = (b: Pick<VatBreakdownLine, "vatCategory" | "vatRate">) =>
+  `${b.vatCategory}|${b.vatRate}`;
 
 function clampPercent(p: Percent): Dec {
   const d = new Dec(p);
@@ -126,7 +133,8 @@ export function computeProgressInvoice(params: {
 
   // 1. Travaux cumulés par ligne.
   const lines: ProgressLineResult[] = [];
-  const taxable: { net: Money; vatRate: Percent; vatCategory: VatBreakdownLine["vatCategory"] }[] = [];
+  const taxable: { net: Money; vatRate: Percent; vatCategory: VatBreakdownLine["vatCategory"] }[] =
+    [];
   const contractTaxable: typeof taxable = [];
 
   for (const section of contract.sections) {
@@ -169,7 +177,9 @@ export function computeProgressInvoice(params: {
   // 3. Déduction d'acompte cumulée, au prorata de l'avancement net.
   let cumulativeDeposit = ZERO;
   if (deposit && !new Dec(contractNet).isZero()) {
-    cumulativeDeposit = toMoney(new Dec(deposit.net).times(cumulativeWorksNet).dividedBy(contractNet));
+    cumulativeDeposit = toMoney(
+      new Dec(deposit.net).times(cumulativeWorksNet).dividedBy(contractNet),
+    );
     if (compareMoney(cumulativeDeposit, deposit.net) > 0) cumulativeDeposit = toMoney(deposit.net);
   }
 
@@ -244,10 +254,12 @@ export function computeProgressInvoice(params: {
 /**
  * Facture d'acompte : `percent` % du marché HT, ventilé par taux de TVA.
  */
-export function computeDepositInvoice(params: {
-  contract: ProgressContract;
-  percent: Percent;
-}): { vatBreakdown: VatBreakdownLine[]; net: Money; vat: Money; gross: Money } {
+export function computeDepositInvoice(params: { contract: ProgressContract; percent: Percent }): {
+  vatBreakdown: VatBreakdownLine[];
+  net: Money;
+  vat: Money;
+  gross: Money;
+} {
   const { contract, percent } = params;
   const taxable = contract.sections.flatMap((s) =>
     s.lines.map((l) => ({ net: lineNet(l), vatRate: l.vatRate, vatCategory: l.vatCategory })),
@@ -255,7 +267,10 @@ export function computeDepositInvoice(params: {
   const groups = groupByVat(applyReverseCharge(taxable, contract.reverseCharge));
   const grossNet = sumMoney(groups.map((g) => g.base));
   const discount = discountAmountOf(contract.discount, grossNet);
-  const discountShares = allocate(discount, groups.map((g) => g.base));
+  const discountShares = allocate(
+    discount,
+    groups.map((g) => g.base),
+  );
   const netByGroup = groups.map((g, i) => subMoney(g.base, discountShares[i] ?? ZERO));
   const depositNet = percentOf(sumMoney(netByGroup), percent);
   const shares = allocate(depositNet, netByGroup);

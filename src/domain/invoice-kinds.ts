@@ -22,11 +22,51 @@ export interface InvoiceKindRules {
 }
 
 export const INVOICE_KIND_RULES: Record<InvoiceKind, InvoiceKindRules> = {
-  standard: { label: "Facture", documentTypeCode: "380", numberingSeries: "invoice", isReceivable: true, canBeCredited: true, isProgress: false, sign: 1 },
-  deposit: { label: "Facture d'acompte", documentTypeCode: "386", numberingSeries: "invoice", isReceivable: true, canBeCredited: true, isProgress: false, sign: 1 },
-  progress: { label: "Situation de travaux", documentTypeCode: "380", numberingSeries: "invoice", isReceivable: true, canBeCredited: true, isProgress: true, sign: 1 },
-  final: { label: "Facture de solde", documentTypeCode: "380", numberingSeries: "invoice", isReceivable: true, canBeCredited: true, isProgress: true, sign: 1 },
-  credit_note: { label: "Avoir", documentTypeCode: "381", numberingSeries: "creditNote", isReceivable: false, canBeCredited: false, isProgress: false, sign: -1 },
+  standard: {
+    label: "Facture",
+    documentTypeCode: "380",
+    numberingSeries: "invoice",
+    isReceivable: true,
+    canBeCredited: true,
+    isProgress: false,
+    sign: 1,
+  },
+  deposit: {
+    label: "Facture d'acompte",
+    documentTypeCode: "386",
+    numberingSeries: "invoice",
+    isReceivable: true,
+    canBeCredited: true,
+    isProgress: false,
+    sign: 1,
+  },
+  progress: {
+    label: "Situation de travaux",
+    documentTypeCode: "380",
+    numberingSeries: "invoice",
+    isReceivable: true,
+    canBeCredited: true,
+    isProgress: true,
+    sign: 1,
+  },
+  final: {
+    label: "Facture de solde",
+    documentTypeCode: "380",
+    numberingSeries: "invoice",
+    isReceivable: true,
+    canBeCredited: true,
+    isProgress: true,
+    sign: 1,
+  },
+  credit_note: {
+    label: "Avoir",
+    documentTypeCode: "381",
+    numberingSeries: "creditNote",
+    isReceivable: false,
+    canBeCredited: false,
+    isProgress: false,
+    sign: -1,
+  },
 };
 
 export function kindRules(kind: InvoiceKind): InvoiceKindRules {

@@ -14,7 +14,12 @@ export function receivedNeedsAction(r: ReceivedInvoice): boolean {
 }
 
 export function invoiceNeedsCorrection(i: Invoice): boolean {
-  return !!i.issuedAt && !i.cancelledByCreditNoteId && !!i.eInvoicing.status && LIFECYCLE_NEEDS_ACTION.includes(i.eInvoicing.status);
+  return (
+    !!i.issuedAt &&
+    !i.cancelledByCreditNoteId &&
+    !!i.eInvoicing.status &&
+    LIFECYCLE_NEEDS_ACTION.includes(i.eInvoicing.status)
+  );
 }
 
 /** Retenue de garantie à récupérer : réception + 1 an dépassé (loi n° 71-584). */
@@ -36,7 +41,9 @@ export async function getNavBadges(ctx: ServiceContext<"receivedInvoices" | "inv
   };
 }
 
-export async function getDashboard(ctx: ServiceContext<"invoices" | "quotes" | "worksites" | "receivedInvoices" | "clients">) {
+export async function getDashboard(
+  ctx: ServiceContext<"invoices" | "quotes" | "worksites" | "receivedInvoices" | "clients">,
+) {
   const { repos, orgId, today } = ctx;
   const [invoices, quotes, worksites, received, clients] = await Promise.all([
     repos.invoices.list(orgId),
@@ -54,7 +61,9 @@ export async function getDashboard(ctx: ServiceContext<"invoices" | "quotes" | "
       .filter((i) => i.issueDate.startsWith(month))
       .map((i) => (kindRules(i.kind).sign < 0 ? `-${i.totals.net}` : i.totals.net)),
   );
-  const outstanding = issued.map((i) => ({ invoice: i, remaining: invoiceRemaining(i) })).filter((x) => compareMoney(x.remaining, ZERO) > 0);
+  const outstanding = issued
+    .map((i) => ({ invoice: i, remaining: invoiceRemaining(i) }))
+    .filter((x) => compareMoney(x.remaining, ZERO) > 0);
   const overdue = outstanding.filter((x) => invoicePaymentStatus(x.invoice, today) === "overdue");
 
   const pendingQuotes = quotes.filter((q) => q.status === "sent");
@@ -67,9 +76,18 @@ export async function getDashboard(ctx: ServiceContext<"invoices" | "quotes" | "
   const retentionByWorksite = worksites
     .filter((w) => !w.retentionReleased)
     .map((w) => {
-      const held = sumMoney(issued.filter((i) => i.worksiteId === w.id && kindRules(i.kind).isReceivable).map((i) => i.totals.retention));
+      const held = sumMoney(
+        issued
+          .filter((i) => i.worksiteId === w.id && kindRules(i.kind).isReceivable)
+          .map((i) => i.totals.retention),
+      );
       const releaseDate = retentionReleaseDate(w);
-      return { worksite: w, held, releaseDate, releasable: releaseDate !== null && releaseDate <= today };
+      return {
+        worksite: w,
+        held,
+        releaseDate,
+        releasable: releaseDate !== null && releaseDate <= today,
+      };
     })
     .filter((r) => compareMoney(r.held, ZERO) > 0);
 
@@ -86,7 +104,9 @@ export async function getDashboard(ctx: ServiceContext<"invoices" | "quotes" | "
       pendingQuotesAmount: sumMoney(pendingQuotes.map(quoteNet)),
       pendingQuotesCount: pendingQuotes.length,
       retentionHeld: sumMoney(retentionByWorksite.map((r) => r.held)),
-      retentionReleasable: sumMoney(retentionByWorksite.filter((r) => r.releasable).map((r) => r.held)),
+      retentionReleasable: sumMoney(
+        retentionByWorksite.filter((r) => r.releasable).map((r) => r.held),
+      ),
       receivedToProcess: received.filter(receivedNeedsAction).length,
       receivedToProcessAmount: sumMoney(received.filter(receivedNeedsAction).map((r) => r.gross)),
     },
@@ -109,9 +129,17 @@ function quoteNet(q: Quote) {
  */
 export function billedProgress(worksiteId: string, invoices: readonly Invoice[]): string {
   const relevant = invoices.filter(
-    (i) => i.worksiteId === worksiteId && i.issuedAt && !i.cancelledByCreditNoteId && i.kind !== "deposit" && kindRules(i.kind).isReceivable,
+    (i) =>
+      i.worksiteId === worksiteId &&
+      i.issuedAt &&
+      !i.cancelledByCreditNoteId &&
+      i.kind !== "deposit" &&
+      kindRules(i.kind).isReceivable,
   );
-  if (relevant.some((i) => i.kind === "final" || (i.kind === "standard" && i.quoteId))) return "100.00";
-  const last = relevant.filter((i) => i.progress).sort((a, b) => b.progress!.index - a.progress!.index)[0];
+  if (relevant.some((i) => i.kind === "final" || (i.kind === "standard" && i.quoteId)))
+    return "100.00";
+  const last = relevant
+    .filter((i) => i.progress)
+    .sort((a, b) => b.progress!.index - a.progress!.index)[0];
   return last?.progress?.overallPercent ?? "0.00";
 }

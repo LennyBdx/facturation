@@ -48,15 +48,16 @@ Un instantané `ProgressCumulative` est enregistré avec chaque situation et ser
 
 **Exemple testé** (marché 15 000 € HT, TVA 20 %, acompte 30 %, retenue 5 %) :
 
-| | Acompte | Situation 1 | Situation 2 | Situation 3 (100 %) |
-|---|---|---|---|---|
-| Travaux de la période HT | — | 3 000,00 | 5 500,00 | 6 500,00 |
-| Acompte déduit HT | — | 900,00 | 1 650,00 | 1 950,00 |
-| TTC | 5 400,00 | 2 520,00 | 4 620,00 | 5 460,00 |
-| Retenue de garantie | — | 180,00 | 330,00 | 390,00 |
-| Net à payer | 5 400,00 | 2 340,00 | 4 290,00 | 5 070,00 |
+|                          | Acompte  | Situation 1 | Situation 2 | Situation 3 (100 %) |
+| ------------------------ | -------- | ----------- | ----------- | ------------------- |
+| Travaux de la période HT | —        | 3 000,00    | 5 500,00    | 6 500,00            |
+| Acompte déduit HT        | —        | 900,00      | 1 650,00    | 1 950,00            |
+| TTC                      | 5 400,00 | 2 520,00    | 4 620,00    | 5 460,00            |
+| Retenue de garantie      | —        | 180,00      | 330,00      | 390,00              |
+| Net à payer              | 5 400,00 | 2 340,00    | 4 290,00    | 5 070,00            |
 
 Contrôles :
+
 - 5 400 + 2 520 + 4 620 + 5 460 = **18 000 € TTC**, c'est-à-dire le marché TTC.
 - 180 + 330 + 390 = **900 €**, c'est-à-dire 5 % du TTC.
 
@@ -98,13 +99,14 @@ Contrôles :
 
 Ce contrôle est **bloquant**. Chaque anomalie indique où la corriger : paramètres de l'entreprise, fiche client ou brouillon.
 
-| Partie | Contrôles |
-|---|---|
-| Vendeur | <ul><li>Raison sociale</li><li>SIREN et SIRET (clé de Luhn)</li><li>TVA (clé cohérente avec le SIREN)</li><li>Adresse et code postal</li><li>Forme juridique</li><li>Immatriculation RCS ou RM</li><li>**Assurance décennale** : assureur, contrat, couverture (art. L243-2 du Code des assurances)</li></ul> |
-| Acheteur | <ul><li>Nom et adresse de facturation</li><li>**SIREN obligatoire pour un professionnel** (facture électronique)</li><li>TVA obligatoire en autoliquidation</li><li>Code service conseillé pour un acheteur public (non bloquant)</li></ul> |
-| Facture | <ul><li>Date d'émission et échéance (l'échéance doit suivre l'émission)</li><li>Conditions de paiement</li><li>Taux des pénalités</li><li>Indemnité forfaitaire de 40 € pour un client professionnel</li><li>**Catégorie de l'opération** (nouvelle mention de la réforme)</li><li>Lignes complètes</li><li>Cohérence entre TVA et catégorie (AE à 0 %, S ≠ 0 %)</li><li>Avoir : facture d'origine</li><li>Acheteur public : référence d'engagement conseillée</li></ul> |
+| Partie   | Contrôles                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Vendeur  | <ul><li>Raison sociale</li><li>SIREN et SIRET (clé de Luhn)</li><li>TVA (clé cohérente avec le SIREN)</li><li>Adresse et code postal</li><li>Forme juridique</li><li>Immatriculation RCS ou RM</li><li>**Assurance décennale** : assureur, contrat, couverture (art. L243-2 du Code des assurances)</li></ul>                                                                                                                                                            |
+| Acheteur | <ul><li>Nom et adresse de facturation</li><li>**SIREN obligatoire pour un professionnel** (facture électronique)</li><li>TVA obligatoire en autoliquidation</li><li>Code service conseillé pour un acheteur public (non bloquant)</li></ul>                                                                                                                                                                                                                              |
+| Facture  | <ul><li>Date d'émission et échéance (l'échéance doit suivre l'émission)</li><li>Conditions de paiement</li><li>Taux des pénalités</li><li>Indemnité forfaitaire de 40 € pour un client professionnel</li><li>**Catégorie de l'opération** (nouvelle mention de la réforme)</li><li>Lignes complètes</li><li>Cohérence entre TVA et catégorie (AE à 0 %, S ≠ 0 %)</li><li>Avoir : facture d'origine</li><li>Acheteur public : référence d'engagement conseillée</li></ul> |
 
 **Identifiants** (`identifiers.ts`) :
+
 - **SIREN** : 9 chiffres et clé de Luhn.
 - **SIRET** : 14 chiffres, clé de Luhn, et il doit commencer par le SIREN. Exception La Poste : si la clé de Luhn échoue, la somme des chiffres doit être un multiple de 5.
 - **TVA française** : `FR` + clé + SIREN, avec clé = (12 + 3 × (SIREN mod 97)) mod 97.
@@ -112,22 +114,22 @@ Ce contrôle est **bloquant**. Chaque anomalie indique où la corriger : paramè
 
 ## 9. Statuts du cycle de vie de la facture électronique — `lifecycle.ts`
 
-| Code | Statut | Émis par | Obligatoire |
-|---|---|---|---|
-| 200 | Déposée | Plateforme de l'émetteur | **Oui** |
-| 201 | Émise par la plateforme | Plateforme | |
-| 202 | Reçue par la plateforme | Plateforme du destinataire | |
-| 203 | Mise à disposition | Plateforme du destinataire | |
-| 204 | Prise en charge | Destinataire | |
-| 205 | Approuvée | Destinataire | |
-| 206 | Approuvée partiellement | Destinataire | |
-| 207 | En litige | Destinataire | |
-| 208 | Suspendue | Destinataire | |
-| 209 | Complétée | Émetteur | |
-| 210 | Refusée | Destinataire | **Oui** |
-| 211 | Paiement transmis | Destinataire | |
-| 212 | Encaissée | Émetteur | **Oui** si la TVA est exigible à l'encaissement : c'est le cas des travaux du BTP |
-| 213 | Rejetée | Plateforme (contrôles techniques) | **Oui** |
+| Code | Statut                  | Émis par                          | Obligatoire                                                                       |
+| ---- | ----------------------- | --------------------------------- | --------------------------------------------------------------------------------- |
+| 200  | Déposée                 | Plateforme de l'émetteur          | **Oui**                                                                           |
+| 201  | Émise par la plateforme | Plateforme                        |                                                                                   |
+| 202  | Reçue par la plateforme | Plateforme du destinataire        |                                                                                   |
+| 203  | Mise à disposition      | Plateforme du destinataire        |                                                                                   |
+| 204  | Prise en charge         | Destinataire                      |                                                                                   |
+| 205  | Approuvée               | Destinataire                      |                                                                                   |
+| 206  | Approuvée partiellement | Destinataire                      |                                                                                   |
+| 207  | En litige               | Destinataire                      |                                                                                   |
+| 208  | Suspendue               | Destinataire                      |                                                                                   |
+| 209  | Complétée               | Émetteur                          |                                                                                   |
+| 210  | Refusée                 | Destinataire                      | **Oui**                                                                           |
+| 211  | Paiement transmis       | Destinataire                      |                                                                                   |
+| 212  | Encaissée               | Émetteur                          | **Oui** si la TVA est exigible à l'encaissement : c'est le cas des travaux du BTP |
+| 213  | Rejetée                 | Plateforme (contrôles techniques) | **Oui**                                                                           |
 
 Le code 214 « Visée » existe aussi (validation par un mandataire). Il n'est pas utilisé dans le prototype.
 
@@ -146,6 +148,7 @@ Le code 214 « Visée » existe aussi (validation par un mandataire). Il n'est p
 **Deux dimensions de statut**
 
 Le **statut de paiement** n'est jamais stocké. Il est recalculé à partir des paiements, de l'échéance et de la date du jour :
+
 - brouillon ;
 - émise ;
 - payée partiellement ;
@@ -157,9 +160,9 @@ Le **statut du cycle de vie** est celui transmis par la plateforme.
 
 ### Sources
 
-- DGFiP, *Spécifications externes et normes pour la facturation électronique* (version 3.1 du 31/10/2025 et annexes, dont le format sémantique du cycle de vie) : https://www.impots.gouv.fr/specifications-externes-b2b
+- DGFiP, _Spécifications externes et normes pour la facturation électronique_ (version 3.1 du 31/10/2025 et annexes, dont le format sémantique du cycle de vie) : https://www.impots.gouv.fr/specifications-externes-b2b
 - Norme AFNOR XP Z12-012 (formats, profils et statuts), publiée par impots.gouv.fr : https://www.impots.gouv.fr/sites/default/files/media/1_metier/2_professionnel/EV/2_gestion/290_facturation_electronique/specification_externes_b2b/afnor/norme-afnor-factures.pdf
-- DGFiP, *Guide pratique de démarrage au 1er septembre 2026* : https://www.impots.gouv.fr/sites/default/files/media/1_metier/2_professionnel/EV/2_gestion/290_facturation_electronique/guide_pratique_facturation_electronique.pdf
+- DGFiP, _Guide pratique de démarrage au 1er septembre 2026_ : https://www.impots.gouv.fr/sites/default/files/media/1_metier/2_professionnel/EV/2_gestion/290_facturation_electronique/guide_pratique_facturation_electronique.pdf
 - DGFiP, fiche « L'émission de factures électroniques » : https://www.impots.gouv.fr/sites/default/files/media/1_metier/2_professionnel/EV/2_gestion/290_facturation_electronique/fiches_reforme/fiche-e-invoicing.pdf
 - Liste des plateformes agréées : https://www.impots.gouv.fr/je-consulte-la-liste-des-plateformes-agreees
 - Synthèses consultées pour recouper la liste des codes 200 à 214 :

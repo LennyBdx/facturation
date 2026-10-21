@@ -12,7 +12,13 @@ export function Highlight({ children }: { children: React.ReactNode }) {
         preserveAspectRatio="none"
         className="absolute -bottom-1 left-0 z-0 h-[0.35em] w-full text-brand sm:-bottom-2"
       >
-        <path d="M3 13 C 70 4, 150 3, 297 9" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+        <path
+          d="M3 13 C 70 4, 150 3, 297 9"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
       </svg>
     </span>
   );

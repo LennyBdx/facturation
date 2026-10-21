@@ -13,4 +13,5 @@ export const SITE_DESCRIPTION =
   "Logiciel de devis et de facturation pour les entreprises du second œuvre : situations de travaux, retenue de garantie, autoliquidation. Prêt pour la facture électronique.";
 
 /** Liste officielle des plateformes agréées (impots.gouv.fr). */
-export const OFFICIAL_PLATFORMS_URL = "https://www.impots.gouv.fr/je-consulte-la-liste-des-plateformes-agreees";
+export const OFFICIAL_PLATFORMS_URL =
+  "https://www.impots.gouv.fr/je-consulte-la-liste-des-plateformes-agreees";

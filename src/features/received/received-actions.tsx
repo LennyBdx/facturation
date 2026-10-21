@@ -26,7 +26,13 @@ const LABELS: Record<ReceivedInvoiceAction, string> = {
 };
 
 /** Actions de traitement d'une facture fournisseur, selon le statut courant. */
-export function ReceivedActions({ id, allowed }: { id: string; allowed: readonly ReceivedInvoiceAction[] }) {
+export function ReceivedActions({
+  id,
+  allowed,
+}: {
+  id: string;
+  allowed: readonly ReceivedInvoiceAction[];
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<"refuse" | "dispute" | null>(null);
@@ -47,7 +53,8 @@ export function ReceivedActions({ id, allowed }: { id: string; allowed: readonly
       router.refresh();
     });
 
-  if (allowed.length === 0) return <p className="text-sm text-muted-foreground">Aucune action possible à ce statut.</p>;
+  if (allowed.length === 0)
+    return <p className="text-sm text-muted-foreground">Aucune action possible à ce statut.</p>;
 
   return (
     <>
@@ -60,7 +67,11 @@ export function ReceivedActions({ id, allowed }: { id: string; allowed: readonly
         ) : null}
         {allowed.includes("mark_paid") ? (
           <Button onClick={() => run("mark_paid")} disabled={pending}>
-            {pending ? <Loader2 aria-hidden className="animate-spin" /> : <ArrowRightLeft aria-hidden />}
+            {pending ? (
+              <Loader2 aria-hidden className="animate-spin" />
+            ) : (
+              <ArrowRightLeft aria-hidden />
+            )}
             {LABELS.mark_paid}
           </Button>
         ) : null}
@@ -80,7 +91,9 @@ export function ReceivedActions({ id, allowed }: { id: string; allowed: readonly
       <Dialog open={dialog !== null} onOpenChange={(o) => !o && setDialog(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{dialog === "refuse" ? "Refuser la facture" : "Signaler un litige"}</DialogTitle>
+            <DialogTitle>
+              {dialog === "refuse" ? "Refuser la facture" : "Signaler un litige"}
+            </DialogTitle>
             <DialogDescription>
               {dialog === "refuse"
                 ? "Le refus est définitif et transmis au fournisseur, qui devra émettre un avoir."
@@ -112,7 +125,11 @@ export function ReceivedActions({ id, allowed }: { id: string; allowed: readonly
             <Button variant="outline" onClick={() => setDialog(null)} disabled={pending}>
               Annuler
             </Button>
-            <Button variant={dialog === "refuse" ? "destructive" : "default"} disabled={pending} onClick={() => dialog && run(dialog, reason)}>
+            <Button
+              variant={dialog === "refuse" ? "destructive" : "default"}
+              disabled={pending}
+              onClick={() => dialog && run(dialog, reason)}
+            >
               {pending ? <Loader2 aria-hidden className="animate-spin" /> : null}
               {dialog === "refuse" ? "Confirmer le refus" : "Signaler le litige"}
             </Button>
@@ -123,7 +140,15 @@ export function ReceivedActions({ id, allowed }: { id: string; allowed: readonly
   );
 }
 
-export function WorksiteAttach({ id, current, worksites }: { id: string; current: string | null; worksites: { id: string; name: string }[] }) {
+export function WorksiteAttach({
+  id,
+  current,
+  worksites,
+}: {
+  id: string;
+  current: string | null;
+  worksites: { id: string; name: string }[];
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   return (
@@ -154,7 +179,9 @@ export function WorksiteAttach({ id, current, worksites }: { id: string; current
         </select>
         {pending ? <Loader2 aria-label="Enregistrement" className="size-4 animate-spin" /> : null}
       </div>
-      <p className="text-sm text-muted-foreground">Permet de suivre les achats et la marge par chantier.</p>
+      <p className="text-sm text-muted-foreground">
+        Permet de suivre les achats et la marge par chantier.
+      </p>
     </div>
   );
 }

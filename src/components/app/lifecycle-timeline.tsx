@@ -27,7 +27,10 @@ export function LifecycleTimeline({
         return (
           <li key={e.id} className="relative flex gap-3">
             {i < ordered.length - 1 ? (
-              <span aria-hidden className="absolute top-8 -bottom-4 left-[0.9375rem] w-px bg-border" />
+              <span
+                aria-hidden
+                className="absolute top-8 -bottom-4 left-[0.9375rem] w-px bg-border"
+              />
             ) : null}
             <span
               className={cn(
@@ -39,13 +42,20 @@ export function LifecycleTimeline({
             </span>
             <div className="min-w-0 pt-1">
               <p className="font-medium">
-                {s.label} <span className="num text-xs font-normal text-muted-foreground">· {s.code}</span>
-                {s.mandatory ? <span className="ml-1 text-xs font-normal text-muted-foreground">(statut obligatoire)</span> : null}
+                {s.label}{" "}
+                <span className="num text-xs font-normal text-muted-foreground">· {s.code}</span>
+                {s.mandatory ? (
+                  <span className="ml-1 text-xs font-normal text-muted-foreground">
+                    (statut obligatoire)
+                  </span>
+                ) : null}
               </p>
               <p className="text-sm text-muted-foreground">
                 {formatDateTime(e.at)} — {actorLabels[e.actor]}
               </p>
-              {e.comment ? <p className="mt-1 rounded-md bg-secondary px-2 py-1 text-sm">{e.comment}</p> : null}
+              {e.comment ? (
+                <p className="mt-1 rounded-md bg-secondary px-2 py-1 text-sm">{e.comment}</p>
+              ) : null}
             </div>
           </li>
         );

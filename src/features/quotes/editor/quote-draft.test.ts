@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { computeQuoteTotals } from "@/domain/quote";
 import type { QuoteFormValues } from "../schemas";
-import { addSection, emptyLine, insertLine, moveLine, removeLine, removeSection, toTotalsInput, updateLine } from "./quote-draft";
+import {
+  addSection,
+  emptyLine,
+  insertLine,
+  moveLine,
+  removeLine,
+  removeSection,
+  toTotalsInput,
+  updateLine,
+} from "./quote-draft";
 
 const base = (): QuoteFormValues => ({
   clientId: "c",
@@ -15,7 +24,22 @@ const base = (): QuoteFormValues => ({
   depositPercent: "0",
   estimatedDuration: "",
   notes: "",
-  sections: [{ id: "s1", title: "Lot 1", lines: [{ id: "a", description: "A", quantity: "12,5", unit: "u", unitPrice: "45,10", vatRate: "20.00" }] }],
+  sections: [
+    {
+      id: "s1",
+      title: "Lot 1",
+      lines: [
+        {
+          id: "a",
+          description: "A",
+          quantity: "12,5",
+          unit: "u",
+          unitPrice: "45,10",
+          vatRate: "20.00",
+        },
+      ],
+    },
+  ],
 });
 
 describe("brouillon de devis (opérations pures)", () => {

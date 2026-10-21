@@ -21,7 +21,12 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <header className={cn("mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between", className)}>
+    <header
+      className={cn(
+        "mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between",
+        className,
+      )}
+    >
       <div className="min-w-0 space-y-1">
         {backHref ? (
           <Link
@@ -33,7 +38,9 @@ export function PageHeader({
           </Link>
         ) : null}
         <h1 className="text-2xl font-semibold tracking-tight text-balance">{title}</h1>
-        {description ? <p className="text-base text-muted-foreground md:text-sm">{description}</p> : null}
+        {description ? (
+          <p className="text-base text-muted-foreground md:text-sm">{description}</p>
+        ) : null}
         {meta ? <div className="flex flex-wrap items-center gap-2 pt-1">{meta}</div> : null}
       </div>
       {actions ? <div className="flex flex-wrap gap-2 md:justify-end">{actions}</div> : null}

@@ -3,6 +3,7 @@
 « Factobat » est le nom du produit (site vitrine et application) ; on le change en un seul endroit, `src/config/site.ts`.
 
 Factobat est un SaaS de devis et de facturation pour les entreprises du second œuvre (5 à 50 salariés) qui facturent à l'avancement. Il gère :
+
 - les acomptes et les situations de travaux ;
 - la retenue de garantie ;
 - l'autoliquidation de la TVA en sous-traitance ;
@@ -11,6 +12,7 @@ Factobat est un SaaS de devis et de facturation pour les entreprises du second �
 Il est conçu comme une **solution compatible** avec la réforme de la facturation électronique : il se connecte à une plateforme agréée.
 
 > **Prototype front-end complet et cliquable.** Il n'y a ni base de données, ni authentification réelle, ni paiement, ni connexion réelle à une plateforme agréée.
+>
 > - Les données fictives sont en mémoire : elles sont perdues au redémarrage du serveur.
 > - Un utilisateur fictif est toujours connecté.
 > - La plateforme agréée est simulée.
@@ -26,15 +28,15 @@ pnpm dev
 
 Ouvrez ensuite http://localhost:3000 (site vitrine) ; l'application est sous http://localhost:3000/app. Aucune variable d'environnement n'est nécessaire.
 
-| Script | Rôle |
-|---|---|
-| `pnpm dev` | Serveur de développement |
-| `pnpm build` | Build de production |
-| `pnpm lint` | ESLint (inclut les règles d'architecture) |
-| `pnpm test` | Tests Vitest de la logique métier et du jeu de données |
+| Script             | Rôle                                                                                                                                                                                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`         | Serveur de développement                                                                                                                                                                                                                                         |
+| `pnpm build`       | Build de production                                                                                                                                                                                                                                              |
+| `pnpm lint`        | ESLint (inclut les règles d'architecture)                                                                                                                                                                                                                        |
+| `pnpm test`        | Tests Vitest de la logique métier et du jeu de données                                                                                                                                                                                                           |
 | `pnpm screenshots` | Refait les captures du prototype pour le site vitrine (`public/screenshots/*.jpg`, session de démo injectée) et les aperçus de la page d'accueil (`docs/references/home-v1-*.png`). Utilise `BASE_URL` s'il est défini, sinon lance `next dev` sur le port 3210. |
-| `pnpm references` | Refait les captures de référence (Playwright) dans `docs/references/` |
-| `pnpm format` | Prettier |
+| `pnpm references`  | Refait les captures de référence (Playwright) dans `docs/references/`                                                                                                                                                                                            |
+| `pnpm format`      | Prettier                                                                                                                                                                                                                                                         |
 
 Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec playwright install chromium`.
 
@@ -95,41 +97,41 @@ L'architecture isole tout ce qui est simulé. **Les pages, les composants et `sr
 
 ### 1. PostgreSQL
 
-| Remplacer / ajouter | Détail |
-|---|---|
-| `src/data/postgres/` (nouveau) | Implémentation de chaque interface de `src/data/repositories.ts` : `OrganizationRepository`, `ClientRepository`, `QuoteRepository`, `InvoiceRepository`, `ReceivedInvoiceRepository`… Le schéma découle de `src/data/types.ts`. Les lots, lignes, paiements et événements deviennent des tables filles ; les instantanés `seller`, `buyer` et `progress.cumulative` peuvent rester en JSONB. |
-| `src/data/index.ts` | `getRepositories()` renvoie l'implémentation PostgreSQL au lieu de `createMemoryRepositories(...)`. |
-| `OrganizationRepository.takeNextNumber` | À implémenter de façon **atomique** (`UPDATE … SET next_value = next_value + 1 RETURNING`) dans la même transaction que l'émission de la facture (`src/services/invoices.ts › issueInvoice`). |
-| `src/data/mock/` | Ne sert plus qu'au peuplement d'une base de démonstration (`buildSeed()`). |
-| `src/config/app.ts` + `src/lib/clock.ts` | Supprimer `DEMO_TODAY` : `today()` renvoie la vraie date (fuseau Europe/Paris). |
+| Remplacer / ajouter                      | Détail                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/data/postgres/` (nouveau)           | Implémentation de chaque interface de `src/data/repositories.ts` : `OrganizationRepository`, `ClientRepository`, `QuoteRepository`, `InvoiceRepository`, `ReceivedInvoiceRepository`… Le schéma découle de `src/data/types.ts`. Les lots, lignes, paiements et événements deviennent des tables filles ; les instantanés `seller`, `buyer` et `progress.cumulative` peuvent rester en JSONB. |
+| `src/data/index.ts`                      | `getRepositories()` renvoie l'implémentation PostgreSQL au lieu de `createMemoryRepositories(...)`.                                                                                                                                                                                                                                                                                          |
+| `OrganizationRepository.takeNextNumber`  | À implémenter de façon **atomique** (`UPDATE … SET next_value = next_value + 1 RETURNING`) dans la même transaction que l'émission de la facture (`src/services/invoices.ts › issueInvoice`).                                                                                                                                                                                                |
+| `src/data/mock/`                         | Ne sert plus qu'au peuplement d'une base de démonstration (`buildSeed()`).                                                                                                                                                                                                                                                                                                                   |
+| `src/config/app.ts` + `src/lib/clock.ts` | Supprimer `DEMO_TODAY` : `today()` renvoie la vraie date (fuseau Europe/Paris).                                                                                                                                                                                                                                                                                                              |
 
 ### 2. Authentification
 
-| Remplacer / ajouter | Détail |
-|---|---|
-| `src/lib/session.ts` | Réimplémenter `getCurrentUser()`, `getCurrentOrganization()` et `getCurrentMembership()` à partir de la vraie session (cookie signé, JWT ou fournisseur d'identité). Toutes les pages passent déjà par ce module. |
-| `src/proxy.ts` (nouveau ; c'est l'ancien « middleware » de Next.js 16) | Rediriger vers `/connexion` sans session sur `/app`. |
-| `src/features/auth/auth-forms.tsx` | Remplacer les `router.push` simulés par l'appel au fournisseur d'authentification. Les schémas Zod restent. |
-| `src/features/session/actions.ts` | `signOut()` : détruire la session. |
-| `src/features/organization/onboarding-wizard.tsx` | `finish()` : créer l'entreprise et le membership « propriétaire » via une Server Action. |
+| Remplacer / ajouter                                                    | Détail                                                                                                                                                                                                            |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/session.ts`                                                   | Réimplémenter `getCurrentUser()`, `getCurrentOrganization()` et `getCurrentMembership()` à partir de la vraie session (cookie signé, JWT ou fournisseur d'identité). Toutes les pages passent déjà par ce module. |
+| `src/proxy.ts` (nouveau ; c'est l'ancien « middleware » de Next.js 16) | Rediriger vers `/connexion` sans session sur `/app`.                                                                                                                                                              |
+| `src/features/auth/auth-forms.tsx`                                     | Remplacer les `router.push` simulés par l'appel au fournisseur d'authentification. Les schémas Zod restent.                                                                                                       |
+| `src/features/session/actions.ts`                                      | `signOut()` : détruire la session.                                                                                                                                                                                |
+| `src/features/organization/onboarding-wizard.tsx`                      | `finish()` : créer l'entreprise et le membership « propriétaire » via une Server Action.                                                                                                                          |
 
 ### 3. Stripe (abonnements)
 
-| Remplacer / ajouter | Détail |
-|---|---|
-| `src/integrations/billing/` (nouveau) | Client Stripe : Checkout, portail client, webhooks. |
-| `src/app/api/webhooks/stripe/route.ts` (nouveau) | Mettre à jour `organization.settings.plan`. |
-| `src/app/app/parametres/abonnement/page.tsx` | Remplacer les boutons désactivés par un Checkout ou par le portail. |
+| Remplacer / ajouter                              | Détail                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------- |
+| `src/integrations/billing/` (nouveau)            | Client Stripe : Checkout, portail client, webhooks.                 |
+| `src/app/api/webhooks/stripe/route.ts` (nouveau) | Mettre à jour `organization.settings.plan`.                         |
+| `src/app/app/parametres/abonnement/page.tsx`     | Remplacer les boutons désactivés par un Checkout ou par le portail. |
 
 ### 4. Plateforme agréée
 
-| Remplacer / ajouter | Détail |
-|---|---|
-| `src/integrations/e-invoicing/<plateforme>-provider.ts` (nouveau) | Implémenter `EInvoicingProvider` (`provider.ts`) avec l'API de la plateforme choisie : `submitInvoice`, `getInvoiceStatus`, `reportPayment` (statut 212), `listReceivedInvoices`, `updateReceivedInvoiceStatus`. |
-| `src/integrations/e-invoicing/index.ts` | `getEInvoicingProvider()` renvoie ce nouvel adaptateur. |
-| Génération Factur-X / UBL / CII | Elle vient de `Invoice` : les champs EN 16931 sont déjà présents (SIREN et TVA des parties, catégorie de TVA par ligne, ventilation de TVA, échéance, conditions, références). Voir les points ouverts dans `docs/domaine-btp.md` § 10. |
-| `src/app/api/webhooks/e-invoicing/route.ts` (nouveau) | Réception des statuts poussés par la plateforme, qui remplace l'interrogation périodique de `LifecyclePoller`. |
-| Variables d'environnement | Clés d'API de la plateforme et de Stripe, URL de la base de données (seulement à ce moment-là). |
+| Remplacer / ajouter                                               | Détail                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/integrations/e-invoicing/<plateforme>-provider.ts` (nouveau) | Implémenter `EInvoicingProvider` (`provider.ts`) avec l'API de la plateforme choisie : `submitInvoice`, `getInvoiceStatus`, `reportPayment` (statut 212), `listReceivedInvoices`, `updateReceivedInvoiceStatus`.                        |
+| `src/integrations/e-invoicing/index.ts`                           | `getEInvoicingProvider()` renvoie ce nouvel adaptateur.                                                                                                                                                                                 |
+| Génération Factur-X / UBL / CII                                   | Elle vient de `Invoice` : les champs EN 16931 sont déjà présents (SIREN et TVA des parties, catégorie de TVA par ligne, ventilation de TVA, échéance, conditions, références). Voir les points ouverts dans `docs/domaine-btp.md` § 10. |
+| `src/app/api/webhooks/e-invoicing/route.ts` (nouveau)             | Réception des statuts poussés par la plateforme, qui remplace l'interrogation périodique de `LifecyclePoller`.                                                                                                                          |
+| Variables d'environnement                                         | Clés d'API de la plateforme et de Stripe, URL de la base de données (seulement à ce moment-là).                                                                                                                                         |
 
 ## Choix par défaut pris pendant la réalisation
 

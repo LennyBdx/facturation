@@ -17,7 +17,12 @@ import { CompanyFields } from "@/features/organization/company-fields";
 import type { CompanyInput } from "@/features/organization/schemas";
 import { contrastOnWhite, safeAccent } from "@/lib/color";
 import type { UseFormReturn } from "react-hook-form";
-import { inviteAccountantAction, saveBillingSettingsAction, saveCompanyAction, saveDocumentSettingsAction } from "./actions";
+import {
+  inviteAccountantAction,
+  saveBillingSettingsAction,
+  saveCompanyAction,
+  saveDocumentSettingsAction,
+} from "./actions";
 import {
   billingSettingsSchema,
   type BillingSettingsInput,
@@ -40,7 +45,11 @@ function SaveBar({ pending, label = "Enregistrer" }: { pending: boolean; label?:
 
 export function CompanySettingsForm({ defaultValues }: { defaultValues: CompanySettingsInput }) {
   const router = useRouter();
-  const form = useForm<CompanySettingsInput>({ resolver: zodResolver(companySettingsSchema), defaultValues, mode: "onBlur" });
+  const form = useForm<CompanySettingsInput>({
+    resolver: zodResolver(companySettingsSchema),
+    defaultValues,
+    mode: "onBlur",
+  });
   return (
     <form
       noValidate
@@ -55,13 +64,25 @@ export function CompanySettingsForm({ defaultValues }: { defaultValues: CompanyS
         <div className="grid gap-4 sm:grid-cols-3">
           <TextField control={form.control} name="insurer" label="Assureur" required />
           <TextField control={form.control} name="policyNumber" label="N° de contrat" required />
-          <TextField control={form.control} name="coverageArea" label="Couverture géographique" required />
+          <TextField
+            control={form.control}
+            name="coverageArea"
+            label="Couverture géographique"
+            required
+          />
         </div>
       </FieldSet>
       <FieldSet>
         <FieldLegend>Coordonnées bancaires</FieldLegend>
         <div className="grid gap-4 sm:grid-cols-3">
-          <TextField control={form.control} name="iban" label="IBAN" required className="sm:col-span-2" autoComplete="off" />
+          <TextField
+            control={form.control}
+            name="iban"
+            label="IBAN"
+            required
+            className="sm:col-span-2"
+            autoComplete="off"
+          />
           <TextField control={form.control} name="bic" label="BIC" required autoComplete="off" />
         </div>
       </FieldSet>
@@ -70,9 +91,19 @@ export function CompanySettingsForm({ defaultValues }: { defaultValues: CompanyS
   );
 }
 
-export function BillingSettingsForm({ defaultValues, preview }: { defaultValues: BillingSettingsInput; preview: { year: string; padding: number } }) {
+export function BillingSettingsForm({
+  defaultValues,
+  preview,
+}: {
+  defaultValues: BillingSettingsInput;
+  preview: { year: string; padding: number };
+}) {
   const router = useRouter();
-  const form = useForm<BillingSettingsInput>({ resolver: zodResolver(billingSettingsSchema), defaultValues, mode: "onBlur" });
+  const form = useForm<BillingSettingsInput>({
+    resolver: zodResolver(billingSettingsSchema),
+    defaultValues,
+    mode: "onBlur",
+  });
   const values = useWatch({ control: form.control });
   const sample = (key: "quote" | "invoice" | "creditNote") =>
     `${values[key]?.prefix || "?"}-${preview.year}-${String(values[key]?.nextValue ?? 1).padStart(preview.padding, "0")}`;
@@ -82,7 +113,13 @@ export function BillingSettingsForm({ defaultValues, preview }: { defaultValues:
       <p className="mb-3 text-sm text-muted-foreground">{help}</p>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField control={form.control} name={`${key}.prefix`} label="Préfixe" required />
-        <TextField control={form.control} name={`${key}.nextValue`} label="Prochain numéro" inputMode="numeric" required />
+        <TextField
+          control={form.control}
+          name={`${key}.nextValue`}
+          label="Prochain numéro"
+          inputMode="numeric"
+          required
+        />
       </div>
       <p className="mt-2 text-sm">
         Prochain document : <span className="font-mono font-medium">{sample(key)}</span>
@@ -100,8 +137,9 @@ export function BillingSettingsForm({ defaultValues, preview }: { defaultValues:
       <FieldSet>
         <FieldLegend>Numérotation des documents</FieldLegend>
         <p className="-mt-2 text-sm text-muted-foreground">
-          Les factures sont numérotées à l&apos;émission, en séquence continue et sans trou (art. 242 nonies A, annexe II du CGI). Une fois des
-          factures émises, le prochain numéro ne peut être que le suivant du dernier émis.
+          Les factures sont numérotées à l&apos;émission, en séquence continue et sans trou (art.
+          242 nonies A, annexe II du CGI). Une fois des factures émises, le prochain numéro ne peut
+          être que le suivant du dernier émis.
         </p>
         <div className="grid gap-4 xl:grid-cols-3">
           {seriesBlock("quote", "Devis", "Numéro attribué à la création.")}
@@ -112,11 +150,44 @@ export function BillingSettingsForm({ defaultValues, preview }: { defaultValues:
       <FieldSet>
         <FieldLegend>Conditions par défaut</FieldLegend>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <TextField control={form.control} name="defaultPaymentTermsDays" label="Délai de paiement (jours)" inputMode="numeric" description="60 jours maximum (Code de commerce)." required />
-          <TextField control={form.control} name="latePenaltyRate" label="Pénalités de retard (% annuel)" inputMode="decimal" description="Au moins 3 fois le taux d'intérêt légal." required />
-          <TextField control={form.control} name="defaultQuoteValidityDays" label="Validité des devis (jours)" inputMode="numeric" required />
-          <TextField control={form.control} name="defaultRetentionRate" label="Retenue de garantie (%)" inputMode="decimal" description="5 % maximum. Appliquée aux nouveaux chantiers." required />
-          <TextField control={form.control} name="defaultDepositPercent" label="Acompte par défaut (%)" inputMode="decimal" required />
+          <TextField
+            control={form.control}
+            name="defaultPaymentTermsDays"
+            label="Délai de paiement (jours)"
+            inputMode="numeric"
+            description="60 jours maximum (Code de commerce)."
+            required
+          />
+          <TextField
+            control={form.control}
+            name="latePenaltyRate"
+            label="Pénalités de retard (% annuel)"
+            inputMode="decimal"
+            description="Au moins 3 fois le taux d'intérêt légal."
+            required
+          />
+          <TextField
+            control={form.control}
+            name="defaultQuoteValidityDays"
+            label="Validité des devis (jours)"
+            inputMode="numeric"
+            required
+          />
+          <TextField
+            control={form.control}
+            name="defaultRetentionRate"
+            label="Retenue de garantie (%)"
+            inputMode="decimal"
+            description="5 % maximum. Appliquée aux nouveaux chantiers."
+            required
+          />
+          <TextField
+            control={form.control}
+            name="defaultDepositPercent"
+            label="Acompte par défaut (%)"
+            inputMode="decimal"
+            required
+          />
         </div>
       </FieldSet>
       <SaveBar pending={form.formState.isSubmitting} />
@@ -124,9 +195,19 @@ export function BillingSettingsForm({ defaultValues, preview }: { defaultValues:
   );
 }
 
-export function DocumentSettingsForm({ defaultValues, companyName }: { defaultValues: DocumentSettingsInput; companyName: string }) {
+export function DocumentSettingsForm({
+  defaultValues,
+  companyName,
+}: {
+  defaultValues: DocumentSettingsInput;
+  companyName: string;
+}) {
   const router = useRouter();
-  const form = useForm<DocumentSettingsInput>({ resolver: zodResolver(documentSettingsSchema), defaultValues, mode: "onChange" });
+  const form = useForm<DocumentSettingsInput>({
+    resolver: zodResolver(documentSettingsSchema),
+    defaultValues,
+    mode: "onChange",
+  });
   const color = useWatch({ control: form.control, name: "accentColor" }) ?? "";
   const valid = /^#[0-9a-fA-F]{6}$/.test(color);
   const ratio = valid ? contrastOnWhite(color) : 0;
@@ -143,10 +224,17 @@ export function DocumentSettingsForm({ defaultValues, companyName }: { defaultVa
           <div className="space-y-2">
             <p className="text-sm font-medium">Logo</p>
             <div className="flex items-center gap-3 rounded-lg border border-dashed p-4">
-              <span aria-hidden className="flex size-12 items-center justify-center rounded-md text-xl font-bold text-paper-on-accent" style={{ background: safeAccent(color) }}>
+              <span
+                aria-hidden
+                className="flex size-12 items-center justify-center rounded-md text-xl font-bold text-paper-on-accent"
+                style={{ background: safeAccent(color) }}
+              >
                 {companyName.slice(0, 1)}
               </span>
-              <p className="text-sm text-muted-foreground">L&apos;import du logo sera disponible avec le stockage de fichiers. En attendant, l&apos;initiale de l&apos;entreprise est utilisée.</p>
+              <p className="text-sm text-muted-foreground">
+                L&apos;import du logo sera disponible avec le stockage de fichiers. En attendant,
+                l&apos;initiale de l&apos;entreprise est utilisée.
+              </p>
             </div>
           </div>
           <div className="space-y-2">
@@ -156,14 +244,29 @@ export function DocumentSettingsForm({ defaultValues, companyName }: { defaultVa
                 id="color-picker"
                 type="color"
                 value={valid ? color : "#1e3a5f"}
-                onChange={(e) => form.setValue("accentColor", e.target.value, { shouldValidate: true, shouldDirty: true })}
+                onChange={(e) =>
+                  form.setValue("accentColor", e.target.value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
                 className="h-11 w-14 cursor-pointer rounded-md border bg-card p-1"
                 aria-describedby="color-help"
               />
-              <TextField control={form.control} name="accentColor" label="Code hexadécimal" className="flex-1" />
+              <TextField
+                control={form.control}
+                name="accentColor"
+                label="Code hexadécimal"
+                className="flex-1"
+              />
             </div>
-            <p id="color-help" className={ratio >= 4.5 ? "text-sm text-success" : "text-sm text-warning"}>
-              Contraste du texte blanc sur cette couleur : {ratio ? ratio.toFixed(1).replace(".", ",") : "—"}:1 {ratio >= 4.5 ? "(lisible)" : "(4,5:1 minimum requis)"}
+            <p
+              id="color-help"
+              className={ratio >= 4.5 ? "text-sm text-success" : "text-sm text-warning"}
+            >
+              Contraste du texte blanc sur cette couleur :{" "}
+              {ratio ? ratio.toFixed(1).replace(".", ",") : "—"}:1{" "}
+              {ratio >= 4.5 ? "(lisible)" : "(4,5:1 minimum requis)"}
             </p>
           </div>
           <TextareaField
@@ -183,14 +286,20 @@ export function DocumentSettingsForm({ defaultValues, companyName }: { defaultVa
                 Facture
               </span>
             </div>
-            <div className="mt-4 rounded-sm px-2 py-1.5 text-xs text-paper-on-accent" style={{ background: safeAccent(color) }}>
+            <div
+              className="mt-4 rounded-sm px-2 py-1.5 text-xs text-paper-on-accent"
+              style={{ background: safeAccent(color) }}
+            >
               Désignation · Qté · PU HT · TVA · Total HT
             </div>
             <div className="mt-2 space-y-1 text-xs text-paper-muted">
               <div className="h-2 w-3/4 rounded bg-paper-border" />
               <div className="h-2 w-2/3 rounded bg-paper-border" />
             </div>
-            <div className="mt-4 ml-auto w-40 rounded-sm px-2 py-1 text-right text-sm font-semibold text-paper-on-accent" style={{ background: safeAccent(color) }}>
+            <div
+              className="mt-4 ml-auto w-40 rounded-sm px-2 py-1 text-right text-sm font-semibold text-paper-on-accent"
+              style={{ background: safeAccent(color) }}
+            >
               Net à payer
             </div>
           </div>
@@ -209,7 +318,9 @@ export function AccountantInvite() {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Inviter votre expert-comptable</CardTitle>
-        <CardDescription>Accès en lecture à vos factures émises et reçues (maquette, non fonctionnel).</CardDescription>
+        <CardDescription>
+          Accès en lecture à vos factures émises et reçues (maquette, non fonctionnel).
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form

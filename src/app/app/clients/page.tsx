@@ -19,12 +19,24 @@ import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Clients" };
 
-export default async function ClientsPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
+export default async function ClientsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; filtre?: string }>;
+}) {
   const { q, filtre } = await searchParams;
   const kind = CLIENT_KINDS.includes(filtre as ClientKind) ? (filtre as ClientKind) : undefined;
   const { repos, orgId } = await getRequestContext();
-  const [clients, invoices] = await Promise.all([repos.clients.list(orgId, { search: q, kind }), repos.invoices.list(orgId)]);
-  const due = new Map(clients.map((c) => [c.id, sumMoney(invoices.filter((i) => i.clientId === c.id).map(invoiceRemaining))]));
+  const [clients, invoices] = await Promise.all([
+    repos.clients.list(orgId, { search: q, kind }),
+    repos.invoices.list(orgId),
+  ]);
+  const due = new Map(
+    clients.map((c) => [
+      c.id,
+      sumMoney(invoices.filter((i) => i.clientId === c.id).map(invoiceRemaining)),
+    ]),
+  );
 
   return (
     <>
@@ -49,8 +61,16 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
       {clients.length === 0 ? (
         <EmptyState
           icon={Users}
-          title={q || kind ? "Aucun client ne correspond à votre recherche." : "Aucun client pour l'instant."}
-          description={q || kind ? "Modifiez la recherche ou le filtre." : "Ajoutez votre premier client pour lui adresser un devis."}
+          title={
+            q || kind
+              ? "Aucun client ne correspond à votre recherche."
+              : "Aucun client pour l'instant."
+          }
+          description={
+            q || kind
+              ? "Modifiez la recherche ou le filtre."
+              : "Ajoutez votre premier client pour lui adresser un devis."
+          }
           action={
             <Button asChild>
               <Link href={routes.clients.new()}>Créer un client</Link>
@@ -65,7 +85,10 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
           href={(c) => routes.clients.show(c.id)}
           columns={[
             { header: "Client", cell: (c) => c.name },
-            { header: "Type", cell: (c) => <ToneBadge tone="neutral">{CLIENT_KIND_LABELS[c.kind]}</ToneBadge> },
+            {
+              header: "Type",
+              cell: (c) => <ToneBadge tone="neutral">{CLIENT_KIND_LABELS[c.kind]}</ToneBadge>,
+            },
             {
               header: "SIREN",
               cell: (c) =>
@@ -84,7 +107,10 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
             title: c.name,
             subtitle: `${CLIENT_KIND_LABELS[c.kind]} · ${c.billingAddress.city}`,
             amount: due.get(c.id) !== "0.00" ? <Amount value={due.get(c.id)} /> : undefined,
-            meta: !c.siren && c.kind !== "individual" ? <ToneBadge tone="warning">SIREN à compléter</ToneBadge> : undefined,
+            meta:
+              !c.siren && c.kind !== "individual" ? (
+                <ToneBadge tone="warning">SIREN à compléter</ToneBadge>
+              ) : undefined,
           })}
         />
       )}

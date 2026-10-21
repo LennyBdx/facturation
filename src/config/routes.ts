@@ -11,7 +11,8 @@ type Query = Record<string, string | number | undefined | null>;
 function withQuery(path: string, query?: Query): string {
   if (!query) return path;
   const params = new URLSearchParams();
-  for (const [k, v] of Object.entries(query)) if (v !== undefined && v !== null && v !== "") params.set(k, String(v));
+  for (const [k, v] of Object.entries(query))
+    if (v !== undefined && v !== null && v !== "") params.set(k, String(v));
   const qs = params.toString();
   return qs ? `${path}?${qs}` : path;
 }
@@ -38,16 +39,21 @@ export const routes = {
   app: APP_BASE,
   dashboard: `${APP_BASE}/tableau-de-bord`,
   clients: { ...resource(`${APP_BASE}/clients`), new: () => `${APP_BASE}/clients/nouveau` },
-  worksites: { ...resource(`${APP_BASE}/chantiers`), new: (query?: { client?: string }) => withQuery(`${APP_BASE}/chantiers/nouveau`, query) },
+  worksites: {
+    ...resource(`${APP_BASE}/chantiers`),
+    new: (query?: { client?: string }) => withQuery(`${APP_BASE}/chantiers/nouveau`, query),
+  },
   quotes: {
     ...resource(`${APP_BASE}/devis`),
-    new: (query?: { client?: string; chantier?: string }) => withQuery(`${APP_BASE}/devis/nouveau`, query),
+    new: (query?: { client?: string; chantier?: string }) =>
+      withQuery(`${APP_BASE}/devis/nouveau`, query),
     preview: (id: string) => `${APP_BASE}/devis/${encodeURIComponent(id)}/apercu`,
   },
   invoices: {
     ...resource(`${APP_BASE}/factures`),
     new: () => `${APP_BASE}/factures/nouvelle`,
-    newProgress: (quoteId: string) => withQuery(`${APP_BASE}/factures/situation/nouvelle`, { devis: quoteId }),
+    newProgress: (quoteId: string) =>
+      withQuery(`${APP_BASE}/factures/situation/nouvelle`, { devis: quoteId }),
     preview: (id: string) => `${APP_BASE}/factures/${encodeURIComponent(id)}/apercu`,
   },
   received: resource(`${APP_BASE}/factures-recues`),

@@ -15,15 +15,26 @@ import { computeFrVatNumber, normalizeIdentifier, validateSiren } from "@/domain
 import { saveClient } from "./actions";
 import { CLIENT_KINDS, clientSchema, type ClientFormInput } from "./schemas";
 
-export function ClientForm({ clientId, defaultValues }: { clientId: string | null; defaultValues: ClientFormInput }) {
+export function ClientForm({
+  clientId,
+  defaultValues,
+}: {
+  clientId: string | null;
+  defaultValues: ClientFormInput;
+}) {
   const router = useRouter();
-  const form = useForm<ClientFormInput>({ resolver: zodResolver(clientSchema), defaultValues, mode: "onBlur" });
+  const form = useForm<ClientFormInput>({
+    resolver: zodResolver(clientSchema),
+    defaultValues,
+    mode: "onBlur",
+  });
   const kind = useWatch({ control: form.control, name: "kind" });
   const isIndividual = kind === "individual";
 
   const fillVat = () => {
     const siren = normalizeIdentifier(form.getValues("siren") ?? "");
-    if (validateSiren(siren).valid) form.setValue("vatNumber", computeFrVatNumber(siren), { shouldValidate: true });
+    if (validateSiren(siren).valid)
+      form.setValue("vatNumber", computeFrVatNumber(siren), { shouldValidate: true });
     else form.trigger("siren");
   };
 
@@ -63,10 +74,27 @@ export function ClientForm({ clientId, defaultValues }: { clientId: string | nul
             Le SIREN de votre client est indispensable pour lui adresser une facture électronique.
           </p>
           <div className="grid gap-4 sm:grid-cols-3">
-            <TextField control={form.control} name="siren" label="SIREN" inputMode="numeric" placeholder="123 456 789" required />
-            <TextField control={form.control} name="siret" label="SIRET (établissement facturé)" inputMode="numeric" />
+            <TextField
+              control={form.control}
+              name="siren"
+              label="SIREN"
+              inputMode="numeric"
+              placeholder="123 456 789"
+              required
+            />
+            <TextField
+              control={form.control}
+              name="siret"
+              label="SIRET (établissement facturé)"
+              inputMode="numeric"
+            />
             <div className="space-y-2">
-              <TextField control={form.control} name="vatNumber" label="N° de TVA" description="Obligatoire en autoliquidation." />
+              <TextField
+                control={form.control}
+                name="vatNumber"
+                label="N° de TVA"
+                description="Obligatoire en autoliquidation."
+              />
               <Button type="button" variant="outline" size="sm" onClick={fillVat}>
                 <Wand2 aria-hidden />
                 Calculer depuis le SIREN
@@ -88,18 +116,59 @@ export function ClientForm({ clientId, defaultValues }: { clientId: string | nul
       <FieldSet>
         <FieldLegend>Adresse de facturation</FieldLegend>
         <div className="grid gap-4 sm:grid-cols-6">
-          <TextField control={form.control} name="billingAddress.line1" label="Adresse" autoComplete="address-line1" required className="sm:col-span-6" />
-          <TextField control={form.control} name="billingAddress.postalCode" label="Code postal" inputMode="numeric" autoComplete="postal-code" required className="sm:col-span-2" />
-          <TextField control={form.control} name="billingAddress.city" label="Ville" autoComplete="address-level2" required className="sm:col-span-4" />
+          <TextField
+            control={form.control}
+            name="billingAddress.line1"
+            label="Adresse"
+            autoComplete="address-line1"
+            required
+            className="sm:col-span-6"
+          />
+          <TextField
+            control={form.control}
+            name="billingAddress.postalCode"
+            label="Code postal"
+            inputMode="numeric"
+            autoComplete="postal-code"
+            required
+            className="sm:col-span-2"
+          />
+          <TextField
+            control={form.control}
+            name="billingAddress.city"
+            label="Ville"
+            autoComplete="address-level2"
+            required
+            className="sm:col-span-4"
+          />
         </div>
       </FieldSet>
 
       <FieldSet>
         <FieldLegend>Contact et conditions</FieldLegend>
         <div className="grid gap-4 sm:grid-cols-3">
-          {!isIndividual ? <TextField control={form.control} name="contact.name" label="Interlocuteur" autoComplete="name" /> : null}
-          <TextField control={form.control} name="contact.email" label="E-mail" type="email" autoComplete="email" />
-          <TextField control={form.control} name="contact.phone" label="Téléphone" type="tel" autoComplete="tel" />
+          {!isIndividual ? (
+            <TextField
+              control={form.control}
+              name="contact.name"
+              label="Interlocuteur"
+              autoComplete="name"
+            />
+          ) : null}
+          <TextField
+            control={form.control}
+            name="contact.email"
+            label="E-mail"
+            type="email"
+            autoComplete="email"
+          />
+          <TextField
+            control={form.control}
+            name="contact.phone"
+            label="Téléphone"
+            type="tel"
+            autoComplete="tel"
+          />
           <TextField
             control={form.control}
             name="paymentTermsDays"
@@ -108,11 +177,20 @@ export function ClientForm({ clientId, defaultValues }: { clientId: string | nul
             description="0 = paiement à réception."
             required
           />
-          <TextareaField control={form.control} name="notes" label="Notes internes" className="sm:col-span-3" />
+          <TextareaField
+            control={form.control}
+            name="notes"
+            label="Notes internes"
+            className="sm:col-span-3"
+          />
         </div>
       </FieldSet>
 
-      <FormActions pending={form.formState.isSubmitting} submitLabel={clientId ? "Enregistrer" : "Créer le client"} cancelHref={clientId ? routes.clients.show(clientId) : routes.clients.list()} />
+      <FormActions
+        pending={form.formState.isSubmitting}
+        submitLabel={clientId ? "Enregistrer" : "Créer le client"}
+        cancelHref={clientId ? routes.clients.show(clientId) : routes.clients.list()}
+      />
     </form>
   );
 }

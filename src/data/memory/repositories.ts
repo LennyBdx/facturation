@@ -4,11 +4,17 @@ import { NotFoundError, type Repositories, type UnitOfWork } from "../repositori
 import type { Invoice, Quote } from "../types";
 import { clone, matches, type MemoryDb, newId, nowIso } from "./store";
 
-const byNewest = <T extends { createdAt: string }>(a: T, b: T) => b.createdAt.localeCompare(a.createdAt);
-const byDateDesc = (a: { issueDate: string; createdAt: string }, b: { issueDate: string; createdAt: string }) =>
-  b.issueDate.localeCompare(a.issueDate) || byNewest(a, b);
+const byNewest = <T extends { createdAt: string }>(a: T, b: T) =>
+  b.createdAt.localeCompare(a.createdAt);
+const byDateDesc = (
+  a: { issueDate: string; createdAt: string },
+  b: { issueDate: string; createdAt: string },
+) => b.issueDate.localeCompare(a.issueDate) || byNewest(a, b);
 
-function scoped<T extends { organizationId: string }>(map: Map<string, T>, organizationId: string): T[] {
+function scoped<T extends { organizationId: string }>(
+  map: Map<string, T>,
+  organizationId: string,
+): T[] {
   return [...map.values()].filter((row) => row.organizationId === organizationId);
 }
 
@@ -37,7 +43,11 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
   return {
     organizations: {
       async listForUser(userId) {
-        const orgIds = new Set([...db.memberships.values()].filter((m) => m.userId === userId).map((m) => m.organizationId));
+        const orgIds = new Set(
+          [...db.memberships.values()]
+            .filter((m) => m.userId === userId)
+            .map((m) => m.organizationId),
+        );
         return [...db.organizations.values()].filter((o) => orgIds.has(o.id)).map(clone);
       },
       async get(id) {
@@ -71,7 +81,10 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
         return user ? clone(user) : null;
       },
       async listByIds(ids) {
-        return ids.map((id) => db.users.get(id)).filter((u) => u !== undefined).map(clone);
+        return ids
+          .map((id) => db.users.get(id))
+          .filter((u) => u !== undefined)
+          .map(clone);
       },
     },
 
@@ -115,7 +128,12 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
       async list(organizationId, filter = {}) {
         return scoped(db.clients, organizationId)
           .filter((c) => !filter.kind || c.kind === filter.kind)
-          .filter((c) => matches([c.name, c.siren, c.billingAddress.city, c.contact.name, c.contact.email], filter.search))
+          .filter((c) =>
+            matches(
+              [c.name, c.siren, c.billingAddress.city, c.contact.name, c.contact.email],
+              filter.search,
+            ),
+          )
           .sort((a, b) => a.name.localeCompare(b.name, "fr"))
           .map(clone);
       },
@@ -175,7 +193,13 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
       },
       async create(organizationId, input) {
         const now = nowIso();
-        const quote: Quote = { ...clone(input), id: newId(), organizationId, createdAt: now, updatedAt: now };
+        const quote: Quote = {
+          ...clone(input),
+          id: newId(),
+          organizationId,
+          createdAt: now,
+          updatedAt: now,
+        };
         db.quotes.set(quote.id, quote);
         return clone(quote);
       },
@@ -202,7 +226,13 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
       },
       async create(organizationId, input) {
         const now = nowIso();
-        const invoice: Invoice = { ...clone(input), id: newId(), organizationId, createdAt: now, updatedAt: now };
+        const invoice: Invoice = {
+          ...clone(input),
+          id: newId(),
+          organizationId,
+          createdAt: now,
+          updatedAt: now,
+        };
         db.invoices.set(invoice.id, invoice);
         return clone(invoice);
       },
@@ -231,7 +261,9 @@ export function createMemoryRepositories(db: MemoryDb): Repositories {
       },
       async upsert(organizationId, invoice) {
         const existing = [...db.receivedInvoices.values()].find(
-          (r) => r.organizationId === organizationId && r.platformInvoiceId === invoice.platformInvoiceId,
+          (r) =>
+            r.organizationId === organizationId &&
+            r.platformInvoiceId === invoice.platformInvoiceId,
         );
         const row = existing
           ? { ...existing, status: invoice.status, events: clone(invoice.events) }
@@ -258,7 +290,9 @@ export function createMemoryUnitOfWork(db: MemoryDb, repos: Repositories): UnitO
   return {
     run<T>(work: (repos: Repositories) => Promise<T>): Promise<T> {
       const next = queue.then(async () => {
-        const snapshot = Object.fromEntries(Object.entries(db).map(([k, map]) => [k, clone(map)])) as unknown as MemoryDb;
+        const snapshot = Object.fromEntries(
+          Object.entries(db).map(([k, map]) => [k, clone(map)]),
+        ) as unknown as MemoryDb;
         try {
           return await work(repos);
         } catch (error) {

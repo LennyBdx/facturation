@@ -20,14 +20,25 @@ export const metadata: Metadata = { title: "Devis" };
 
 const STATUSES = Object.keys(QUOTE_STATUS) as QuoteStatus[];
 
-export default async function QuotesPage({ searchParams }: { searchParams: Promise<{ q?: string; filtre?: string }> }) {
+export default async function QuotesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; filtre?: string }>;
+}) {
   const { q, filtre } = await searchParams;
   const status = STATUSES.includes(filtre as QuoteStatus) ? (filtre as QuoteStatus) : undefined;
   const { repos, orgId, today } = await getRequestContext();
-  const [all, clients] = await Promise.all([repos.quotes.list(orgId, { search: q }), repos.clients.list(orgId)]);
+  const [all, clients] = await Promise.all([
+    repos.quotes.list(orgId, { search: q }),
+    repos.clients.list(orgId),
+  ]);
   const clientName = new Map(clients.map((c) => [c.id, c.name]));
   const quotes = all
-    .map((quote) => ({ quote, status: effectiveQuoteStatus(quote, today), totals: quoteTotals(quote) }))
+    .map((quote) => ({
+      quote,
+      status: effectiveQuoteStatus(quote, today),
+      totals: quoteTotals(quote),
+    }))
     .filter((x) => !status || x.status === status);
 
   return (
@@ -53,7 +64,11 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
       {quotes.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title={q || status ? "Aucun devis ne correspond à votre recherche." : "Aucun devis pour l'instant."}
+          title={
+            q || status
+              ? "Aucun devis ne correspond à votre recherche."
+              : "Aucun devis pour l'instant."
+          }
           description="Créez un devis en quelques minutes : lots, lignes, TVA et totaux calculés automatiquement."
           action={
             <Button asChild>
@@ -68,10 +83,16 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
           getKey={(x) => x.quote.id}
           href={(x) => routes.quotes.show(x.quote.id)}
           columns={[
-            { header: "Numéro", cell: (x) => <span className="font-mono text-sm">{x.quote.number}</span> },
+            {
+              header: "Numéro",
+              cell: (x) => <span className="font-mono text-sm">{x.quote.number}</span>,
+            },
             { header: "Objet", cell: (x) => <span className="line-clamp-1">{x.quote.title}</span> },
             { header: "Client", cell: (x) => clientName.get(x.quote.clientId) },
-            { header: "Date", cell: (x) => <span className="num">{formatDate(x.quote.issueDate)}</span> },
+            {
+              header: "Date",
+              cell: (x) => <span className="num">{formatDate(x.quote.issueDate)}</span>,
+            },
             { header: "Statut", cell: (x) => <QuoteStatusBadge status={x.status} /> },
             { header: "Total HT", align: "right", cell: (x) => <Amount value={x.totals.net} /> },
           ]}
@@ -82,7 +103,9 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
             meta: (
               <>
                 <QuoteStatusBadge status={x.status} />
-                <span className="num ml-auto text-sm text-muted-foreground">{formatDate(x.quote.issueDate)}</span>
+                <span className="num ml-auto text-sm text-muted-foreground">
+                  {formatDate(x.quote.issueDate)}
+                </span>
               </>
             ),
           })}

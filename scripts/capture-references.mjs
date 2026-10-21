@@ -71,7 +71,10 @@ async function saveTiimeImages(page) {
   for (const url of urls) {
     const pathname = decodeURIComponent(new URL(url).pathname);
     if (!/mockup/i.test(pathname)) continue;
-    const base = path.basename(pathname).replace(/^tiime-mockup-/, "").replace(/\.\w+$/, "");
+    const base = path
+      .basename(pathname)
+      .replace(/^tiime-mockup-/, "")
+      .replace(/\.\w+$/, "");
     if (!byName.has(base)) byName.set(base, url);
   }
   for (const [base, url] of byName) {

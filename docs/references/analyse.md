@@ -6,17 +6,17 @@
 
 ## Fichiers
 
-| Fichier | Contenu |
-|---|---|
-| `facturenet-desktop.png` / `facturenet-mobile.png` | Page d'accueil Facture.net, 1440 px et 390 px, pleine page |
-| `tiime-factures-desktop.png` / `tiime-factures-mobile.png` | Page module factures Tiime, 1440 px et 390 px, pleine page |
-| `tiime-app-hero-factures.png` | Maquette produit : facture sur mobile + aperçu du document sur bureau |
-| `tiime-app-section-factures.png` | Maquette produit : écran « nouvelle facture » sur mobile |
-| `tiime-app-factures-brouillon.png` | Facture en brouillon (mobile) |
-| `tiime-app-factures-parametres.png` | Paramètres de facturation (mobile) |
-| `tiime-app-factures-fiche-client.png` | Fiche client avec « vous doit » et factures associées |
-| `tiime-app-factures-repetition.png` | Facturation récurrente |
-| `tiime-app-factures-facture.png` | Fiche d'une facture émise |
+| Fichier                                                    | Contenu                                                               |
+| ---------------------------------------------------------- | --------------------------------------------------------------------- |
+| `facturenet-desktop.png` / `facturenet-mobile.png`         | Page d'accueil Facture.net, 1440 px et 390 px, pleine page            |
+| `tiime-factures-desktop.png` / `tiime-factures-mobile.png` | Page module factures Tiime, 1440 px et 390 px, pleine page            |
+| `tiime-app-hero-factures.png`                              | Maquette produit : facture sur mobile + aperçu du document sur bureau |
+| `tiime-app-section-factures.png`                           | Maquette produit : écran « nouvelle facture » sur mobile              |
+| `tiime-app-factures-brouillon.png`                         | Facture en brouillon (mobile)                                         |
+| `tiime-app-factures-parametres.png`                        | Paramètres de facturation (mobile)                                    |
+| `tiime-app-factures-fiche-client.png`                      | Fiche client avec « vous doit » et factures associées                 |
+| `tiime-app-factures-repetition.png`                        | Facturation récurrente                                                |
+| `tiime-app-factures-facture.png`                           | Fiche d'une facture émise                                             |
 
 Toutes les captures ont réussi le 18/10/2026 (pas de blocage anti-robot).
 
@@ -27,29 +27,35 @@ Remarque : il s'agit de pages marketing. On y voit des maquettes du produit, pas
 ## 1. Ce qui fonctionne bien
 
 ### Hiérarchie de l'information
+
 - **Le montant d'abord.** La fiche facture (Tiime) ouvre sur le montant TTC en très gros, puis le statut sous forme de bouton-pastille cliquable, puis l'intitulé et la date en petit. On sait en une seconde « combien » et « où en est-on ».
 - **« Vous doit »** sur la fiche client : le solde dû est la première information, en couleur d'alerte, avant les coordonnées (repliées par défaut). C'est exactement la question qu'un dirigeant se pose.
 - **Tableau de bord orienté encaissement** (Facture.net) : chiffre d'affaires à encaisser et retards de paiement en premier, courbe ensuite.
 
 ### Navigation
+
 - Facture.net : barre latérale gauche groupée par domaine (facturation, clients, notes de frais…), sélecteur d'organisation en haut de la barre latérale. Simple et prévisible.
 - Tiime mobile : navigation par pile (croix pour fermer, chevron retour, menu « ⋮ » pour les actions secondaires). Les actions principales d'une facture (envoyer, télécharger, dupliquer) sont trois gros boutons icône + libellé.
 
 ### Présentation des statuts
+
 - Statuts en **pastilles bordées avec libellé texte** (« Facturée », « Envoyée », « Payée ») et une couleur par état. Le montant prend aussi la couleur « payé » (vert) — lisible, mais l'information repose en partie sur la couleur seule.
 - Icône de document différente selon le statut dans les listes : bon repère visuel.
 
 ### Densité des tableaux
+
 - Aperçu du document : tableau classique Quantité / Unité / PU / TVA / Montant HT, totaux alignés à droite, TTC mis en avant. Chiffres alignés à droite.
 - Sur mobile, les lignes deviennent des **cartes à deux niveaux** : désignation en titre, puis « TVA 20 % | 3 heures × 900,00 € » et le montant à droite. Très bonne transposition d'un tableau large sur petit écran.
 
 ### Parcours de création
+
 - Brouillon Tiime : sections empilées **Client → Intitulé → Lignes → Totaux → Date d'émission**, avec des zones en pointillés « + Ajouter un client » / « + Ajouter une ligne ». Les totaux HT/TTC sont toujours visibles sous les lignes.
 - Mode **« Rapide / Complet »** dans les paramètres : saisie minimale (désignation, TVA, prix) ou complète. Bonne idée de divulgation progressive.
 - Duplication et transformation devis → facture en un clic.
 - Personnalisation du document limitée à logo + couleur : suffisant, pas d'éditeur de mise en page.
 
 ### Réassurance
+
 - Facture.net met la conformité au centre (Réception / Émission / E-reporting en trois puces, bloc « documents conformes et sécurisés » : conformité, sécurité, inaltérabilité, archivage). Le vocabulaire de la réforme est expliqué simplement.
 
 ## 2. Ce qui est moins adapté à notre cible BTP
@@ -85,16 +91,16 @@ Analyse des captures pleine page `facturenet-desktop/mobile.png` et `tiime-factu
 
 ## Structure observée
 
-| Ordre | Facture.net | Tiime (page factures) |
-|---|---|---|
-| 1 | Hero centré : titre en 3 lignes avec mot-clé souligné, 3 puces (réception, émission, e-reporting), 1 bouton, puis grande capture du tableau de bord sur ordinateur, avec des éléments flottants (paiement en ligne, aperçu de facture). | Hero en deux colonnes : titre en capitales avec mot mis en avant dans une pastille, 5 puces cochées, 2 boutons (principal et secondaire), 3 notes d'avis ; à droite, téléphone et ordinateur superposés. |
-| 2 | 3 arguments en ligne + compteur d'utilisateurs + logos clients. | Bandeau de logos et notes, vidéo de démonstration. |
-| 3 | Bloc conformité : 2 cartes (conformité Factur-X, note d'avis) + badge officiel. | Blocs alternés texte + maquette de téléphone : créer, personnaliser, suivre les paiements, gagner du temps, conformité. |
-| 4 | Grande section sombre : grille de fonctionnalités en cartes avec mini-captures (facturation, CRM, rendez-vous, site vitrine). | Témoignages en carrousel, chiffres clés. |
-| 5 | « Moins d'outils, plus de temps » : schéma avant/après. | Intégration expert-comptable. |
-| 6 | Bandeau d'appel à l'action intermédiaire avec visuel. | Bandeau facture électronique + appel à l'action. |
-| 7 | « Documents conformes et sécurisés » : grille de 6 garanties (conformité, sécurité, inaltérabilité, archivage…). | FAQ en accordéon (environ 6 questions). |
-| 8 | Avis clients, FAQ en accordéon, pied de page dense. | Articles de blog, bloc contact, pied de page très dense. |
+| Ordre | Facture.net                                                                                                                                                                                                                             | Tiime (page factures)                                                                                                                                                                                    |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Hero centré : titre en 3 lignes avec mot-clé souligné, 3 puces (réception, émission, e-reporting), 1 bouton, puis grande capture du tableau de bord sur ordinateur, avec des éléments flottants (paiement en ligne, aperçu de facture). | Hero en deux colonnes : titre en capitales avec mot mis en avant dans une pastille, 5 puces cochées, 2 boutons (principal et secondaire), 3 notes d'avis ; à droite, téléphone et ordinateur superposés. |
+| 2     | 3 arguments en ligne + compteur d'utilisateurs + logos clients.                                                                                                                                                                         | Bandeau de logos et notes, vidéo de démonstration.                                                                                                                                                       |
+| 3     | Bloc conformité : 2 cartes (conformité Factur-X, note d'avis) + badge officiel.                                                                                                                                                         | Blocs alternés texte + maquette de téléphone : créer, personnaliser, suivre les paiements, gagner du temps, conformité.                                                                                  |
+| 4     | Grande section sombre : grille de fonctionnalités en cartes avec mini-captures (facturation, CRM, rendez-vous, site vitrine).                                                                                                           | Témoignages en carrousel, chiffres clés.                                                                                                                                                                 |
+| 5     | « Moins d'outils, plus de temps » : schéma avant/après.                                                                                                                                                                                 | Intégration expert-comptable.                                                                                                                                                                            |
+| 6     | Bandeau d'appel à l'action intermédiaire avec visuel.                                                                                                                                                                                   | Bandeau facture électronique + appel à l'action.                                                                                                                                                         |
+| 7     | « Documents conformes et sécurisés » : grille de 6 garanties (conformité, sécurité, inaltérabilité, archivage…).                                                                                                                        | FAQ en accordéon (environ 6 questions).                                                                                                                                                                  |
+| 8     | Avis clients, FAQ en accordéon, pied de page dense.                                                                                                                                                                                     | Articles de blog, bloc contact, pied de page très dense.                                                                                                                                                 |
 
 ## Ordre des arguments
 

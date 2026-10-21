@@ -1,4 +1,14 @@
-import { compareMoney, Dec, type Money, type Percent, percentOf, type Quantity, sumMoney, toMoney, ZERO } from "./money";
+import {
+  compareMoney,
+  Dec,
+  type Money,
+  type Percent,
+  percentOf,
+  type Quantity,
+  sumMoney,
+  toMoney,
+  ZERO,
+} from "./money";
 import {
   applyReverseCharge,
   groupByVat,
@@ -23,9 +33,7 @@ export interface PricedSection<L extends PricedLine = PricedLine> {
 }
 
 export type Discount =
-  | { kind: "none" }
-  | { kind: "percent"; value: Percent }
-  | { kind: "amount"; value: Money };
+  { kind: "none" } | { kind: "percent"; value: Percent } | { kind: "amount"; value: Money };
 
 export interface QuoteInput {
   sections: readonly PricedSection[];
@@ -98,7 +106,10 @@ export function computeQuoteTotals(input: QuoteInput): QuoteTotals {
 
   const grossNet = sumMoney(Object.values(sectionSubtotals));
   const discountAmount = discountAmountOf(input.discount, grossNet);
-  const vatBreakdown = reduceBreakdown(groupByVat(applyReverseCharge(taxable, input.reverseCharge)), discountAmount);
+  const vatBreakdown = reduceBreakdown(
+    groupByVat(applyReverseCharge(taxable, input.reverseCharge)),
+    discountAmount,
+  );
   const totals = totalsOfBreakdown(vatBreakdown);
 
   return {

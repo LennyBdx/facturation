@@ -15,7 +15,12 @@ export default async function EditDraftPage({ params }: { params: Promise<{ id: 
   if (invoice.issuedAt) redirect(routes.invoices.show(id));
   return (
     <>
-      <PageHeader title="Modifier le brouillon" description={invoice.title} backHref={routes.invoices.show(id)} backLabel="Brouillon" />
+      <PageHeader
+        title="Modifier le brouillon"
+        description={invoice.title}
+        backHref={routes.invoices.show(id)}
+        backLabel="Brouillon"
+      />
       <DraftForm
         invoiceId={id}
         defaultValues={{

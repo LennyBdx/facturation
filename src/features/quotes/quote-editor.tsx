@@ -44,19 +44,28 @@ export function QuoteEditor({
         <QuoteInfoCard editor={editor} number={number} clients={clients} worksites={worksites} />
 
         {errors.sections ? (
-          <p role="alert" className="rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
+          <p
+            role="alert"
+            className="rounded-md border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger"
+          >
             {errors.sections}
           </p>
         ) : null}
         <p className="hidden text-sm text-muted-foreground md:block">
-          Astuce : <kbd className="rounded border bg-secondary px-1">Entrée</kbd> passe à la ligne suivante ou en crée une nouvelle.
+          Astuce : <kbd className="rounded border bg-secondary px-1">Entrée</kbd> passe à la ligne
+          suivante ou en crée une nouvelle.
         </p>
 
         {values.sections.map((section, si) => (
           <QuoteSectionCard key={section.id} editor={editor} section={section} si={si} />
         ))}
 
-        <Button type="button" variant="secondary" onClick={actions.addSection} className="w-full sm:w-auto">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={actions.addSection}
+          className="w-full sm:w-auto"
+        >
           <Plus aria-hidden />
           Ajouter un lot
         </Button>

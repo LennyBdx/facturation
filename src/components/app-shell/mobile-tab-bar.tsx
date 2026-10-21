@@ -38,11 +38,15 @@ export function MobileTabBar({ badges }: { badges: { received: number; rejected:
                   <span
                     className={cn(
                       "num absolute top-2 left-1/2 ml-2 min-w-5 rounded-full px-1 text-center text-[11px] leading-5 font-semibold",
-                      item.badgeKey === "rejected" ? "bg-danger text-primary-foreground" : "bg-info text-primary-foreground",
+                      item.badgeKey === "rejected"
+                        ? "bg-danger text-primary-foreground"
+                        : "bg-info text-primary-foreground",
                     )}
                   >
                     {count}
-                    <span className="sr-only">{item.badgeKey === "rejected" ? " à corriger" : " à traiter"}</span>
+                    <span className="sr-only">
+                      {item.badgeKey === "rejected" ? " à corriger" : " à traiter"}
+                    </span>
                   </span>
                 ) : null}
               </Link>

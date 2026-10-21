@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import type { QuoteTotals } from "@/domain/quote";
 import { formatVatRateLabel, REVERSE_CHARGE_MENTION } from "@/domain/vat";
 
-export function TotalsBlock({ totals, reverseCharge }: { totals: QuoteTotals; reverseCharge: boolean }) {
+export function TotalsBlock({
+  totals,
+  reverseCharge,
+}: {
+  totals: QuoteTotals;
+  reverseCharge: boolean;
+}) {
   return (
     <dl className="space-y-2 text-sm">
       <div className="flex justify-between">
@@ -56,14 +62,31 @@ export function TotalsBlock({ totals, reverseCharge }: { totals: QuoteTotals; re
           </dd>
         </div>
       ) : null}
-      {reverseCharge ? <p className="rounded-md bg-pending-soft p-2 text-xs text-pending">{REVERSE_CHARGE_MENTION}</p> : null}
+      {reverseCharge ? (
+        <p className="rounded-md bg-pending-soft p-2 text-xs text-pending">
+          {REVERSE_CHARGE_MENTION}
+        </p>
+      ) : null}
     </dl>
   );
 }
 
-function SaveButton({ pending, label = "Enregistrer le devis", className }: { pending: boolean; label?: string; className?: string }) {
+function SaveButton({
+  pending,
+  label = "Enregistrer le devis",
+  className,
+}: {
+  pending: boolean;
+  label?: string;
+  className?: string;
+}) {
   return (
-    <Button type="submit" className={className} disabled={pending} onClick={(e) => e.stopPropagation()}>
+    <Button
+      type="submit"
+      className={className}
+      disabled={pending}
+      onClick={(e) => e.stopPropagation()}
+    >
       {pending ? <Loader2 aria-hidden className="animate-spin" /> : <Save aria-hidden />}
       {label}
     </Button>
@@ -74,7 +97,15 @@ function SaveButton({ pending, label = "Enregistrer le devis", className }: { pe
  * Totaux toujours visibles : colonne collante (ordinateur), bloc en bas (tablette),
  * barre collante dépliable au-dessus des onglets (mobile).
  */
-export function QuoteTotalsPanels({ totals, reverseCharge, pending }: { totals: QuoteTotals; reverseCharge: boolean; pending: boolean }) {
+export function QuoteTotalsPanels({
+  totals,
+  reverseCharge,
+  pending,
+}: {
+  totals: QuoteTotals;
+  reverseCharge: boolean;
+  pending: boolean;
+}) {
   return (
     <>
       <aside className="hidden xl:block">
@@ -93,7 +124,9 @@ export function QuoteTotalsPanels({ totals, reverseCharge, pending }: { totals: 
         <details className="group">
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3">
             <span>
-              <span className="block text-xs text-muted-foreground">Total {reverseCharge ? "HT (autoliquidation)" : "TTC"}</span>
+              <span className="block text-xs text-muted-foreground">
+                Total {reverseCharge ? "HT (autoliquidation)" : "TTC"}
+              </span>
               <Amount value={totals.gross} className="text-lg font-semibold" />
             </span>
             <span className="flex items-center gap-2">

@@ -27,7 +27,10 @@ export function ReceivedSync() {
   if (added === 0) return null;
   const s = added > 1 ? "s" : "";
   return (
-    <p role="status" className="mb-4 rounded-lg border border-info/25 bg-info-soft p-3 text-sm text-info">
+    <p
+      role="status"
+      className="mb-4 rounded-lg border border-info/25 bg-info-soft p-3 text-sm text-info"
+    >
       {added} nouvelle{s} facture{s} reçue{s} depuis votre dernière visite.
     </p>
   );

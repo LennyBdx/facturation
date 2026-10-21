@@ -32,10 +32,26 @@ export function SignInForm() {
         await startSession(new URLSearchParams(window.location.search).get("next") ?? undefined);
       })}
     >
-      <TextField control={form.control} name="email" label="Adresse e-mail" type="email" autoComplete="email" required />
-      <PasswordField control={form.control} name="password" label="Mot de passe" autoComplete="current-password" required />
+      <TextField
+        control={form.control}
+        name="email"
+        label="Adresse e-mail"
+        type="email"
+        autoComplete="email"
+        required
+      />
+      <PasswordField
+        control={form.control}
+        name="password"
+        label="Mot de passe"
+        autoComplete="current-password"
+        required
+      />
       <div className="flex justify-end">
-        <Link href={routes.forgotPassword} className="text-sm text-primary underline-offset-4 hover:underline">
+        <Link
+          href={routes.forgotPassword}
+          className="text-sm text-primary underline-offset-4 hover:underline"
+        >
           Mot de passe oublié ?
         </Link>
       </div>
@@ -59,10 +75,29 @@ export function SignUpForm() {
       })}
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField control={form.control} name="firstName" label="Prénom" autoComplete="given-name" required />
-        <TextField control={form.control} name="lastName" label="Nom" autoComplete="family-name" required />
+        <TextField
+          control={form.control}
+          name="firstName"
+          label="Prénom"
+          autoComplete="given-name"
+          required
+        />
+        <TextField
+          control={form.control}
+          name="lastName"
+          label="Nom"
+          autoComplete="family-name"
+          required
+        />
       </div>
-      <TextField control={form.control} name="email" label="Adresse e-mail professionnelle" type="email" autoComplete="email" required />
+      <TextField
+        control={form.control}
+        name="email"
+        label="Adresse e-mail professionnelle"
+        type="email"
+        autoComplete="email"
+        required
+      />
       <PasswordField
         control={form.control}
         name="password"
@@ -106,15 +141,21 @@ export function ForgotPasswordForm() {
   });
   if (sentTo) {
     return (
-      <div role="status" className="space-y-3 rounded-lg border border-success/30 bg-success-soft p-4 text-sm">
+      <div
+        role="status"
+        className="space-y-3 rounded-lg border border-success/30 bg-success-soft p-4 text-sm"
+      >
         <p className="flex items-center gap-2 font-medium text-success">
           <CircleCheck aria-hidden className="size-4" /> Demande enregistrée
         </p>
         <p>
-          Si un compte existe pour <strong>{sentTo}</strong>, un lien de réinitialisation vient d&apos;être envoyé (prototype : aucun
-          e-mail n&apos;est réellement envoyé).
+          Si un compte existe pour <strong>{sentTo}</strong>, un lien de réinitialisation vient
+          d&apos;être envoyé (prototype : aucun e-mail n&apos;est réellement envoyé).
         </p>
-        <Link href={routes.signIn} className="inline-block text-primary underline-offset-4 hover:underline">
+        <Link
+          href={routes.signIn}
+          className="inline-block text-primary underline-offset-4 hover:underline"
+        >
           Retour à la connexion
         </Link>
       </div>
@@ -129,7 +170,14 @@ export function ForgotPasswordForm() {
         setSentTo(v.email);
       })}
     >
-      <TextField control={form.control} name="email" label="Adresse e-mail" type="email" autoComplete="email" required />
+      <TextField
+        control={form.control}
+        name="email"
+        label="Adresse e-mail"
+        type="email"
+        autoComplete="email"
+        required
+      />
       <SubmitButton pending={form.formState.isSubmitting}>Recevoir un lien</SubmitButton>
     </form>
   );

@@ -12,7 +12,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const STATUS: Record<FeatureStatus, { label: string; tone: Tone; icon: typeof CircleCheck; bar: string }> = {
+const STATUS: Record<
+  FeatureStatus,
+  { label: string; tone: Tone; icon: typeof CircleCheck; bar: string }
+> = {
   done: { label: "Fait", tone: "success", icon: CircleCheck, bar: "bg-success" },
   mock: { label: "Simulé", tone: "info", icon: FlaskConical, bar: "bg-info" },
   todo: { label: "À faire", tone: "neutral", icon: CircleDashed, bar: "bg-border" },
@@ -54,8 +57,11 @@ export default function DebugAppPage() {
             Fonctionnalités par page
           </h1>
           <p className="mt-1 text-muted-foreground">
-            Inventaire tenu dans <code className="rounded bg-secondary px-1 font-mono text-sm">src/content/debug-features.ts</code>. « Simulé » : présent et
-            cliquable, mais sans back-end ni service externe réel.
+            Inventaire tenu dans{" "}
+            <code className="rounded bg-secondary px-1 font-mono text-sm">
+              src/content/debug-features.ts
+            </code>
+            . « Simulé » : présent et cliquable, mais sans back-end ni service externe réel.
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-4">
             <div>
@@ -66,7 +72,10 @@ export default function DebugAppPage() {
               <div key={s}>
                 <p className="text-sm text-muted-foreground">{STATUS[s].label}</p>
                 <p className="num text-3xl font-semibold">
-                  {total[s]} <span className="text-base font-normal text-muted-foreground">({pct(total[s])} %)</span>
+                  {total[s]}{" "}
+                  <span className="text-base font-normal text-muted-foreground">
+                    ({pct(total[s])} %)
+                  </span>
                 </p>
               </div>
             ))}
@@ -74,7 +83,10 @@ export default function DebugAppPage() {
           <div className="mt-5">
             <ProgressBar c={total} label="Avancement global" />
           </div>
-          <ul className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground" aria-label="Légende">
+          <ul
+            className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground"
+            aria-label="Légende"
+          >
             {(["done", "mock", "todo"] as const).map((s) => (
               <li key={s} className="flex items-center gap-1.5">
                 <span aria-hidden className={`size-3 rounded-full ${STATUS[s].bar}`} />
@@ -86,7 +98,11 @@ export default function DebugAppPage() {
 
         <nav aria-label="Zones" className="flex flex-wrap gap-2">
           {AREAS.map((a) => (
-            <a key={a.id} href={`#${a.id}`} className="inline-flex min-h-9 items-center rounded-full border bg-card px-3 text-sm hover:bg-secondary">
+            <a
+              key={a.id}
+              href={`#${a.id}`}
+              className="inline-flex min-h-9 items-center rounded-full border bg-card px-3 text-sm hover:bg-secondary"
+            >
               {a.title}
             </a>
           ))}
@@ -95,7 +111,12 @@ export default function DebugAppPage() {
         {AREAS.map((area) => {
           const c = count(area.pages.flatMap((p) => p.features));
           return (
-            <section key={area.id} id={area.id} aria-labelledby={`${area.id}-title`} className="scroll-mt-6 rounded-2xl border bg-card">
+            <section
+              key={area.id}
+              id={area.id}
+              aria-labelledby={`${area.id}-title`}
+              className="scroll-mt-6 rounded-2xl border bg-card"
+            >
               <div className="flex flex-col gap-3 border-b p-5 sm:flex-row sm:items-center sm:justify-between">
                 <h2 id={`${area.id}-title`} className="text-xl font-semibold">
                   {area.title}
@@ -109,13 +130,20 @@ export default function DebugAppPage() {
               </div>
               <div className="divide-y">
                 {area.pages.map((p) => {
-                  const href = p.href ?? (p.route.startsWith("/") && !p.route.includes("[") ? p.route : null);
+                  const href =
+                    p.href ?? (p.route.startsWith("/") && !p.route.includes("[") ? p.route : null);
                   return (
-                    <div key={p.page + p.route} className="grid gap-3 p-5 md:grid-cols-[16rem_minmax(0,1fr)]">
+                    <div
+                      key={p.page + p.route}
+                      className="grid gap-3 p-5 md:grid-cols-[16rem_minmax(0,1fr)]"
+                    >
                       <div>
                         <p className="font-medium">{p.page}</p>
                         {href ? (
-                          <Link href={href} className="inline-flex items-center gap-1 font-mono text-sm text-primary underline-offset-4 hover:underline">
+                          <Link
+                            href={href}
+                            className="inline-flex items-center gap-1 font-mono text-sm text-primary underline-offset-4 hover:underline"
+                          >
                             {p.route}
                             <ExternalLink aria-hidden className="size-3" />
                           </Link>
@@ -127,13 +155,22 @@ export default function DebugAppPage() {
                         {p.features.map((f) => {
                           const s = STATUS[f.status];
                           return (
-                            <li key={f.label} className="flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-3">
-                              <ToneBadge tone={s.tone} icon={s.icon} className="w-fit sm:min-w-[5.75rem] sm:justify-center">
+                            <li
+                              key={f.label}
+                              className="flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-3"
+                            >
+                              <ToneBadge
+                                tone={s.tone}
+                                icon={s.icon}
+                                className="w-fit sm:min-w-[5.75rem] sm:justify-center"
+                              >
                                 {s.label}
                               </ToneBadge>
                               <span className="text-sm">
                                 {f.label}
-                                {f.note ? <span className="text-muted-foreground"> — {f.note}</span> : null}
+                                {f.note ? (
+                                  <span className="text-muted-foreground"> — {f.note}</span>
+                                ) : null}
                               </span>
                             </li>
                           );

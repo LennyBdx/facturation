@@ -40,13 +40,20 @@ export async function runAction<S extends z.ZodType | undefined, R>(
     const ctx = await getActionContext();
     orgId = ctx.orgId;
     if (options.permission && !can(ctx.role, options.permission)) {
-      return { ok: false, error: `Votre rôle ne permet pas de ${PERMISSION_LABELS[options.permission]}.` };
+      return {
+        ok: false,
+        error: `Votre rôle ne permet pas de ${PERMISSION_LABELS[options.permission]}.`,
+      };
     }
     let data = undefined as Input<S>;
     if (options.schema) {
       const parsed = options.schema.safeParse(input);
       if (!parsed.success) {
-        return { ok: false, error: options.invalidMessage ?? "Certains champs sont à corriger.", fieldErrors: fieldErrors(parsed.error) };
+        return {
+          ok: false,
+          error: options.invalidMessage ?? "Certains champs sont à corriger.",
+          fieldErrors: fieldErrors(parsed.error),
+        };
       }
       data = parsed.data as Input<S>;
     }
@@ -54,7 +61,8 @@ export async function runAction<S extends z.ZodType | undefined, R>(
     if (result.ok) updateTag(orgCacheTag(orgId));
     return result;
   } catch (error) {
-    if (error instanceof BusinessError || error instanceof ProgressBillingError) return { ok: false, error: error.message };
+    if (error instanceof BusinessError || error instanceof ProgressBillingError)
+      return { ok: false, error: error.message };
     if (error instanceof NotFoundError) return { ok: false, error: error.message };
     // Les redirections et « notFound » de Next.js doivent remonter telles quelles.
     if (isNextControlFlow(error)) {
@@ -68,6 +76,13 @@ export async function runAction<S extends z.ZodType | undefined, R>(
 }
 
 function isNextControlFlow(error: unknown): boolean {
-  const digest = typeof error === "object" && error !== null && "digest" in error ? String((error as { digest: unknown }).digest) : "";
-  return digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_HTTP_ERROR_FALLBACK") || digest === "NEXT_NOT_FOUND";
+  const digest =
+    typeof error === "object" && error !== null && "digest" in error
+      ? String((error as { digest: unknown }).digest)
+      : "";
+  return (
+    digest.startsWith("NEXT_REDIRECT") ||
+    digest.startsWith("NEXT_HTTP_ERROR_FALLBACK") ||
+    digest === "NEXT_NOT_FOUND"
+  );
 }

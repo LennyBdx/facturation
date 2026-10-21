@@ -32,7 +32,10 @@ export interface StatusResult {
 }
 
 /** Facture fournisseur telle que transmise par la plateforme. */
-export type IncomingInvoice = Omit<ReceivedInvoice, "id" | "organizationId" | "worksiteId" | "statusReason" | "paidAt">;
+export type IncomingInvoice = Omit<
+  ReceivedInvoice,
+  "id" | "organizationId" | "worksiteId" | "statusReason" | "paidAt"
+>;
 
 export interface EInvoicingProvider {
   /** Plateformes disponibles (annuaire). */
@@ -45,7 +48,10 @@ export interface EInvoicingProvider {
   getInvoiceStatus(platformInvoiceId: string): Promise<StatusResult | null>;
 
   /** Déclare l'encaissement (statut 212, obligatoire si TVA exigible à l'encaissement). */
-  reportPayment(platformInvoiceId: string, payment: { date: string; amount: string }): Promise<LifecycleEvent>;
+  reportPayment(
+    platformInvoiceId: string,
+    payment: { date: string; amount: string },
+  ): Promise<LifecycleEvent>;
 
   /** Factures fournisseurs reçues à l'adresse de réception de l'entreprise. */
   listReceivedInvoices(receptionAddress: string): Promise<IncomingInvoice[]>;

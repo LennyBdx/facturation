@@ -49,7 +49,8 @@ async function prepare(page) {
 
 async function clean(page) {
   await page.addStyleTag({
-    content: "nextjs-portal, [data-nextjs-toast], [data-sonner-toaster] { display: none !important; } *, *::before, *::after { transition: none !important; animation: none !important; caret-color: transparent !important; }",
+    content:
+      "nextjs-portal, [data-nextjs-toast], [data-sonner-toaster] { display: none !important; } *, *::before, *::after { transition: none !important; animation: none !important; caret-color: transparent !important; }",
   });
   await page.waitForTimeout(400);
 }
@@ -78,7 +79,11 @@ async function main() {
   const server = await ensureServer();
   const browser = await chromium.launch();
   try {
-    const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, locale: "fr-FR" });
+    const desktop = await browser.newContext({
+      viewport: { width: 1440, height: 900 },
+      deviceScaleFactor: 2,
+      locale: "fr-FR",
+    });
     const mobile = await browser.newContext({
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 3,
@@ -91,19 +96,29 @@ async function main() {
     await shoot(desktop, { name: "dashboard", url: "/app/tableau-de-bord", wait: "h1" });
     await shoot(desktop, {
       name: "quote-editor",
-      find: { from: "/app/devis?filtre=draft", selector: 'main tbody a[href^="/app/devis/"]', suffix: "/modifier" },
+      find: {
+        from: "/app/devis?filtre=draft",
+        selector: 'main tbody a[href^="/app/devis/"]',
+        suffix: "/modifier",
+      },
       wait: "textarea",
     });
     await shoot(desktop, { name: "worksite", url: "/app/chantiers/ws-terrasses", wait: "h1" });
     await shoot(desktop, {
       name: "invoice-lifecycle",
-      find: { from: "/app/chantiers/ws-terrasses", selector: 'main table a[href^="/app/factures/"]' },
+      find: {
+        from: "/app/chantiers/ws-terrasses",
+        selector: 'main table a[href^="/app/factures/"]',
+      },
       wait: 'ol[aria-label="Historique du cycle de vie"]',
     });
     await shoot(desktop, { name: "received-inbox", url: "/app/factures-recues", wait: "h1" });
     await shoot(mobile, {
       name: "situation-mobile",
-      find: { from: "/app/chantiers/ws-terrasses", selector: 'a[href^="/app/factures/situation/nouvelle"]' },
+      find: {
+        from: "/app/chantiers/ws-terrasses",
+        selector: 'a[href^="/app/factures/situation/nouvelle"]',
+      },
       wait: "h1",
       // Saisie d'un avancement de 90 % sur le lot « Logements », puis cadrage sur ce lot.
       act: async (page) => {
@@ -111,7 +126,9 @@ async function main() {
         const input = lot.locator('input[id^="lot-"]');
         await input.fill("90");
         await input.press("Enter");
-        await lot.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 64));
+        await lot.evaluate((el) =>
+          window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 64),
+        );
       },
     });
     await shoot(mobile, { name: "dashboard-mobile", url: "/app/tableau-de-bord", wait: "h1" });
@@ -119,7 +136,15 @@ async function main() {
     // Page d'accueil complète (contrôle visuel) : docs/references/home-v1-*.png
     for (const [label, opts] of [
       ["desktop", { viewport: { width: 1440, height: 900 } }],
-      ["mobile", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }],
+      [
+        "mobile",
+        {
+          viewport: { width: 390, height: 844 },
+          isMobile: true,
+          hasTouch: true,
+          deviceScaleFactor: 2,
+        },
+      ],
     ]) {
       const ctx = await browser.newContext({ ...opts, locale: "fr-FR", reducedMotion: "reduce" });
       const page = await ctx.newPage();

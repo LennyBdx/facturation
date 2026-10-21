@@ -44,7 +44,12 @@ export function formatDateTime(iso: string | null | undefined): string {
   return dateTime.format(new Date(iso)).replace(" ", " à ");
 }
 
-const longDate = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const longDate = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
 export function formatLongDate(iso: string): string {
   return longDate.format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
 }
@@ -61,6 +66,11 @@ export function initials(firstName: string, lastName: string): string {
   return `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
 }
 
-export function formatAddress(a: { line1: string; line2?: string; postalCode: string; city: string }): string {
+export function formatAddress(a: {
+  line1: string;
+  line2?: string;
+  postalCode: string;
+  city: string;
+}): string {
   return [a.line1, a.line2, `${a.postalCode} ${a.city}`].filter(Boolean).join(", ");
 }

@@ -13,7 +13,9 @@ const baseQuote = (overrides: Partial<QuoteInput> = {}): QuoteInput => ({
     },
     {
       id: "lot-b",
-      lines: [{ id: "l3", quantity: "1", unitPrice: "1000.00", vatRate: "10.00", vatCategory: "S" }],
+      lines: [
+        { id: "l3", quantity: "1", unitPrice: "1000.00", vatRate: "10.00", vatCategory: "S" },
+      ],
     },
   ],
   discount: { kind: "none" },
@@ -90,7 +92,9 @@ describe("totaux de devis", () => {
 
   it("met la TVA à zéro en autoliquidation (catégorie AE)", () => {
     const t = computeQuoteTotals(baseQuote({ reverseCharge: true }));
-    expect(t.vatBreakdown).toEqual([{ vatCategory: "AE", vatRate: "0.00", base: "1533.33", vat: "0.00" }]);
+    expect(t.vatBreakdown).toEqual([
+      { vatCategory: "AE", vatRate: "0.00", base: "1533.33", vat: "0.00" },
+    ]);
     expect(t.vat).toBe("0.00");
     expect(t.gross).toBe("1533.33");
   });
@@ -101,7 +105,12 @@ describe("totaux de devis", () => {
   });
 
   it("gère un devis vide", () => {
-    const t = computeQuoteTotals({ sections: [], discount: { kind: "none" }, reverseCharge: false, depositPercent: "0" });
+    const t = computeQuoteTotals({
+      sections: [],
+      discount: { kind: "none" },
+      reverseCharge: false,
+      depositPercent: "0",
+    });
     expect(t.gross).toBe("0.00");
     expect(t.vatBreakdown).toEqual([]);
   });

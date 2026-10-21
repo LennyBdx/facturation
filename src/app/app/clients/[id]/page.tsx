@@ -17,7 +17,11 @@ import { formatAddress } from "@/lib/format";
 import { invoicePaymentStatus, invoiceRemaining } from "@/services/builders";
 import { getRequestContext } from "@/composition/request-context";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const { id } = await params;
   const { repos, orgId } = await getRequestContext();
   return { title: (await repos.clients.get(orgId, id))?.name ?? "Client" };
@@ -34,7 +38,9 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
     repos.worksites.list(orgId, { clientId: id }),
   ]);
   const due = sumMoney(invoices.map(invoiceRemaining));
-  const overdue = sumMoney(invoices.filter((i) => invoicePaymentStatus(i, today) === "overdue").map(invoiceRemaining));
+  const overdue = sumMoney(
+    invoices.filter((i) => invoicePaymentStatus(i, today) === "overdue").map(invoiceRemaining),
+  );
   const isPro = client.kind !== "individual";
 
   return (
@@ -63,12 +69,20 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       />
 
       {isPro && !client.siren ? (
-        <div role="status" className="mb-6 flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-soft p-4 text-warning">
+        <div
+          role="status"
+          className="mb-6 flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-soft p-4 text-warning"
+        >
           <TriangleAlert aria-hidden className="mt-0.5 size-5 shrink-0" />
           <div>
             <p className="font-medium">SIREN manquant</p>
-            <p className="text-sm">Sans SIREN, aucune facture électronique ne peut être émise pour ce client.</p>
-            <Link href={routes.clients.edit(id)} className="mt-1 inline-block text-sm font-medium underline underline-offset-4">
+            <p className="text-sm">
+              Sans SIREN, aucune facture électronique ne peut être émise pour ce client.
+            </p>
+            <Link
+              href={routes.clients.edit(id)}
+              className="mt-1 inline-block text-sm font-medium underline underline-offset-4"
+            >
               Compléter la fiche
             </Link>
           </div>
@@ -109,13 +123,19 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                 </p>
               ) : null}
               {client.contact.email ? (
-                <a href={`mailto:${client.contact.email}`} className="flex min-h-11 items-center gap-2 text-primary underline-offset-4 hover:underline md:min-h-0">
+                <a
+                  href={`mailto:${client.contact.email}`}
+                  className="flex min-h-11 items-center gap-2 text-primary underline-offset-4 hover:underline md:min-h-0"
+                >
                   <Mail aria-hidden className="size-4 shrink-0" />
                   {client.contact.email}
                 </a>
               ) : null}
               {client.contact.phone ? (
-                <a href={`tel:${client.contact.phone.replace(/\s/g, "")}`} className="flex min-h-11 items-center gap-2 text-primary underline-offset-4 hover:underline md:min-h-0">
+                <a
+                  href={`tel:${client.contact.phone.replace(/\s/g, "")}`}
+                  className="flex min-h-11 items-center gap-2 text-primary underline-offset-4 hover:underline md:min-h-0"
+                >
                   <Phone aria-hidden className="size-4 shrink-0" />
                   {client.contact.phone}
                 </a>
@@ -131,11 +151,33 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
               <DetailList
                 columns={1}
                 items={[
-                  { label: "SIREN", value: client.siren ? <span className="font-mono">{formatSiren(client.siren)}</span> : null, hidden: !isPro },
-                  { label: "SIRET", value: client.siret ? <span className="font-mono">{formatSiret(client.siret)}</span> : null, hidden: !isPro },
+                  {
+                    label: "SIREN",
+                    value: client.siren ? (
+                      <span className="font-mono">{formatSiren(client.siren)}</span>
+                    ) : null,
+                    hidden: !isPro,
+                  },
+                  {
+                    label: "SIRET",
+                    value: client.siret ? (
+                      <span className="font-mono">{formatSiret(client.siret)}</span>
+                    ) : null,
+                    hidden: !isPro,
+                  },
                   { label: "N° de TVA", value: client.vatNumber, hidden: !isPro },
-                  { label: "Code service", value: client.serviceCode, hidden: client.kind !== "public_buyer" },
-                  { label: "Délai de paiement", value: client.paymentTermsDays === 0 ? "À réception" : `${client.paymentTermsDays} jours` },
+                  {
+                    label: "Code service",
+                    value: client.serviceCode,
+                    hidden: client.kind !== "public_buyer",
+                  },
+                  {
+                    label: "Délai de paiement",
+                    value:
+                      client.paymentTermsDays === 0
+                        ? "À réception"
+                        : `${client.paymentTermsDays} jours`,
+                  },
                   { label: "Notes", value: client.notes, hidden: !client.notes },
                 ]}
               />

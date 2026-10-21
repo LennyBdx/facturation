@@ -12,7 +12,10 @@ export function Reform() {
             <ShieldCheck aria-hidden className="size-4" />
             {reform.badge}
           </p>
-          <h2 id="reform-title" className="text-3xl font-bold tracking-tight text-balance md:text-5xl">
+          <h2
+            id="reform-title"
+            className="text-3xl font-bold tracking-tight text-balance md:text-5xl"
+          >
             {reform.title}
           </h2>
           <div className="mt-5 space-y-3 text-lg text-muted-foreground">
@@ -33,9 +36,19 @@ export function Reform() {
         </div>
         <ol className="reveal space-y-4 lg:pl-6">
           {reform.dates.map((d, i) => (
-            <li key={d.date} className={i === 1 ? "rounded-2xl bg-card p-6 shadow-lg lg:ml-10" : "rounded-2xl bg-card p-6 shadow-lg lg:mr-10"}>
+            <li
+              key={d.date}
+              className={
+                i === 1
+                  ? "rounded-2xl bg-card p-6 shadow-lg lg:ml-10"
+                  : "rounded-2xl bg-card p-6 shadow-lg lg:mr-10"
+              }
+            >
               <span className="flex items-center gap-3">
-                <span aria-hidden className="flex size-10 items-center justify-center rounded-lg bg-accent text-brand">
+                <span
+                  aria-hidden
+                  className="flex size-10 items-center justify-center rounded-lg bg-accent text-brand"
+                >
                   <CalendarClock className="size-5" />
                 </span>
                 <span className="text-xl font-bold">{d.date}</span>

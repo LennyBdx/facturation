@@ -15,16 +15,33 @@ export function emptyLine(vatRate: DraftLine["vatRate"], id: string): DraftLine 
   return { id, description: "", quantity: "1", unit: "u", unitPrice: "", vatRate };
 }
 
-function mapSection(values: QuoteFormValues, si: number, fn: (s: DraftSection) => DraftSection): QuoteFormValues {
+function mapSection(
+  values: QuoteFormValues,
+  si: number,
+  fn: (s: DraftSection) => DraftSection,
+): QuoteFormValues {
   return { ...values, sections: values.sections.map((s, i) => (i === si ? fn(s) : s)) };
 }
 
-export function updateLine(values: QuoteFormValues, si: number, li: number, patch: Partial<DraftLine>): QuoteFormValues {
-  return mapSection(values, si, (s) => ({ ...s, lines: s.lines.map((l, j) => (j === li ? { ...l, ...patch } : l)) }));
+export function updateLine(
+  values: QuoteFormValues,
+  si: number,
+  li: number,
+  patch: Partial<DraftLine>,
+): QuoteFormValues {
+  return mapSection(values, si, (s) => ({
+    ...s,
+    lines: s.lines.map((l, j) => (j === li ? { ...l, ...patch } : l)),
+  }));
 }
 
 /** Insère `line` après l'indice `after` (en fin de lot si omis). */
-export function insertLine(values: QuoteFormValues, si: number, line: DraftLine, after?: number): QuoteFormValues {
+export function insertLine(
+  values: QuoteFormValues,
+  si: number,
+  line: DraftLine,
+  after?: number,
+): QuoteFormValues {
   return mapSection(values, si, (s) => {
     const lines = [...s.lines];
     lines.splice(after === undefined ? lines.length : after + 1, 0, line);
@@ -36,7 +53,12 @@ export function removeLine(values: QuoteFormValues, si: number, li: number): Quo
   return mapSection(values, si, (s) => ({ ...s, lines: s.lines.filter((_, j) => j !== li) }));
 }
 
-export function moveLine(values: QuoteFormValues, si: number, li: number, dir: -1 | 1): QuoteFormValues {
+export function moveLine(
+  values: QuoteFormValues,
+  si: number,
+  li: number,
+  dir: -1 | 1,
+): QuoteFormValues {
   return mapSection(values, si, (s) => {
     const target = li + dir;
     if (target < 0 || target >= s.lines.length) return s;
@@ -73,7 +95,10 @@ export function toTotalsInput(values: QuoteFormValues): DomainQuoteInput {
         vatCategory: defaultCategoryForRate(l.vatRate),
       })),
     })),
-    discount: values.discountKind === "none" ? { kind: "none" } : { kind: values.discountKind, value: num(values.discountValue) },
+    discount:
+      values.discountKind === "none"
+        ? { kind: "none" }
+        : { kind: values.discountKind, value: num(values.discountValue) },
     reverseCharge: values.reverseCharge,
     depositPercent: num(values.depositPercent),
   };

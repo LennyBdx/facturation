@@ -7,7 +7,13 @@ import "server-only";
 import { MockEInvoicingProvider } from "./mock-provider";
 import type { EInvoicingProvider } from "./provider";
 
-export type { EInvoicingProvider, IncomingInvoice, PlatformInfo, StatusResult, SubmitResult } from "./provider";
+export type {
+  EInvoicingProvider,
+  IncomingInvoice,
+  PlatformInfo,
+  StatusResult,
+  SubmitResult,
+} from "./provider";
 export { EInvoicingError } from "./provider";
 
 let provider: EInvoicingProvider | undefined;

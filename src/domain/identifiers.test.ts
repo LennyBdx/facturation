@@ -56,7 +56,10 @@ describe("SIRET", () => {
 
   it("vérifie la cohérence avec le SIREN", () => {
     const r = validateSiret("73282932000074", "552100554");
-    expect(r).toEqual({ valid: false, error: "Le SIRET doit commencer par le SIREN de l'entreprise." });
+    expect(r).toEqual({
+      valid: false,
+      error: "Le SIRET doit commencer par le SIREN de l'entreprise.",
+    });
   });
 
   it("explique une longueur incorrecte", () => {

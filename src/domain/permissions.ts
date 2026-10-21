@@ -19,7 +19,12 @@ export const PERMISSIONS = [
 export type Permission = (typeof PERMISSIONS)[number];
 
 /** Un membre prépare (devis, chantiers, brouillons) ; émettre, encaisser et administrer est réservé aux administrateurs. */
-const MEMBER: readonly Permission[] = ["client:write", "worksite:write", "quote:write", "invoice:draft"];
+const MEMBER: readonly Permission[] = [
+  "client:write",
+  "worksite:write",
+  "quote:write",
+  "invoice:draft",
+];
 
 const MATRIX: Record<Role, readonly Permission[]> = {
   owner: PERMISSIONS,

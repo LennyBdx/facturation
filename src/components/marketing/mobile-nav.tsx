@@ -4,7 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { routes } from "@/config/routes";
 import { PRODUCT_NAME } from "@/config/site";
 import { cta, nav } from "@/content/home";
@@ -28,7 +35,11 @@ export function MobileNav() {
           <ul className="space-y-1">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} onClick={() => setOpen(false)} className="flex min-h-11 items-center rounded-md px-3 text-base hover:bg-secondary">
+                <Link
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="flex min-h-11 items-center rounded-md px-3 text-base hover:bg-secondary"
+                >
                   {item.label}
                 </Link>
               </li>

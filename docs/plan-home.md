@@ -21,25 +21,27 @@ Skill ui-ux-pro-max : il est utilisé. Python n'est pas installé, donc ses base
 
 ## Organisation technique
 
-| Élément | Décision |
-|---|---|
-| Accueil | `src/app/(marketing)/page.tsx` → `/`, avec son layout (en-tête et pied de page publics). |
-| Application | Déplacée de la racine vers **`/app`** : `/app/tableau-de-bord`, `/app/devis`, `/app/factures/...`. Tous les liens internes sont mis à jour via un module unique `src/config/routes.ts`. `/connexion`, `/inscription`, `/mot-de-passe-oublie` et `/onboarding` restent à la racine. Après connexion : `/app/tableau-de-bord`. |
-| Textes | `src/content/home.ts` (typé), y compris la FAQ et les offres. |
-| Pages légales | `/mentions-legales`, `/cgu`, `/confidentialite`, `/contact` : pages minimales `[À RÉDIGER]`. |
-| SEO | `metadata` + Open Graph (image générée), un seul `h1`, JSON-LD `SoftwareApplication` et `FAQPage`, `app/sitemap.ts`, `app/robots.ts` (`/app` exclu de l'indexation). |
-| Captures | Script `pnpm screenshots` (Playwright) : il démarre l'application en production sur un port libre, puis capture le tableau de bord (ordinateur), l'assistant de situation (mobile), l'éditeur de devis, la fiche facture avec frise, la boîte des factures reçues et la fiche chantier. Sortie dans `public/screenshots/*.jpg` + aperçus `docs/references/home-v1-*.png` en fin de travail. |
-| Interactivité | Composants serveur partout. Code client uniquement pour le tiroir mobile et l'accordéon de la FAQ (`<details>` natif, donc accessible sans JavaScript). |
+| Élément       | Décision                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Accueil       | `src/app/(marketing)/page.tsx` → `/`, avec son layout (en-tête et pied de page publics).                                                                                                                                                                                                                                                                                                    |
+| Application   | Déplacée de la racine vers **`/app`** : `/app/tableau-de-bord`, `/app/devis`, `/app/factures/...`. Tous les liens internes sont mis à jour via un module unique `src/config/routes.ts`. `/connexion`, `/inscription`, `/mot-de-passe-oublie` et `/onboarding` restent à la racine. Après connexion : `/app/tableau-de-bord`.                                                                |
+| Textes        | `src/content/home.ts` (typé), y compris la FAQ et les offres.                                                                                                                                                                                                                                                                                                                               |
+| Pages légales | `/mentions-legales`, `/cgu`, `/confidentialite`, `/contact` : pages minimales `[À RÉDIGER]`.                                                                                                                                                                                                                                                                                                |
+| SEO           | `metadata` + Open Graph (image générée), un seul `h1`, JSON-LD `SoftwareApplication` et `FAQPage`, `app/sitemap.ts`, `app/robots.ts` (`/app` exclu de l'indexation).                                                                                                                                                                                                                        |
+| Captures      | Script `pnpm screenshots` (Playwright) : il démarre l'application en production sur un port libre, puis capture le tableau de bord (ordinateur), l'assistant de situation (mobile), l'éditeur de devis, la fiche facture avec frise, la boîte des factures reçues et la fiche chantier. Sortie dans `public/screenshots/*.jpg` + aperçus `docs/references/home-v1-*.png` en fin de travail. |
+| Interactivité | Composants serveur partout. Code client uniquement pour le tiroir mobile et l'accordéon de la FAQ (`<details>` natif, donc accessible sans JavaScript).                                                                                                                                                                                                                                     |
 
 ## Sections, titres et accroches (propositions)
 
 **1. En-tête collant**
+
 - Logo texte `[NOM DU PRODUIT]`.
 - Menu : Fonctionnalités · Facture électronique · Tarifs · FAQ.
 - Boutons : « Se connecter », « Essayer gratuitement ».
 - Sur mobile, le menu passe dans un tiroir et le bouton « Essayer » reste visible.
 
 **2. Hero** (deux colonnes sur ordinateur, empilé sur mobile)
+
 - Surtitre : « Logiciel de devis et de facturation pour le second œuvre »
 - `h1` : **« Vos situations de travaux, facturées juste et payées à temps. »**
 - Sous-titre : « Devis par lots, situations à l'avancement, retenue de garantie et autoliquidation calculées pour vous. Prêt pour la facture électronique. »
@@ -54,6 +56,7 @@ Skill ui-ux-pro-max : il est utilisé. Python n'est pas installé, donc ses base
   - pas de décor ajouté.
 
 **3. Bandeau réforme** (`id="facture-electronique"`)
+
 - Pastille neutre : « Prêt pour la facture électronique ».
 - Deux dates :
   - **1er septembre 2026** : réception obligatoire pour toutes les entreprises ;
@@ -62,6 +65,7 @@ Skill ui-ux-pro-max : il est utilisé. Python n'est pas installé, donc ses base
 - Lien « Consulter la liste officielle des plateformes agréées », vers impots.gouv.fr (nouvel onglet, signalé).
 
 **4. Le problème** — « Ce qui fait perdre du temps (et de l'argent) aux entreprises du second œuvre »
+
 - Cinq cartes avec icône :
   - situations tenues sur Excel ;
   - retenues de garantie oubliées ;
@@ -72,23 +76,25 @@ Skill ui-ux-pro-max : il est utilisé. Python n'est pas installé, donc ses base
 
 **5. Fonctionnalités** (`id="fonctionnalites"`) — 6 blocs alternés texte + capture
 
-| Bloc | Titre proposé | Capture |
-|---|---|---|
-| Devis par lots | « Un devis complet en quelques minutes, même à 80 lignes » | éditeur de devis |
-| Situations | « Saisissez l'avancement, le reste se calcule » | assistant de situation |
-| Facture électronique | « Contrôlée avant l'envoi, suivie après » | fiche facture (contrôle et frise) |
-| Factures reçues | « Toutes vos factures fournisseurs au même endroit » | boîte des factures reçues |
-| Encaissements et retenues | « Sachez qui vous doit quoi, et quand récupérer vos retenues » | fiche chantier |
+| Bloc                        | Titre proposé                                                            | Capture                                   |
+| --------------------------- | ------------------------------------------------------------------------ | ----------------------------------------- |
+| Devis par lots              | « Un devis complet en quelques minutes, même à 80 lignes »               | éditeur de devis                          |
+| Situations                  | « Saisissez l'avancement, le reste se calcule »                          | assistant de situation                    |
+| Facture électronique        | « Contrôlée avant l'envoi, suivie après »                                | fiche facture (contrôle et frise)         |
+| Factures reçues             | « Toutes vos factures fournisseurs au même endroit »                     | boîte des factures reçues                 |
+| Encaissements et retenues   | « Sachez qui vous doit quoi, et quand récupérer vos retenues »           | fiche chantier                            |
 | Équipe et multi-entreprises | « Le patron, le conducteur de travaux et l'assistante, chacun son rôle » | liste ou icônes (pas de capture inventée) |
 
 Chaque bloc comporte 3 puces factuelles, uniquement sur ce que fait le prototype.
 
 **6. Comment ça marche** : 3 étapes
+
 1. Créez votre entreprise (SIREN vérifié).
 2. Faites vos devis puis vos situations.
 3. Émettez : la plateforme agréée transmet, vous suivez le paiement.
 
 **7. Pour qui** : 5 cartes métier
+
 - Électricité ;
 - plomberie-chauffage ;
 - menuiserie-agencement ;
@@ -98,11 +104,13 @@ Chaque bloc comporte 3 puces factuelles, uniquement sur ce que fait le prototype
 Chaque carte donne un exemple concret d'usage (« Situations par lot sur un chantier de 24 logements »…), sans chiffres inventés.
 
 **8. Tarifs** (`id="tarifs"`) : 3 offres
+
 - Essentiel / Pro / Entreprise. Prix et contenus `[À DÉFINIR]`.
 - Une offre mise en avant (« Pro ») par bordure, sans faux « le plus populaire ».
 - Bouton → `/inscription`.
 
 **9. FAQ** (`id="faq"`) : 8 questions en accordéon `<details>`/`<summary>`
+
 1. Suis-je concerné par la facture électronique, et quand ?
 2. `[NOM DU PRODUIT]` est-il une plateforme agréée ? → Non : solution qui se connecte à une plateforme agréée.
 3. Quelle plateforme agréée utiliser ? `[À CONFIRMER]`
@@ -113,11 +121,13 @@ Chaque carte donne un exemple concret d'usage (« Situations par lot sur un chan
 8. Y a-t-il un engagement ? Puis-je exporter mes données ? `[À CONFIRMER]`
 
 **10. Appel à l'action final** (fond primaire)
+
 - Titre : « Prêt à facturer vos chantiers sans tableur ? »
 - Bouton « Essayer gratuitement ».
 - Mention « Sans carte bancaire » marquée `[À CONFIRMER]`.
 
 **11. Pied de page**
+
 - Produit : fonctionnalités, tarifs, facture électronique.
 - Ressources : FAQ, liste officielle des plateformes agréées.
 - Légal : mentions légales, CGU, confidentialité.

@@ -28,8 +28,19 @@ import {
   Upload,
 } from "lucide-react";
 import { INVOICE_KIND_RULES } from "@/domain/invoice-kinds";
-import { LIFECYCLE_STATUSES, type LifecycleStatus, PAYMENT_STATUS_LABELS, type PaymentStatus } from "@/domain/lifecycle";
-import type { ClientKind, InvoiceKind, QuoteStatus, ReceivedInvoiceCategory, WorksiteStatus } from "@/data/types";
+import {
+  LIFECYCLE_STATUSES,
+  type LifecycleStatus,
+  PAYMENT_STATUS_LABELS,
+  type PaymentStatus,
+} from "@/domain/lifecycle";
+import type {
+  ClientKind,
+  InvoiceKind,
+  QuoteStatus,
+  ReceivedInvoiceCategory,
+  WorksiteStatus,
+} from "@/data/types";
 
 export type Tone = "neutral" | "info" | "pending" | "success" | "warning" | "danger";
 
@@ -50,7 +61,11 @@ export const QUOTE_STATUS: Record<QuoteStatus, StatusDisplay> = {
 export const PAYMENT_STATUS: Record<PaymentStatus, StatusDisplay> = {
   draft: { label: PAYMENT_STATUS_LABELS.draft, tone: "neutral", icon: FilePen },
   issued: { label: PAYMENT_STATUS_LABELS.issued, tone: "info", icon: FileCheck },
-  partially_paid: { label: PAYMENT_STATUS_LABELS.partially_paid, tone: "warning", icon: CircleDashed },
+  partially_paid: {
+    label: PAYMENT_STATUS_LABELS.partially_paid,
+    tone: "warning",
+    icon: CircleDashed,
+  },
   paid: { label: PAYMENT_STATUS_LABELS.paid, tone: "success", icon: BadgeEuro },
   overdue: { label: PAYMENT_STATUS_LABELS.overdue, tone: "danger", icon: AlarmClock },
   cancelled: { label: PAYMENT_STATUS_LABELS.cancelled, tone: "neutral", icon: Undo2 },
@@ -73,13 +88,20 @@ const LIFECYCLE_DISPLAY: Record<LifecycleStatus, Omit<StatusDisplay, "label">> =
   rejected: { tone: "danger", icon: OctagonX },
 };
 
-export const LIFECYCLE_STATUS: Record<LifecycleStatus, StatusDisplay & { code: number; mandatory: boolean }> =
-  Object.fromEntries(
-    (Object.keys(LIFECYCLE_STATUSES) as LifecycleStatus[]).map((k) => [
-      k,
-      { ...LIFECYCLE_DISPLAY[k], label: LIFECYCLE_STATUSES[k].label, code: LIFECYCLE_STATUSES[k].code, mandatory: LIFECYCLE_STATUSES[k].mandatory },
-    ]),
-  ) as Record<LifecycleStatus, StatusDisplay & { code: number; mandatory: boolean }>;
+export const LIFECYCLE_STATUS: Record<
+  LifecycleStatus,
+  StatusDisplay & { code: number; mandatory: boolean }
+> = Object.fromEntries(
+  (Object.keys(LIFECYCLE_STATUSES) as LifecycleStatus[]).map((k) => [
+    k,
+    {
+      ...LIFECYCLE_DISPLAY[k],
+      label: LIFECYCLE_STATUSES[k].label,
+      code: LIFECYCLE_STATUSES[k].code,
+      mandatory: LIFECYCLE_STATUSES[k].mandatory,
+    },
+  ]),
+) as Record<LifecycleStatus, StatusDisplay & { code: number; mandatory: boolean }>;
 
 export const WORKSITE_STATUS: Record<WorksiteStatus, { label: string; tone: Tone }> = {
   planned: { label: "À venir", tone: "neutral" },

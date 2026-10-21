@@ -3,12 +3,20 @@
  */
 import { z } from "zod";
 import { parseDecimalInput } from "@/domain/money";
-import { normalizeIdentifier, validateApeCode, validateSiren, validateSiret, validateVatNumber } from "@/domain/identifiers";
+import {
+  normalizeIdentifier,
+  validateApeCode,
+  validateSiren,
+  validateSiret,
+  validateVatNumber,
+} from "@/domain/identifiers";
 
 const trimmed = () => z.string().trim();
 
 export const requiredText = (label: string, max = 200) =>
-  trimmed().min(1, `${label} : champ obligatoire.`).max(max, `${label} : ${max} caractères maximum.`);
+  trimmed()
+    .min(1, `${label} : champ obligatoire.`)
+    .max(max, `${label} : ${max} caractères maximum.`);
 
 export const optionalText = (max = 500) => trimmed().max(max, `${max} caractères maximum.`);
 
@@ -16,8 +24,10 @@ export const emailSchema = trimmed()
   .min(1, "L'adresse e-mail est obligatoire.")
   .email("Adresse e-mail invalide (ex. nom@entreprise.fr).");
 
-export const optionalEmail = trimmed()
-  .refine((v) => !v || z.string().email().safeParse(v).success, "Adresse e-mail invalide (ex. nom@entreprise.fr).");
+export const optionalEmail = trimmed().refine(
+  (v) => !v || z.string().email().safeParse(v).success,
+  "Adresse e-mail invalide (ex. nom@entreprise.fr).",
+);
 
 export const phoneSchema = trimmed().refine(
   (v) => !v || /^(\+33\s?|0)[1-9](\s?\d{2}){4}$/.test(v),
@@ -34,7 +44,11 @@ export const addressSchema = z.object({
   countryCode: z.string().default("FR"),
 });
 
-function identifier(validate: (v: string) => { valid: boolean; error?: string }, required: boolean, missing: string) {
+function identifier(
+  validate: (v: string) => { valid: boolean; error?: string },
+  required: boolean,
+  missing: string,
+) {
   return trimmed()
     .transform((v) => normalizeIdentifier(v))
     .superRefine((v, ctx) => {
@@ -48,13 +62,41 @@ function identifier(validate: (v: string) => { valid: boolean; error?: string },
 }
 
 export const sirenSchema = (required = true) =>
-  identifier((v) => { const r = validateSiren(v); return r.valid ? r : { valid: false, error: r.error }; }, required, "Le SIREN est obligatoire.");
+  identifier(
+    (v) => {
+      const r = validateSiren(v);
+      return r.valid ? r : { valid: false, error: r.error };
+    },
+    required,
+    "Le SIREN est obligatoire.",
+  );
 export const siretSchema = (required = true) =>
-  identifier((v) => { const r = validateSiret(v); return r.valid ? r : { valid: false, error: r.error }; }, required, "Le SIRET est obligatoire.");
+  identifier(
+    (v) => {
+      const r = validateSiret(v);
+      return r.valid ? r : { valid: false, error: r.error };
+    },
+    required,
+    "Le SIRET est obligatoire.",
+  );
 export const vatNumberSchema = (required = true) =>
-  identifier((v) => { const r = validateVatNumber(v); return r.valid ? r : { valid: false, error: r.error }; }, required, "Le numéro de TVA est obligatoire.");
+  identifier(
+    (v) => {
+      const r = validateVatNumber(v);
+      return r.valid ? r : { valid: false, error: r.error };
+    },
+    required,
+    "Le numéro de TVA est obligatoire.",
+  );
 export const apeSchema = () =>
-  identifier((v) => { const r = validateApeCode(v); return r.valid ? r : { valid: false, error: r.error }; }, true, "Le code APE est obligatoire.");
+  identifier(
+    (v) => {
+      const r = validateApeCode(v);
+      return r.valid ? r : { valid: false, error: r.error };
+    },
+    true,
+    "Le code APE est obligatoire.",
+  );
 
 /** Nombre décimal saisi à la française (« 12,5 »), renvoyé en chaîne normalisée. */
 export const decimalString = (label: string, opts: { min?: number; max?: number } = {}) =>

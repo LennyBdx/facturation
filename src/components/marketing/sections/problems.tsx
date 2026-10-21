@@ -12,7 +12,10 @@ export function Problems() {
           const Icon = ICONS[p.icon] ?? CircleAlert;
           return (
             <li key={p.title} className="reveal rounded-2xl border bg-card p-6">
-              <span aria-hidden className="mb-4 flex size-10 items-center justify-center rounded-md bg-warning-soft text-warning">
+              <span
+                aria-hidden
+                className="mb-4 flex size-10 items-center justify-center rounded-md bg-warning-soft text-warning"
+              >
                 <Icon className="size-5" />
               </span>
               <h3 className="font-semibold">{p.title}</h3>

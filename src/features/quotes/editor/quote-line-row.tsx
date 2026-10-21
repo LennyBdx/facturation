@@ -84,7 +84,12 @@ export function QuoteLineRow({
         <label htmlFor={fid("unit")} className="mb-1 block text-sm font-medium @3xl:sr-only">
           Unité<span className="sr-only">, ligne {n}</span>
         </label>
-        <select id={fid("unit")} className={nativeSelect} value={line.unit} onChange={(e) => actions.setLine(si, li, { unit: e.target.value as DraftLine["unit"] })}>
+        <select
+          id={fid("unit")}
+          className={nativeSelect}
+          value={line.unit}
+          onChange={(e) => actions.setLine(si, li, { unit: e.target.value as DraftLine["unit"] })}
+        >
           {UNITS.map((u) => (
             <option key={u} value={u}>
               {UNIT_LABELS[u]}
@@ -115,7 +120,9 @@ export function QuoteLineRow({
           id={fid("vat")}
           className={nativeSelect}
           value={line.vatRate}
-          onChange={(e) => actions.setLine(si, li, { vatRate: e.target.value as DraftLine["vatRate"] })}
+          onChange={(e) =>
+            actions.setLine(si, li, { vatRate: e.target.value as DraftLine["vatRate"] })
+          }
           disabled={values.reverseCharge}
           title={values.reverseCharge ? "Autoliquidation : TVA non facturée" : undefined}
         >
@@ -133,25 +140,45 @@ export function QuoteLineRow({
       <div className="flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="icon" aria-label={`Actions de la ligne ${n}`}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={`Actions de la ligne ${n}`}
+            >
               <Ellipsis aria-hidden />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem className="min-h-11 md:min-h-9" disabled={li === 0} onSelect={() => actions.moveLine(si, li, -1)}>
+            <DropdownMenuItem
+              className="min-h-11 md:min-h-9"
+              disabled={li === 0}
+              onSelect={() => actions.moveLine(si, li, -1)}
+            >
               <ArrowUp aria-hidden />
               Monter
             </DropdownMenuItem>
-            <DropdownMenuItem className="min-h-11 md:min-h-9" disabled={isLast} onSelect={() => actions.moveLine(si, li, 1)}>
+            <DropdownMenuItem
+              className="min-h-11 md:min-h-9"
+              disabled={isLast}
+              onSelect={() => actions.moveLine(si, li, 1)}
+            >
               <ArrowDown aria-hidden />
               Descendre
             </DropdownMenuItem>
-            <DropdownMenuItem className="min-h-11 md:min-h-9" onSelect={() => actions.duplicateLine(si, li)}>
+            <DropdownMenuItem
+              className="min-h-11 md:min-h-9"
+              onSelect={() => actions.duplicateLine(si, li)}
+            >
               <Copy aria-hidden />
               Dupliquer
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" className="min-h-11 md:min-h-9" onSelect={() => actions.removeLine(si, li)}>
+            <DropdownMenuItem
+              variant="destructive"
+              className="min-h-11 md:min-h-9"
+              onSelect={() => actions.removeLine(si, li)}
+            >
               <Trash2 aria-hidden />
               Supprimer la ligne
             </DropdownMenuItem>

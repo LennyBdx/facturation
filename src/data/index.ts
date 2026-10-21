@@ -26,7 +26,10 @@ function dataLayer(): DataLayer {
   if (!globalForData.__factobatData) {
     const db = createMemoryDb(buildSeed());
     const repositories = createMemoryRepositories(db);
-    globalForData.__factobatData = { repositories, unitOfWork: createMemoryUnitOfWork(db, repositories) };
+    globalForData.__factobatData = {
+      repositories,
+      unitOfWork: createMemoryUnitOfWork(db, repositories),
+    };
   }
   return globalForData.__factobatData;
 }

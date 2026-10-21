@@ -28,7 +28,11 @@ export function CompliancePanel({
     <Card className={report.ok ? "mb-6 border-success/40" : "mb-6 border-danger/40"}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          {report.ok ? <CircleCheck aria-hidden className="size-5 text-success" /> : <ShieldAlert aria-hidden className="size-5 text-danger" />}
+          {report.ok ? (
+            <CircleCheck aria-hidden className="size-5 text-success" />
+          ) : (
+            <ShieldAlert aria-hidden className="size-5 text-danger" />
+          )}
           Contrôle avant émission
         </CardTitle>
         <CardDescription>
@@ -43,12 +47,24 @@ export function CompliancePanel({
         {report.issues.length > 0 ? (
           <ul className="space-y-2">
             {report.issues.map((issue) => (
-              <li key={issue.id} className="flex flex-col gap-1 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between">
+              <li
+                key={issue.id}
+                className="flex flex-col gap-1 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between"
+              >
                 <span className="flex items-start gap-2 text-sm">
-                  <TriangleAlert aria-hidden className={issue.blocking ? "mt-0.5 size-4 shrink-0 text-danger" : "mt-0.5 size-4 shrink-0 text-warning"} />
+                  <TriangleAlert
+                    aria-hidden
+                    className={
+                      issue.blocking
+                        ? "mt-0.5 size-4 shrink-0 text-danger"
+                        : "mt-0.5 size-4 shrink-0 text-warning"
+                    }
+                  />
                   <span>
                     {issue.message}
-                    {!issue.blocking ? <span className="text-muted-foreground"> (recommandé)</span> : null}
+                    {!issue.blocking ? (
+                      <span className="text-muted-foreground"> (recommandé)</span>
+                    ) : null}
                   </span>
                 </span>
                 <Link
@@ -70,8 +86,11 @@ export function CompliancePanel({
             title: throughPlatform ? "Émettre et transmettre la facture ?" : "Émettre la facture ?",
             description: (
               <>
-                Un numéro définitif sera attribué et la facture ne sera plus modifiable (correction par avoir uniquement).
-                {throughPlatform ? " Elle sera déposée sur la plateforme agréée qui la transmettra à votre client." : ""}
+                Un numéro définitif sera attribué et la facture ne sera plus modifiable (correction
+                par avoir uniquement).
+                {throughPlatform
+                  ? " Elle sera déposée sur la plateforme agréée qui la transmettra à votre client."
+                  : ""}
               </>
             ),
             confirmLabel: throughPlatform ? "Émettre et transmettre" : "Émettre",

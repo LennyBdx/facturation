@@ -35,11 +35,20 @@ export function RefuseQuoteButton({ quoteId }: { quoteId: string }) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Marquer le devis comme refusé</DialogTitle>
-          <DialogDescription>Le devis ne pourra plus être facturé. Vous pourrez le dupliquer pour faire une nouvelle proposition.</DialogDescription>
+          <DialogDescription>
+            Le devis ne pourra plus être facturé. Vous pourrez le dupliquer pour faire une nouvelle
+            proposition.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-1.5">
           <Label htmlFor="refusal-reason">Motif du refus (facultatif)</Label>
-          <Textarea id="refusal-reason" value={reason} onChange={(e) => setReason(e.target.value)} rows={3} placeholder="Prix, délai, projet reporté…" />
+          <Textarea
+            id="refusal-reason"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            rows={3}
+            placeholder="Prix, délai, projet reporté…"
+          />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)} disabled={pending}>

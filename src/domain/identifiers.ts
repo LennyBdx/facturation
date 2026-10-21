@@ -37,7 +37,8 @@ function digitCountError(label: string, expected: number, value: string): string
 export function validateSiren(input: string): ValidationResult {
   const value = normalizeIdentifier(input);
   if (!value) return { valid: false, error: "Le SIREN est obligatoire." };
-  if (!/^\d+$/.test(value)) return { valid: false, error: "Le SIREN ne doit contenir que des chiffres." };
+  if (!/^\d+$/.test(value))
+    return { valid: false, error: "Le SIREN ne doit contenir que des chiffres." };
   if (value.length !== 9) return { valid: false, error: digitCountError("SIREN", 9, value) };
   if (!luhnValid(value)) {
     return { valid: false, error: "Ce SIREN n'est pas valide : vérifiez les chiffres saisis." };
@@ -48,13 +49,15 @@ export function validateSiren(input: string): ValidationResult {
 export function validateSiret(input: string, expectedSiren?: string): ValidationResult {
   const value = normalizeIdentifier(input);
   if (!value) return { valid: false, error: "Le SIRET est obligatoire." };
-  if (!/^\d+$/.test(value)) return { valid: false, error: "Le SIRET ne doit contenir que des chiffres." };
+  if (!/^\d+$/.test(value))
+    return { valid: false, error: "Le SIRET ne doit contenir que des chiffres." };
   if (value.length !== 14) return { valid: false, error: digitCountError("SIRET", 14, value) };
   const siren = value.slice(0, 9);
   const ok =
     luhnValid(value) ||
     (siren === LA_POSTE_SIREN && [...value].reduce((acc, d) => acc + Number(d), 0) % 5 === 0);
-  if (!ok) return { valid: false, error: "Ce SIRET n'est pas valide : vérifiez les chiffres saisis." };
+  if (!ok)
+    return { valid: false, error: "Ce SIRET n'est pas valide : vérifiez les chiffres saisis." };
   if (expectedSiren && siren !== normalizeIdentifier(expectedSiren)) {
     return { valid: false, error: "Le SIRET doit commencer par le SIREN de l'entreprise." };
   }
@@ -79,12 +82,14 @@ export function validateVatNumber(input: string, expectedSiren?: string): Valida
     if (!/^FR[0-9A-Z]{2}\d{9}$/.test(value)) {
       return {
         valid: false,
-        error: "Un numéro de TVA français comporte FR, 2 caractères de clé puis les 9 chiffres du SIREN.",
+        error:
+          "Un numéro de TVA français comporte FR, 2 caractères de clé puis les 9 chiffres du SIREN.",
       };
     }
     const siren = value.slice(4);
     const sirenCheck = validateSiren(siren);
-    if (!sirenCheck.valid) return { valid: false, error: "Le SIREN contenu dans le numéro de TVA n'est pas valide." };
+    if (!sirenCheck.valid)
+      return { valid: false, error: "Le SIREN contenu dans le numéro de TVA n'est pas valide." };
     if (/^\d{2}$/.test(value.slice(2, 4)) && computeFrVatNumber(siren) !== value) {
       return { valid: false, error: "La clé du numéro de TVA ne correspond pas au SIREN." };
     }
@@ -103,7 +108,10 @@ export function validateVatNumber(input: string, expectedSiren?: string): Valida
 export function validateApeCode(input: string): ValidationResult {
   const value = normalizeIdentifier(input);
   if (!/^\d{4}[A-Z]$/.test(value)) {
-    return { valid: false, error: "Le code APE comporte 4 chiffres suivis d'une lettre (ex. 4321A)." };
+    return {
+      valid: false,
+      error: "Le code APE comporte 4 chiffres suivis d'une lettre (ex. 4321A).",
+    };
   }
   return { valid: true, value };
 }

@@ -9,7 +9,10 @@ import { PageSkeleton } from "./page-skeleton";
 export function AppShellSkeleton() {
   return (
     <div className="flex min-h-svh">
-      <aside aria-hidden className="hidden w-64 shrink-0 space-y-3 border-r bg-sidebar p-3 md:block">
+      <aside
+        aria-hidden
+        className="hidden w-64 shrink-0 space-y-3 border-r bg-sidebar p-3 md:block"
+      >
         <Skeleton className="h-10 w-40" />
         <Skeleton className="h-14 w-full" />
         {Array.from({ length: 8 }, (_, i) => (

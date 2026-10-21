@@ -15,6 +15,7 @@ export const SESSION_COOKIE_OPTIONS = {
 
 /** N'accepte qu'un chemin interne (évite les redirections ouvertes `//evil.com`). */
 export function safeNextPath(next: string | null | undefined, fallback: string): string {
-  if (!next || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) return fallback;
+  if (!next || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\"))
+    return fallback;
   return next;
 }

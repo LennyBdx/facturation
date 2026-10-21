@@ -41,13 +41,24 @@ export const AREAS: Area[] = [
           { label: "Hero centré, mot-clé souligné, captures réelles du prototype", status: "done" },
           { label: "Bandeau réforme (dates officielles, lien impots.gouv.fr)", status: "done" },
           { label: "Problèmes du second œuvre", status: "done" },
-          { label: "Fonctionnalités en grille avec mini-captures + appel intermédiaire", status: "done" },
+          {
+            label: "Fonctionnalités en grille avec mini-captures + appel intermédiaire",
+            status: "done",
+          },
           { label: "Comment ça marche, cartes métiers, garanties", status: "done" },
-          { label: "Preuve sociale (masquée tant qu'aucun témoignage réel)", status: "done", note: "Liste vide dans src/content/home.ts" },
+          {
+            label: "Preuve sociale (masquée tant qu'aucun témoignage réel)",
+            status: "done",
+            note: "Liste vide dans src/content/home.ts",
+          },
           { label: "Tarifs", status: "mock", note: "Prix et contenus [À DÉFINIR]" },
           { label: "FAQ accordéon accessible", status: "done", note: "3 réponses [À CONFIRMER]" },
           { label: "SEO : métadonnées, Open Graph, JSON-LD, sitemap, robots", status: "done" },
-          { label: "URL publique définitive du site", status: "todo", note: "SITE_URL dans src/config/site.ts" },
+          {
+            label: "URL publique définitive du site",
+            status: "todo",
+            note: "SITE_URL dans src/config/site.ts",
+          },
         ],
       },
       {
@@ -96,7 +107,11 @@ export const AREAS: Area[] = [
         features: [
           { label: "Étape entreprise : SIREN, SIRET, TVA, APE validés", status: "done" },
           { label: "Calcul du n° de TVA depuis le SIREN", status: "done" },
-          { label: "Étape facture électronique : explication et choix de la plateforme", status: "mock", note: "Liste de plateformes fictive" },
+          {
+            label: "Étape facture électronique : explication et choix de la plateforme",
+            status: "mock",
+            note: "Liste de plateformes fictive",
+          },
           { label: "Création réelle de l'entreprise en base", status: "todo" },
         ],
       },
@@ -114,7 +129,11 @@ export const AREAS: Area[] = [
           { label: "Pastilles « à traiter » (factures rejetées, factures reçues)", status: "done" },
           { label: "Sélecteur d'entreprise (2 entreprises fictives)", status: "done" },
           { label: "Menu utilisateur, thème sombre", status: "done" },
-          { label: "Déconnexion", status: "mock", note: "Redirige vers /connexion sans session réelle" },
+          {
+            label: "Déconnexion",
+            status: "mock",
+            note: "Redirige vers /connexion sans session réelle",
+          },
           { label: "Squelettes de chargement, page d'erreur, page introuvable", status: "done" },
         ],
       },
@@ -128,8 +147,15 @@ export const AREAS: Area[] = [
         page: "Tableau de bord",
         route: "/app/tableau-de-bord",
         features: [
-          { label: "6 indicateurs calculés (CA du mois, à encaisser, retards, devis, retenues, reçues)", status: "done" },
-          { label: "Factures électroniques rejetées, refusées, en litige à traiter", status: "done" },
+          {
+            label:
+              "6 indicateurs calculés (CA du mois, à encaisser, retards, devis, retenues, reçues)",
+            status: "done",
+          },
+          {
+            label: "Factures électroniques rejetées, refusées, en litige à traiter",
+            status: "done",
+          },
           { label: "Dernières factures, devis à relancer, chantiers en cours", status: "done" },
           { label: "Retenues de garantie à récupérer", status: "done" },
           { label: "Graphiques d'évolution (CA, encaissements)", status: "todo" },
@@ -167,7 +193,10 @@ export const AREAS: Area[] = [
         features: [
           { label: "Formulaire validé, SIREN obligatoire pour un professionnel", status: "done" },
           { label: "Code service pour un acheteur public", status: "done" },
-          { label: "Recherche automatique dans l'annuaire des entreprises (API SIRENE)", status: "todo" },
+          {
+            label: "Recherche automatique dans l'annuaire des entreprises (API SIRENE)",
+            status: "todo",
+          },
         ],
       },
     ],
@@ -201,7 +230,10 @@ export const AREAS: Area[] = [
         page: "Création / modification",
         route: "/app/chantiers/nouveau",
         features: [
-          { label: "Formulaire : marché, sous-traitance, autoliquidation, retenue ≤ 5 %, caution", status: "done" },
+          {
+            label: "Formulaire : marché, sous-traitance, autoliquidation, retenue ≤ 5 %, caution",
+            status: "done",
+          },
         ],
       },
     ],
@@ -214,7 +246,10 @@ export const AREAS: Area[] = [
         page: "Liste des devis",
         route: "/app/devis",
         features: [
-          { label: "Recherche et filtre par statut (expiré calculé automatiquement)", status: "done" },
+          {
+            label: "Recherche et filtre par statut (expiré calculé automatiquement)",
+            status: "done",
+          },
         ],
       },
       {
@@ -267,14 +302,22 @@ export const AREAS: Area[] = [
       {
         page: "Nouvelle facture",
         route: "/app/factures/nouvelle",
-        features: [{ label: "Choix du devis accepté et du type (acompte, situation, unique)", status: "done" }],
+        features: [
+          {
+            label: "Choix du devis accepté et du type (acompte, situation, unique)",
+            status: "done",
+          },
+        ],
       },
       {
         page: "Assistant de situation",
         route: "/app/factures/situation/nouvelle",
         features: [
           { label: "Avancement cumulé par ligne ou par lot, « tout à 100 % »", status: "done" },
-          { label: "Calcul en direct : période, remise, acompte, TVA, retenue, net à payer", status: "done" },
+          {
+            label: "Calcul en direct : période, remise, acompte, TVA, retenue, net à payer",
+            status: "done",
+          },
           { label: "Contrôle : avancement qui ne diminue pas, 0 à 100 %", status: "done" },
         ],
       },
@@ -284,10 +327,22 @@ export const AREAS: Area[] = [
         features: [
           { label: "Contrôle de conformité bloquant, avec liens de correction", status: "done" },
           { label: "Numérotation continue à l'émission, données figées", status: "done" },
-          { label: "Émettre et transmettre à la plateforme agréée", status: "mock", note: "Plateforme simulée" },
-          { label: "Frise du cycle de vie mise à jour en direct", status: "mock", note: "Statuts simulés" },
+          {
+            label: "Émettre et transmettre à la plateforme agréée",
+            status: "mock",
+            note: "Plateforme simulée",
+          },
+          {
+            label: "Frise du cycle de vie mise à jour en direct",
+            status: "mock",
+            note: "Statuts simulés",
+          },
           { label: "Redéposer une facture rejetée", status: "mock" },
-          { label: "Enregistrer un paiement, statut « Encaissée » déclaré", status: "mock", note: "Aucun flux bancaire" },
+          {
+            label: "Enregistrer un paiement, statut « Encaissée » déclaré",
+            status: "mock",
+            note: "Aucun flux bancaire",
+          },
           { label: "Modifier / supprimer un brouillon", status: "done" },
           { label: "Avoir d'annulation totale", status: "done" },
           { label: "Avoir partiel", status: "todo" },
@@ -297,7 +352,10 @@ export const AREAS: Area[] = [
         page: "Aperçu imprimable",
         route: "/app/factures/[id]/apercu",
         features: [
-          { label: "Document A4 avec mentions légales (situations, autoliquidation, retenue)", status: "done" },
+          {
+            label: "Document A4 avec mentions légales (situations, autoliquidation, retenue)",
+            status: "done",
+          },
           { label: "PDF et fichier Factur-X", status: "todo" },
         ],
       },
@@ -311,7 +369,11 @@ export const AREAS: Area[] = [
         page: "Boîte de réception",
         route: "/app/factures-recues",
         features: [
-          { label: "Synchronisation avec la plateforme agréée", status: "mock", note: "Une nouvelle facture arrive 60 s après le démarrage" },
+          {
+            label: "Synchronisation avec la plateforme agréée",
+            status: "mock",
+            note: "Une nouvelle facture arrive 60 s après le démarrage",
+          },
           { label: "Filtres : à traiter, approuvées, litiges, refusées, payées", status: "done" },
         ],
       },
@@ -320,7 +382,11 @@ export const AREAS: Area[] = [
         route: "/app/factures-recues/[id]",
         features: [
           { label: "Données structurées, TVA, autoliquidation à déclarer", status: "done" },
-          { label: "Approuver, refuser (motif), litige, marquer payée", status: "mock", note: "Statuts envoyés à la plateforme simulée" },
+          {
+            label: "Approuver, refuser (motif), litige, marquer payée",
+            status: "mock",
+            note: "Statuts envoyés à la plateforme simulée",
+          },
           { label: "Rattachement à un chantier", status: "done" },
           { label: "Aperçu du PDF original du fournisseur", status: "todo" },
           { label: "Paiement du fournisseur (virement)", status: "todo" },
@@ -338,8 +404,16 @@ export const AREAS: Area[] = [
         features: [
           { label: "Membres et rôles, changement de rôle", status: "done" },
           { label: "Invitations en attente, annulation", status: "done" },
-          { label: "Envoi de l'invitation par e-mail", status: "mock", note: "Aucun e-mail envoyé" },
-          { label: "Droits appliqués par rôle sur chaque action", status: "todo", note: "Seuls équipe et paramètres sont restreints" },
+          {
+            label: "Envoi de l'invitation par e-mail",
+            status: "mock",
+            note: "Aucun e-mail envoyé",
+          },
+          {
+            label: "Droits appliqués par rôle sur chaque action",
+            status: "todo",
+            note: "Seuls équipe et paramètres sont restreints",
+          },
         ],
       },
     ],
@@ -351,7 +425,9 @@ export const AREAS: Area[] = [
       {
         page: "Entreprise",
         route: "/app/parametres/entreprise",
-        features: [{ label: "Identité, identifiants, adresse, assurance décennale, banque", status: "done" }],
+        features: [
+          { label: "Identité, identifiants, adresse, assurance décennale, banque", status: "done" },
+        ],
       },
       {
         page: "Numérotation et conditions",
@@ -365,7 +441,10 @@ export const AREAS: Area[] = [
         page: "Personnalisation",
         route: "/app/parametres/documents",
         features: [
-          { label: "Couleur d'accent avec contrôle de contraste, mentions complémentaires", status: "done" },
+          {
+            label: "Couleur d'accent avec contrôle de contraste, mentions complémentaires",
+            status: "done",
+          },
           { label: "Import du logo", status: "todo" },
         ],
       },

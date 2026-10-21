@@ -28,10 +28,19 @@ export const LIFECYCLE_STATUSES = {
 export type LifecycleStatus = keyof typeof LIFECYCLE_STATUSES;
 
 /** Une facture rejetée (213) n'a jamais existé fiscalement : on la corrige et on la redépose. */
-export const TERMINAL_LIFECYCLE_STATUSES: readonly LifecycleStatus[] = ["refused", "rejected", "cashed"];
+export const TERMINAL_LIFECYCLE_STATUSES: readonly LifecycleStatus[] = [
+  "refused",
+  "rejected",
+  "cashed",
+];
 
 /** Statuts nécessitant une action de l'émetteur. */
-export const LIFECYCLE_NEEDS_ACTION: readonly LifecycleStatus[] = ["rejected", "refused", "disputed", "suspended"];
+export const LIFECYCLE_NEEDS_ACTION: readonly LifecycleStatus[] = [
+  "rejected",
+  "refused",
+  "disputed",
+  "suspended",
+];
 
 /** Actions possibles sur une facture reçue, et statut produit. */
 export const RECEIVED_INVOICE_ACTIONS = {
@@ -59,13 +68,16 @@ const ALLOWED_RECEIVED_ACTIONS: Record<LifecycleStatus, readonly ReceivedInvoice
   rejected: [],
 };
 
-export function allowedReceivedInvoiceActions(status: LifecycleStatus): readonly ReceivedInvoiceAction[] {
+export function allowedReceivedInvoiceActions(
+  status: LifecycleStatus,
+): readonly ReceivedInvoiceAction[] {
   return ALLOWED_RECEIVED_ACTIONS[status];
 }
 
 // --- Statut de paiement ------------------------------------------------------
 
-export type PaymentStatus = "draft" | "issued" | "partially_paid" | "paid" | "overdue" | "cancelled";
+export type PaymentStatus =
+  "draft" | "issued" | "partially_paid" | "paid" | "overdue" | "cancelled";
 
 export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
   draft: "Brouillon",

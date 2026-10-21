@@ -68,14 +68,24 @@ export function LifecycleStatusBadge({
 }) {
   if (!status) {
     return (
-      <ToneBadge tone="neutral" className="border-dashed" title={outOfScope ? "Vente à un particulier : données transmises par e-reporting" : undefined}>
+      <ToneBadge
+        tone="neutral"
+        className="border-dashed"
+        title={
+          outOfScope ? "Vente à un particulier : données transmises par e-reporting" : undefined
+        }
+      >
         {outOfScope ? "E-reporting" : "Non transmise"}
       </ToneBadge>
     );
   }
   const s = LIFECYCLE_STATUS[status];
   return (
-    <ToneBadge tone={s.tone} icon={s.icon} title={`Statut ${s.code}${s.mandatory ? " (obligatoire)" : ""}`}>
+    <ToneBadge
+      tone={s.tone}
+      icon={s.icon}
+      title={`Statut ${s.code}${s.mandatory ? " (obligatoire)" : ""}`}
+    >
       {s.label}
     </ToneBadge>
   );

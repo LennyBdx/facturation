@@ -5,7 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
 import { useTheme } from "next-themes";
-import { Building2, Check, ChevronsUpDown, LogOut, Moon, ShieldCheck, Sun, UserRound } from "lucide-react";
+import {
+  Building2,
+  Check,
+  ChevronsUpDown,
+  LogOut,
+  Moon,
+  ShieldCheck,
+  Sun,
+  UserRound,
+} from "lucide-react";
 import { APP_NAME, E_INVOICING_READY_LABEL } from "@/config/app";
 import { signOut, switchOrganization } from "@/features/session/actions";
 import {
@@ -64,11 +73,19 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link href={routes.dashboard} className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-          <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground">
+        <Link
+          href={routes.dashboard}
+          className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+        >
+          <span
+            aria-hidden
+            className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground"
+          >
             <span className="size-3 rotate-45 rounded-[2px] bg-brand" />
           </span>
-          <span className="text-lg font-semibold tracking-tight group-data-[collapsible=icon]:hidden">{APP_NAME}</span>
+          <span className="text-lg font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+            {APP_NAME}
+          </span>
         </Link>
         <OrganizationSwitcher organizations={organizations} active={active} />
       </SidebarHeader>
@@ -94,8 +111,16 @@ export function AppSidebar({
                     </SidebarMenuButton>
                     {count > 0 ? (
                       <SidebarMenuBadge
-                        className={item.badgeKey === "rejected" ? "bg-danger-soft text-danger" : "bg-info-soft text-info"}
-                        aria-label={item.badgeKey === "rejected" ? `${count} factures à corriger` : `${count} factures à traiter`}
+                        className={
+                          item.badgeKey === "rejected"
+                            ? "bg-danger-soft text-danger"
+                            : "bg-info-soft text-info"
+                        }
+                        aria-label={
+                          item.badgeKey === "rejected"
+                            ? `${count} factures à corriger`
+                            : `${count} factures à traiter`
+                        }
                       >
                         {count}
                       </SidebarMenuBadge>
@@ -120,14 +145,25 @@ export function AppSidebar({
   );
 }
 
-function OrganizationSwitcher({ organizations, active }: { organizations: ShellOrganization[]; active: ShellOrganization }) {
+function OrganizationSwitcher({
+  organizations,
+  active,
+}: {
+  organizations: ShellOrganization[];
+  active: ShellOrganization;
+}) {
   const [pending, startTransition] = useTransition();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="border bg-card" aria-label="Changer d'entreprise" disabled={pending}>
+            <SidebarMenuButton
+              size="lg"
+              className="border bg-card"
+              aria-label="Changer d'entreprise"
+              disabled={pending}
+            >
               <Building2 aria-hidden />
               <span className="flex min-w-0 flex-col text-left leading-tight">
                 <span className="truncate font-medium">{active.name}</span>
@@ -136,7 +172,10 @@ function OrganizationSwitcher({ organizations, active }: { organizations: ShellO
               <ChevronsUpDown aria-hidden className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-(--radix-dropdown-menu-trigger-width) min-w-64">
+          <DropdownMenuContent
+            align="start"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-64"
+          >
             <DropdownMenuLabel>Entreprises</DropdownMenuLabel>
             {organizations.map((o) => (
               <DropdownMenuItem
@@ -165,17 +204,26 @@ function UserMenu({ user }: { user: ShellUser }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg" aria-label="Menu utilisateur">
-              <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
+              <span
+                aria-hidden
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground"
+              >
                 {user.initials}
               </span>
               <span className="flex min-w-0 flex-col text-left leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs text-muted-foreground">{user.jobTitle ?? user.email}</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {user.jobTitle ?? user.email}
+                </span>
               </span>
               <ChevronsUpDown aria-hidden className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="start" className="w-(--radix-dropdown-menu-trigger-width) min-w-60">
+          <DropdownMenuContent
+            side="top"
+            align="start"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-60"
+          >
             <DropdownMenuLabel className="font-normal">
               <span className="block font-medium">{user.name}</span>
               <span className="block truncate text-xs text-muted-foreground">{user.email}</span>
@@ -188,13 +236,20 @@ function UserMenu({ user }: { user: ShellUser }) {
                   Mon compte
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="min-h-11 md:min-h-9" onSelect={() => setTheme(dark ? "light" : "dark")}>
+              <DropdownMenuItem
+                className="min-h-11 md:min-h-9"
+                onSelect={() => setTheme(dark ? "light" : "dark")}
+              >
                 {dark ? <Sun aria-hidden /> : <Moon aria-hidden />}
                 {dark ? "Thème clair" : "Thème sombre"}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" className="min-h-11 md:min-h-9" onSelect={() => signOut()}>
+            <DropdownMenuItem
+              variant="destructive"
+              className="min-h-11 md:min-h-9"
+              onSelect={() => signOut()}
+            >
               <LogOut aria-hidden />
               Se déconnecter
             </DropdownMenuItem>

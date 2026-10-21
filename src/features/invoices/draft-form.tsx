@@ -14,9 +14,19 @@ import { draftSchema, type DraftInput } from "./schemas";
  * Modification d'un brouillon : en-tête, échéance et conditions.
  * Les lignes d'une situation se recalculent depuis l'assistant (supprimer puis recréer).
  */
-export function DraftForm({ invoiceId, defaultValues }: { invoiceId: string; defaultValues: DraftInput }) {
+export function DraftForm({
+  invoiceId,
+  defaultValues,
+}: {
+  invoiceId: string;
+  defaultValues: DraftInput;
+}) {
   const router = useRouter();
-  const form = useForm<DraftInput>({ resolver: zodResolver(draftSchema), defaultValues, mode: "onBlur" });
+  const form = useForm<DraftInput>({
+    resolver: zodResolver(draftSchema),
+    defaultValues,
+    mode: "onBlur",
+  });
   return (
     <form
       noValidate
@@ -27,14 +37,52 @@ export function DraftForm({ invoiceId, defaultValues }: { invoiceId: string; def
       })}
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField control={form.control} name="title" label="Intitulé" required className="sm:col-span-2" />
-        <TextField control={form.control} name="issueDate" label="Date d'émission prévue" type="date" required />
-        <TextField control={form.control} name="dueDate" label="Date d'échéance" type="date" required />
-        <TextField control={form.control} name="orderReference" label="Référence de commande ou de marché" description="Recommandée pour un acheteur public." />
-        <TextareaField control={form.control} name="paymentTermsLabel" label="Conditions de paiement" required className="sm:col-span-2" />
-        <TextareaField control={form.control} name="notes" label="Notes" className="sm:col-span-2" />
+        <TextField
+          control={form.control}
+          name="title"
+          label="Intitulé"
+          required
+          className="sm:col-span-2"
+        />
+        <TextField
+          control={form.control}
+          name="issueDate"
+          label="Date d'émission prévue"
+          type="date"
+          required
+        />
+        <TextField
+          control={form.control}
+          name="dueDate"
+          label="Date d'échéance"
+          type="date"
+          required
+        />
+        <TextField
+          control={form.control}
+          name="orderReference"
+          label="Référence de commande ou de marché"
+          description="Recommandée pour un acheteur public."
+        />
+        <TextareaField
+          control={form.control}
+          name="paymentTermsLabel"
+          label="Conditions de paiement"
+          required
+          className="sm:col-span-2"
+        />
+        <TextareaField
+          control={form.control}
+          name="notes"
+          label="Notes"
+          className="sm:col-span-2"
+        />
       </div>
-      <FormActions pending={form.formState.isSubmitting} submitLabel="Enregistrer le brouillon" cancelHref={routes.invoices.show(invoiceId)} />
+      <FormActions
+        pending={form.formState.isSubmitting}
+        submitLabel="Enregistrer le brouillon"
+        cancelHref={routes.invoices.show(invoiceId)}
+      />
     </form>
   );
 }

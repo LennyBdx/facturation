@@ -58,10 +58,14 @@ export default async function DashboardPage() {
       />
 
       {d.toCorrect.length > 0 ? (
-        <section aria-labelledby="a-corriger" className="mb-6 rounded-lg border border-danger/30 bg-danger-soft p-4">
+        <section
+          aria-labelledby="a-corriger"
+          className="mb-6 rounded-lg border border-danger/30 bg-danger-soft p-4"
+        >
           <h2 id="a-corriger" className="mb-3 flex items-center gap-2 font-semibold text-danger">
             <TriangleAlert aria-hidden className="size-5" />
-            {d.toCorrect.length} facture{d.toCorrect.length > 1 ? "s" : ""} électronique{d.toCorrect.length > 1 ? "s" : ""} à traiter
+            {d.toCorrect.length} facture{d.toCorrect.length > 1 ? "s" : ""} électronique
+            {d.toCorrect.length > 1 ? "s" : ""} à traiter
           </h2>
           <ul className="space-y-2">
             {d.toCorrect.map((inv) => {
@@ -77,9 +81,13 @@ export default async function DashboardPage() {
                       <span className="font-medium">{inv.number}</span>
                     </span>
                     <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
-                      {d.clientName.get(inv.clientId)} — {last?.comment ?? LIFECYCLE_STATUS[inv.eInvoicing.status!].label}
+                      {d.clientName.get(inv.clientId)} —{" "}
+                      {last?.comment ?? LIFECYCLE_STATUS[inv.eInvoicing.status!].label}
                     </span>
-                    <ArrowRight aria-hidden className="hidden size-4 shrink-0 text-muted-foreground sm:block" />
+                    <ArrowRight
+                      aria-hidden
+                      className="hidden size-4 shrink-0 text-muted-foreground sm:block"
+                    />
                   </Link>
                 </li>
               );
@@ -89,7 +97,13 @@ export default async function DashboardPage() {
       ) : null}
 
       <section aria-label="Indicateurs" className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <KpiCard label="Facturé ce mois-ci (HT)" value={<Amount value={k.billedThisMonth} />} icon={Receipt} href={routes.invoices.list()} emphasis="brand" />
+        <KpiCard
+          label="Facturé ce mois-ci (HT)"
+          value={<Amount value={k.billedThisMonth} />}
+          icon={Receipt}
+          href={routes.invoices.list()}
+          emphasis="brand"
+        />
         <KpiCard
           label="Reste à encaisser"
           value={<Amount value={k.outstanding} />}
@@ -100,7 +114,11 @@ export default async function DashboardPage() {
         <KpiCard
           label="Factures en retard"
           value={<Amount value={k.overdue} />}
-          hint={k.overdueCount > 0 ? `${k.overdueCount} facture${k.overdueCount > 1 ? "s" : ""} à relancer` : "Aucun retard"}
+          hint={
+            k.overdueCount > 0
+              ? `${k.overdueCount} facture${k.overdueCount > 1 ? "s" : ""} à relancer`
+              : "Aucun retard"
+          }
           icon={AlarmClock}
           href={routes.invoices.list({ filtre: "overdue" })}
           emphasis={k.overdueCount > 0 ? "danger" : undefined}
@@ -151,19 +169,30 @@ export default async function DashboardPage() {
             <ul className="divide-y">
               {d.latestInvoices.map((inv) => (
                 <li key={inv.id}>
-                  <Link href={routes.invoices.show(inv.id)} className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+                  <Link
+                    href={routes.invoices.show(inv.id)}
+                    className="flex min-h-11 flex-col gap-1.5 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2"
+                  >
                     <span className="flex items-start justify-between gap-3">
                       <span className="min-w-0">
-                        <span className="block truncate font-medium">{d.clientName.get(inv.clientId)}</span>
+                        <span className="block truncate font-medium">
+                          {d.clientName.get(inv.clientId)}
+                        </span>
                         <span className="block truncate text-sm text-muted-foreground">
-                          {inv.number ?? "Brouillon"} · {INVOICE_KIND_LABELS[inv.kind]} · {formatDate(inv.issueDate)}
+                          {inv.number ?? "Brouillon"} · {INVOICE_KIND_LABELS[inv.kind]} ·{" "}
+                          {formatDate(inv.issueDate)}
                         </span>
                       </span>
                       <Amount value={inv.totals.netToPay} className="font-semibold" />
                     </span>
                     <span className="flex flex-wrap gap-1.5">
                       <PaymentStatusBadge status={invoicePaymentStatus(inv, ctx.today)} />
-                      {inv.issuedAt ? <LifecycleStatusBadge status={inv.eInvoicing.status} outOfScope={inv.buyer?.kind === "individual"} /> : null}
+                      {inv.issuedAt ? (
+                        <LifecycleStatusBadge
+                          status={inv.eInvoicing.status}
+                          outOfScope={inv.buyer?.kind === "individual"}
+                        />
+                      ) : null}
                     </span>
                   </Link>
                 </li>
@@ -185,20 +214,26 @@ export default async function DashboardPage() {
             <CardContent>
               {d.quotesToFollowUp.length === 0 ? (
                 <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CircleCheck aria-hidden className="size-4 text-success" /> Aucun devis sans réponse depuis plus de 15 jours.
+                  <CircleCheck aria-hidden className="size-4 text-success" /> Aucun devis sans
+                  réponse depuis plus de 15 jours.
                 </p>
               ) : (
                 <ul className="divide-y">
                   {d.quotesToFollowUp.map(({ quote, days }) => (
                     <li key={quote.id}>
-                      <Link href={routes.quotes.show(quote.id)} className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2">
+                      <Link
+                        href={routes.quotes.show(quote.id)}
+                        className="flex min-h-11 items-center justify-between gap-3 py-3 hover:bg-accent/30 sm:-mx-2 sm:px-2"
+                      >
                         <span className="min-w-0">
                           <span className="block truncate font-medium">{quote.title}</span>
                           <span className="block truncate text-sm text-muted-foreground">
                             {quote.number} · {d.clientName.get(quote.clientId)}
                           </span>
                         </span>
-                        <span className="shrink-0 text-sm text-warning">envoyé il y a {days} j</span>
+                        <span className="shrink-0 text-sm text-warning">
+                          envoyé il y a {days} j
+                        </span>
                       </Link>
                     </li>
                   ))}
@@ -222,15 +257,28 @@ export default async function DashboardPage() {
                   const pct = d.progressByWorksite.get(w.id) ?? "0.00";
                   return (
                     <li key={w.id}>
-                      <Link href={routes.worksites.show(w.id)} className="block space-y-1.5 rounded-md hover:bg-accent/30 sm:-mx-2 sm:px-2 sm:py-1">
+                      <Link
+                        href={routes.worksites.show(w.id)}
+                        className="block space-y-1.5 rounded-md hover:bg-accent/30 sm:-mx-2 sm:px-2 sm:py-1"
+                      >
                         <span className="flex items-center justify-between gap-3">
                           <span className="truncate font-medium">{w.name}</span>
-                          <span className="num shrink-0 text-sm text-muted-foreground">{formatPercent(pct)} facturé</span>
+                          <span className="num shrink-0 text-sm text-muted-foreground">
+                            {formatPercent(pct)} facturé
+                          </span>
                         </span>
-                        <Progress value={Number(pct)} aria-label={`Avancement facturé : ${formatPercent(pct)}`} className="h-2 [&>*]:bg-brand" />
+                        <Progress
+                          value={Number(pct)}
+                          aria-label={`Avancement facturé : ${formatPercent(pct)}`}
+                          className="h-2 [&>*]:bg-brand"
+                        />
                         <span className="flex items-center gap-2 text-sm text-muted-foreground">
                           Marché <Amount value={w.contractAmount} /> HT
-                          {w.reverseCharge ? <span className="rounded-sm bg-secondary px-1.5 text-xs">Autoliquidation</span> : null}
+                          {w.reverseCharge ? (
+                            <span className="rounded-sm bg-secondary px-1.5 text-xs">
+                              Autoliquidation
+                            </span>
+                          ) : null}
                         </span>
                       </Link>
                     </li>
@@ -254,10 +302,15 @@ export default async function DashboardPage() {
                     .filter((r) => r.releasable)
                     .map((r) => (
                       <li key={r.worksite.id}>
-                        <Link href={routes.worksites.show(r.worksite.id)} className="flex min-h-11 items-center justify-between gap-3 py-3">
+                        <Link
+                          href={routes.worksites.show(r.worksite.id)}
+                          className="flex min-h-11 items-center justify-between gap-3 py-3"
+                        >
                           <span className="min-w-0">
                             <span className="block truncate font-medium">{r.worksite.name}</span>
-                            <span className="block text-sm text-muted-foreground">Libérable depuis le {formatDate(r.releaseDate)}</span>
+                            <span className="block text-sm text-muted-foreground">
+                              Libérable depuis le {formatDate(r.releaseDate)}
+                            </span>
                           </span>
                           <Amount value={r.held} className="font-semibold" />
                         </Link>

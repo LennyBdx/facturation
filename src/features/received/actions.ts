@@ -5,7 +5,11 @@ import { runAction } from "@/composition/action";
 import { routes } from "@/config/routes";
 import type { ReceivedInvoiceAction } from "@/domain/lifecycle";
 import type { ActionResult } from "@/lib/action-result";
-import { actOnReceivedInvoice, attachReceivedToWorksite, syncReceivedInvoices } from "@/services/received";
+import {
+  actOnReceivedInvoice,
+  attachReceivedToWorksite,
+  syncReceivedInvoices,
+} from "@/services/received";
 
 const MESSAGES: Record<ReceivedInvoiceAction, string> = {
   approve: "Facture approuvée : le fournisseur en est informé.",
@@ -14,7 +18,11 @@ const MESSAGES: Record<ReceivedInvoiceAction, string> = {
   mark_paid: "Paiement transmis : la facture est marquée comme payée.",
 };
 
-export async function receivedInvoiceAction(id: string, action: ReceivedInvoiceAction, reason?: string): Promise<ActionResult> {
+export async function receivedInvoiceAction(
+  id: string,
+  action: ReceivedInvoiceAction,
+  reason?: string,
+): Promise<ActionResult> {
   return runAction({ permission: "received:process" }, undefined, async (ctx) => {
     await actOnReceivedInvoice(ctx, id, action, reason);
     revalidatePath(routes.received.list());
@@ -27,7 +35,10 @@ export async function attachWorksiteAction(id: string, worksiteId: string): Prom
   return runAction({ permission: "received:process" }, undefined, async (ctx) => {
     await attachReceivedToWorksite(ctx, id, worksiteId || null);
     revalidatePath(routes.received.show(id));
-    return { ok: true, message: worksiteId ? "Facture rattachée au chantier." : "Rattachement retiré." };
+    return {
+      ok: true,
+      message: worksiteId ? "Facture rattachée au chantier." : "Rattachement retiré.",
+    };
   });
 }
 

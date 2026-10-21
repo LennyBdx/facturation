@@ -31,7 +31,12 @@ export function ActionButton({
   ...button
 }: Omit<ButtonProps, "onClick" | "action"> & {
   action: () => Promise<ActionResult<{ id?: string; redirectTo?: string } | undefined>>;
-  confirm?: { title: string; description: React.ReactNode; confirmLabel: string; destructive?: boolean };
+  confirm?: {
+    title: string;
+    description: React.ReactNode;
+    confirmLabel: string;
+    destructive?: boolean;
+  };
   redirectTo?: string;
 }) {
   const router = useRouter();
@@ -53,7 +58,11 @@ export function ActionButton({
     });
 
   const trigger = (
-    <Button {...button} disabled={pending || button.disabled} onClick={confirm ? () => setOpen(true) : run}>
+    <Button
+      {...button}
+      disabled={pending || button.disabled}
+      onClick={confirm ? () => setOpen(true) : run}
+    >
       {pending ? <Loader2 aria-hidden className="animate-spin" /> : null}
       {children}
     </Button>

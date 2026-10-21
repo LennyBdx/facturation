@@ -8,7 +8,14 @@ import { PageHeader } from "@/components/app/page-header";
 import { LifecycleStatusBadge, ToneBadge } from "@/components/status/status-badge";
 import { RECEIVED_CATEGORY_LABELS } from "@/components/status/status-config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { formatSiren } from "@/domain/identifiers";
 import { allowedReceivedInvoiceActions, daysBetween } from "@/domain/lifecycle";
 import { formatVatRateLabel, REVERSE_CHARGE_MENTION } from "@/domain/vat";
@@ -18,12 +25,20 @@ import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Facture reçue" };
 
-const ACTORS = { platform: "Plateforme agréée", buyer: "Votre entreprise", seller: "Fournisseur", administration: "Administration fiscale" } as const;
+const ACTORS = {
+  platform: "Plateforme agréée",
+  buyer: "Votre entreprise",
+  seller: "Fournisseur",
+  administration: "Administration fiscale",
+} as const;
 
 export default async function ReceivedInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { repos, orgId, today } = await getRequestContext();
-  const [inv, worksites] = await Promise.all([repos.receivedInvoices.get(orgId, id), repos.worksites.list(orgId)]);
+  const [inv, worksites] = await Promise.all([
+    repos.receivedInvoices.get(orgId, id),
+    repos.worksites.list(orgId),
+  ]);
   if (!inv) notFound();
   const dueIn = daysBetween(today, inv.dueDate);
   const settled = inv.status === "payment_sent" || inv.status === "refused";
@@ -50,14 +65,22 @@ export default async function ReceivedInvoicePage({ params }: { params: Promise<
           <p className="num text-3xl font-semibold tracking-tight">
             <Amount value={inv.gross} />
           </p>
-          <p className={!settled && dueIn < 0 ? "text-sm text-danger" : "text-sm text-muted-foreground"}>
-            {inv.paidAt ? `Payée le ${formatDate(inv.paidAt)}` : `Échéance le ${formatDate(inv.dueDate)}${settled ? "" : ` (${formatDueIn(dueIn)})`}`}
+          <p
+            className={
+              !settled && dueIn < 0 ? "text-sm text-danger" : "text-sm text-muted-foreground"
+            }
+          >
+            {inv.paidAt
+              ? `Payée le ${formatDate(inv.paidAt)}`
+              : `Échéance le ${formatDate(inv.dueDate)}${settled ? "" : ` (${formatDueIn(dueIn)})`}`}
           </p>
         </div>
         <div className="space-y-3 rounded-lg border bg-card p-4 lg:col-span-2">
           <p className="font-medium">Traitement</p>
           <ReceivedActions id={inv.id} allowed={allowedReceivedInvoiceActions(inv.status)} />
-          {inv.statusReason ? <p className="rounded-md bg-secondary px-3 py-2 text-sm">Motif : {inv.statusReason}</p> : null}
+          {inv.statusReason ? (
+            <p className="rounded-md bg-secondary px-3 py-2 text-sm">Motif : {inv.statusReason}</p>
+          ) : null}
         </div>
       </section>
 
@@ -66,7 +89,9 @@ export default async function ReceivedInvoicePage({ params }: { params: Promise<
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Aperçu des données de la facture</CardTitle>
-              <CardDescription>Données structurées transmises par la plateforme (format électronique).</CardDescription>
+              <CardDescription>
+                Données structurées transmises par la plateforme (format électronique).
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="hidden md:block">
@@ -90,7 +115,9 @@ export default async function ReceivedInvoicePage({ params }: { params: Promise<
                         <TableCell className="num text-right">
                           <Amount value={l.unitPrice} />
                         </TableCell>
-                        <TableCell className="num text-right">{inv.reverseCharge ? "AE" : formatVatRateLabel(l.vatRate)}</TableCell>
+                        <TableCell className="num text-right">
+                          {inv.reverseCharge ? "AE" : formatVatRateLabel(l.vatRate)}
+                        </TableCell>
                         <TableCell className="num text-right">
                           <Amount value={l.net} />
                         </TableCell>
@@ -121,7 +148,11 @@ export default async function ReceivedInvoicePage({ params }: { params: Promise<
                 </div>
                 {inv.vatBreakdown.map((b) => (
                   <div key={`${b.vatCategory}${b.vatRate}`} className="flex justify-between">
-                    <dt className="text-muted-foreground">{b.vatCategory === "AE" ? "TVA à autoliquider" : `TVA ${formatVatRateLabel(b.vatRate)}`}</dt>
+                    <dt className="text-muted-foreground">
+                      {b.vatCategory === "AE"
+                        ? "TVA à autoliquider"
+                        : `TVA ${formatVatRateLabel(b.vatRate)}`}
+                    </dt>
                     <dd>
                       <Amount value={b.vat} />
                     </dd>
@@ -158,7 +189,11 @@ export default async function ReceivedInvoicePage({ params }: { params: Promise<
               <CardTitle className="text-lg">Rattachement</CardTitle>
             </CardHeader>
             <CardContent>
-              <WorksiteAttach id={inv.id} current={inv.worksiteId} worksites={worksites.map((w) => ({ id: w.id, name: w.name }))} />
+              <WorksiteAttach
+                id={inv.id}
+                current={inv.worksiteId}
+                worksites={worksites.map((w) => ({ id: w.id, name: w.name }))}
+              />
             </CardContent>
           </Card>
           <Card>
@@ -170,13 +205,23 @@ export default async function ReceivedInvoicePage({ params }: { params: Promise<
                 columns={1}
                 items={[
                   { label: "Raison sociale", value: inv.supplier.name },
-                  { label: "SIREN", value: <span className="font-mono">{formatSiren(inv.supplier.siren)}</span> },
+                  {
+                    label: "SIREN",
+                    value: <span className="font-mono">{formatSiren(inv.supplier.siren)}</span>,
+                  },
                   { label: "TVA", value: inv.supplier.vatNumber },
                   { label: "Adresse", value: formatAddress(inv.supplier.address) },
                   { label: "Date de facture", value: formatDate(inv.issueDate) },
                   { label: "Reçue le", value: formatDate(inv.receivedAt) },
-                  { label: "Réf. commande", value: inv.orderReference, hidden: !inv.orderReference },
-                  { label: "Identifiant plateforme", value: <span className="font-mono text-xs">{inv.platformInvoiceId}</span> },
+                  {
+                    label: "Réf. commande",
+                    value: inv.orderReference,
+                    hidden: !inv.orderReference,
+                  },
+                  {
+                    label: "Identifiant plateforme",
+                    value: <span className="font-mono text-xs">{inv.platformInvoiceId}</span>,
+                  },
                 ]}
               />
             </CardContent>

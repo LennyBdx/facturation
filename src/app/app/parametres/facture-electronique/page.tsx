@@ -27,7 +27,8 @@ export default async function EInvoicingSettingsPage() {
           </ToneBadge>
         </h2>
         <p className="text-sm text-muted-foreground">
-          Nous préparons vos factures et les transmettons à la plateforme agréée de votre choix. Liste et connexion fictives dans le prototype.
+          Nous préparons vos factures et les transmettons à la plateforme agréée de votre choix.
+          Liste et connexion fictives dans le prototype.
         </p>
       </div>
 
@@ -61,7 +62,11 @@ export default async function EInvoicingSettingsPage() {
               </span>
             ) : null}
           </p>
-          <PlatformPicker platforms={platforms} current={e.platformId} connected={e.connectionStatus === "connected"} />
+          <PlatformPicker
+            platforms={platforms}
+            current={e.platformId}
+            connected={e.connectionStatus === "connected"}
+          />
         </CardContent>
       </Card>
 
@@ -70,22 +75,29 @@ export default async function EInvoicingSettingsPage() {
           <CalendarClock aria-hidden className="mb-2 size-5 text-brand" />
           <p className="font-medium">Calendrier de la réforme</p>
           <ul className="mt-1 space-y-1 text-sm text-muted-foreground">
-            <li>1er septembre 2026 : réception obligatoire pour toutes les entreprises ; émission pour les grandes entreprises et ETI.</li>
-            <li>1er septembre 2027 : émission obligatoire pour les PME, TPE et micro-entreprises.</li>
+            <li>
+              1er septembre 2026 : réception obligatoire pour toutes les entreprises ; émission pour
+              les grandes entreprises et ETI.
+            </li>
+            <li>
+              1er septembre 2027 : émission obligatoire pour les PME, TPE et micro-entreprises.
+            </li>
           </ul>
         </div>
         <div className="rounded-lg border bg-card p-4">
           <Network aria-hidden className="mb-2 size-5 text-brand" />
           <p className="font-medium">Plateforme agréée</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Immatriculée par l&apos;État, elle émet, transmet et reçoit vos factures électroniques et transmet les données à l&apos;administration.
+            Immatriculée par l&apos;État, elle émet, transmet et reçoit vos factures électroniques
+            et transmet les données à l&apos;administration.
           </p>
         </div>
         <div className="rounded-lg border bg-card p-4">
           <Send aria-hidden className="mb-2 size-5 text-brand" />
           <p className="font-medium">Particuliers et étranger</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Les ventes aux particuliers ne passent pas par la facture électronique : leurs données sont transmises par e-reporting.
+            Les ventes aux particuliers ne passent pas par la facture électronique : leurs données
+            sont transmises par e-reporting.
           </p>
         </div>
       </div>
@@ -94,8 +106,9 @@ export default async function EInvoicingSettingsPage() {
         <CardHeader>
           <CardTitle className="text-lg">Statuts du cycle de vie</CardTitle>
           <CardDescription>
-            Statuts échangés entre plateformes. Ceux marqués « obligatoire » sont transmis à l&apos;administration. Pour des travaux (prestations de
-            services, TVA exigible à l&apos;encaissement), le statut « Encaissée » doit être déclaré à réception du paiement.
+            Statuts échangés entre plateformes. Ceux marqués « obligatoire » sont transmis à
+            l&apos;administration. Pour des travaux (prestations de services, TVA exigible à
+            l&apos;encaissement), le statut « Encaissée » doit être déclaré à réception du paiement.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,7 +121,9 @@ export default async function EInvoicingSettingsPage() {
                   <ToneBadge tone={s.tone} icon={s.icon}>
                     {s.label}
                   </ToneBadge>
-                  {s.mandatory ? <span className="text-xs font-medium text-muted-foreground">obligatoire</span> : null}
+                  {s.mandatory ? (
+                    <span className="text-xs font-medium text-muted-foreground">obligatoire</span>
+                  ) : null}
                 </li>
               );
             })}

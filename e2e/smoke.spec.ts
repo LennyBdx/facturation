@@ -35,7 +35,9 @@ test("un client créé apparaît aussitôt dans la liste (cache invalidé)", asy
 });
 
 test("la déconnexion ferme la session", async ({ page, context }) => {
-  await context.addCookies([{ name: "factobat_session", value: "usr-julien", url: "http://localhost:3230" }]);
+  await context.addCookies([
+    { name: "factobat_session", value: "usr-julien", url: "http://localhost:3230" },
+  ]);
   await page.goto("/app/tableau-de-bord");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await context.clearCookies();

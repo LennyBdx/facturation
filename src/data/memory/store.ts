@@ -36,7 +36,8 @@ export interface SeedData {
   receivedInvoices: ReceivedInvoice[];
 }
 
-const toMap = <T extends { id: string }>(rows: readonly T[]) => new Map(rows.map((r) => [r.id, structuredClone(r)]));
+const toMap = <T extends { id: string }>(rows: readonly T[]) =>
+  new Map(rows.map((r) => [r.id, structuredClone(r)]));
 
 export function createMemoryDb(seed: SeedData): MemoryDb {
   return {
@@ -64,7 +65,10 @@ export function nowIso(): string {
 }
 
 /** Recherche insensible à la casse et aux accents. */
-export function matches(haystack: readonly (string | undefined | null)[], needle?: string): boolean {
+export function matches(
+  haystack: readonly (string | undefined | null)[],
+  needle?: string,
+): boolean {
   if (!needle?.trim()) return true;
   const norm = (s: string) =>
     s

@@ -30,10 +30,18 @@ export const companySchema = z
   })
   .superRefine((v, ctx) => {
     if (v.siren && v.siret && !validateSiret(v.siret, v.siren).valid) {
-      ctx.addIssue({ code: "custom", path: ["siret"], message: "Le SIRET doit commencer par le SIREN de l'entreprise." });
+      ctx.addIssue({
+        code: "custom",
+        path: ["siret"],
+        message: "Le SIRET doit commencer par le SIREN de l'entreprise.",
+      });
     }
     if (v.siren && v.vatNumber.startsWith("FR") && !validateVatNumber(v.vatNumber, v.siren).valid) {
-      ctx.addIssue({ code: "custom", path: ["vatNumber"], message: "Le numéro de TVA ne correspond pas au SIREN saisi." });
+      ctx.addIssue({
+        code: "custom",
+        path: ["vatNumber"],
+        message: "Le numéro de TVA ne correspond pas au SIREN saisi.",
+      });
     }
   });
 

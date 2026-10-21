@@ -16,9 +16,21 @@ function fakeProvider() {
     submitInvoice: vi.fn(async () => ({
       platformInvoiceId: "PA-TEST",
       status: "deposited" as const,
-      events: [{ id: "e1", status: "deposited" as const, at: "2026-10-18T10:00:00.000Z", actor: "seller" as const }],
+      events: [
+        {
+          id: "e1",
+          status: "deposited" as const,
+          at: "2026-10-18T10:00:00.000Z",
+          actor: "seller" as const,
+        },
+      ],
     })),
-    reportPayment: vi.fn(async () => ({ id: "e2", status: "cashed" as const, at: "2026-10-18T11:00:00.000Z", actor: "seller" as const })),
+    reportPayment: vi.fn(async () => ({
+      id: "e2",
+      status: "cashed" as const,
+      at: "2026-10-18T11:00:00.000Z",
+      actor: "seller" as const,
+    })),
   };
 }
 
@@ -30,9 +42,16 @@ async function setup(role: Role = "owner") {
   const provider = fakeProvider();
   const user = (await repos.users.get(DEMO_USER_ID))!;
   const [org] = await repos.organizations.listForUser(user.id);
-  const membership = (await repos.memberships.listByOrganization(org.id)).find((m) => m.userId === user.id)!;
+  const membership = (await repos.memberships.listByOrganization(org.id)).find(
+    (m) => m.userId === user.id,
+  )!;
   const ctx = createContext(
-    { repos, uow, provider: provider as unknown as EInvoicingProvider, clock: { today: () => DEMO_TODAY, now: () => `${DEMO_TODAY}T10:00:00.000Z` } },
+    {
+      repos,
+      uow,
+      provider: provider as unknown as EInvoicingProvider,
+      clock: { today: () => DEMO_TODAY, now: () => `${DEMO_TODAY}T10:00:00.000Z` },
+    },
     { org, user, membership: { ...membership, role } },
   );
   return { ctx, provider, repos };
@@ -93,7 +112,11 @@ describe("paiements et avoirs", () => {
   it("un paiement du solde déclare l'encaissement (212)", async () => {
     const { ctx, provider } = await setup();
     const issued = await issueInvoice(ctx, (await draftFromAcceptedQuote(ctx)).id);
-    const paid = await recordPayment(ctx, issued.id, { date: DEMO_TODAY, amount: issued.totals.netToPay, method: "transfer" });
+    const paid = await recordPayment(ctx, issued.id, {
+      date: DEMO_TODAY,
+      amount: issued.totals.netToPay,
+      method: "transfer",
+    });
     expect(paid.payments).toHaveLength(1);
     expect(paid.eInvoicing.status).toBe("cashed");
     expect(provider.reportPayment).toHaveBeenCalledOnce();
@@ -102,7 +125,13 @@ describe("paiements et avoirs", () => {
   it("refuse un paiement supérieur au reste à payer", async () => {
     const { ctx } = await setup();
     const issued = await issueInvoice(ctx, (await draftFromAcceptedQuote(ctx)).id);
-    await expect(recordPayment(ctx, issued.id, { date: DEMO_TODAY, amount: "99999999.00", method: "transfer" })).rejects.toBeInstanceOf(BusinessError);
+    await expect(
+      recordPayment(ctx, issued.id, {
+        date: DEMO_TODAY,
+        amount: "99999999.00",
+        method: "transfer",
+      }),
+    ).rejects.toBeInstanceOf(BusinessError);
   });
 
   it("l'avoir émis annule la facture d'origine", async () => {
@@ -110,7 +139,9 @@ describe("paiements et avoirs", () => {
     const issued = await issueInvoice(ctx, (await draftFromAcceptedQuote(ctx)).id);
     const credit = await createCreditNote(ctx, issued.id, "Erreur de quantité");
     await issueInvoice(ctx, credit.id);
-    expect((await repos.invoices.get(ctx.orgId, issued.id))?.cancelledByCreditNoteId).toBe(credit.id);
+    expect((await repos.invoices.get(ctx.orgId, issued.id))?.cancelledByCreditNoteId).toBe(
+      credit.id,
+    );
   });
 });
 
@@ -120,7 +151,9 @@ describe("unité de travail en mémoire", () => {
     const before = (await repos.clients.list(ctx.orgId)).length;
     await expect(
       ctx.uow.run(async (r) => {
-        await r.clients.update(ctx.orgId, (await r.clients.list(ctx.orgId))[0].id, { name: "Modifié" });
+        await r.clients.update(ctx.orgId, (await r.clients.list(ctx.orgId))[0].id, {
+          name: "Modifié",
+        });
         await r.organizations.takeNextNumber(ctx.orgId, "invoice", DEMO_TODAY);
         throw new Error("échec simulé");
       }),

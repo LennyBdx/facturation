@@ -54,6 +54,9 @@ export function createContext(deps: AppDeps, scope: RequestScope): Context {
 type Scope = Pick<Context, "org" | "orgId" | "user" | "role" | "today" | "clock">;
 
 /** Contexte réduit à ce qu'un service utilise réellement. */
-export type ServiceContext<R extends keyof Repositories = never, P extends keyof EInvoicingProvider = never> = Scope & {
+export type ServiceContext<
+  R extends keyof Repositories = never,
+  P extends keyof EInvoicingProvider = never,
+> = Scope & {
   repos: Pick<Repositories, R>;
 } & ([P] extends [never] ? unknown : { provider: Pick<EInvoicingProvider, P> });

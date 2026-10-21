@@ -13,5 +13,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: routes.terms, priority: 0.1 },
     { path: routes.privacy, priority: 0.1 },
   ];
-  return pages.map((p) => ({ url: `${SITE_URL}${p.path}`, changeFrequency: "monthly", priority: p.priority }));
+  return pages.map((p) => ({
+    url: `${SITE_URL}${p.path}`,
+    changeFrequency: "monthly",
+    priority: p.priority,
+  }));
 }

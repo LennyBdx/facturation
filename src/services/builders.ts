@@ -5,7 +5,12 @@
  */
 import "server-only";
 import { kindRules } from "@/domain/invoice-kinds";
-import { addDays, computePaymentStatus, type PaymentStatus, remainingDue } from "@/domain/lifecycle";
+import {
+  addDays,
+  computePaymentStatus,
+  type PaymentStatus,
+  remainingDue,
+} from "@/domain/lifecycle";
 import { compareMoney, type Money, type Percent, sumMoney, ZERO } from "@/domain/money";
 import {
   computeDepositInvoice,
@@ -30,11 +35,15 @@ import type {
 
 type Id = () => string;
 
-export function quoteTotals(quote: Pick<Quote, "sections" | "discount" | "reverseCharge" | "depositPercent">): QuoteTotals {
+export function quoteTotals(
+  quote: Pick<Quote, "sections" | "discount" | "reverseCharge" | "depositPercent">,
+): QuoteTotals {
   return computeQuoteTotals(quote);
 }
 
-export function quoteToContract(quote: Pick<Quote, "sections" | "discount" | "reverseCharge">): ProgressContract {
+export function quoteToContract(
+  quote: Pick<Quote, "sections" | "discount" | "reverseCharge">,
+): ProgressContract {
   return { sections: quote.sections, discount: quote.discount, reverseCharge: quote.reverseCharge };
 }
 
@@ -104,7 +113,10 @@ function draftBase(params: {
   };
 }
 
-function simpleTotals(t: { vatBreakdown: InvoiceTotals["vatBreakdown"]; net: Money; vat: Money; gross: Money }, discount: Money = ZERO): InvoiceTotals {
+function simpleTotals(
+  t: { vatBreakdown: InvoiceTotals["vatBreakdown"]; net: Money; vat: Money; gross: Money },
+  discount: Money = ZERO,
+): InvoiceTotals {
   return { ...t, discount, depositDeduction: ZERO, retention: ZERO, netToPay: t.gross };
 }
 
@@ -188,7 +200,10 @@ export function buildDepositInvoice(params: {
 export function depositNetForQuote(invoices: readonly Invoice[], quoteId: string): Money {
   return sumMoney(
     invoices
-      .filter((i) => i.quoteId === quoteId && i.kind === "deposit" && i.issuedAt && !i.cancelledByCreditNoteId)
+      .filter(
+        (i) =>
+          i.quoteId === quoteId && i.kind === "deposit" && i.issuedAt && !i.cancelledByCreditNoteId,
+      )
       .map((i) => i.totals.net),
   );
 }
@@ -196,7 +211,14 @@ export function depositNetForQuote(invoices: readonly Invoice[], quoteId: string
 /** Dernière situation émise (non annulée) d'un devis. */
 export function lastProgressInvoice(invoices: readonly Invoice[], quoteId: string): Invoice | null {
   const list = invoices
-    .filter((i) => i.quoteId === quoteId && kindRules(i.kind).isProgress && i.issuedAt && !i.cancelledByCreditNoteId && i.progress)
+    .filter(
+      (i) =>
+        i.quoteId === quoteId &&
+        kindRules(i.kind).isProgress &&
+        i.issuedAt &&
+        !i.cancelledByCreditNoteId &&
+        i.progress,
+    )
     .sort((a, b) => a.progress!.index - b.progress!.index);
   return list.at(-1) ?? null;
 }
@@ -289,7 +311,12 @@ export function buildProgressInvoice(params: {
 }
 
 /** Avoir d'annulation totale d'une facture émise. */
-export function buildCreditNote(params: { invoice: Invoice; issueDate: string; reason: string; newId: Id }): InvoiceInput {
+export function buildCreditNote(params: {
+  invoice: Invoice;
+  issueDate: string;
+  reason: string;
+  newId: Id;
+}): InvoiceInput {
   const { invoice } = params;
   return {
     number: null,
@@ -332,13 +359,19 @@ export function invoicePaymentStatus(invoice: Invoice, today: string): PaymentSt
 }
 
 export function invoiceRemaining(invoice: Invoice): Money {
-  if (!invoice.issuedAt || invoice.cancelledByCreditNoteId || !kindRules(invoice.kind).isReceivable) return ZERO;
-  return remainingDue(invoice.totals.netToPay, invoice.payments.map((p) => p.amount));
+  if (!invoice.issuedAt || invoice.cancelledByCreditNoteId || !kindRules(invoice.kind).isReceivable)
+    return ZERO;
+  return remainingDue(
+    invoice.totals.netToPay,
+    invoice.payments.map((p) => p.amount),
+  );
 }
 
 /** Retenue de garantie cumulée retenue sur un ensemble de factures émises. */
 export function retentionHeld(invoices: readonly Invoice[]): Money {
   return sumMoney(
-    invoices.filter((i) => i.issuedAt && !i.cancelledByCreditNoteId && kindRules(i.kind).isReceivable).map((i) => i.totals.retention),
+    invoices
+      .filter((i) => i.issuedAt && !i.cancelledByCreditNoteId && kindRules(i.kind).isReceivable)
+      .map((i) => i.totals.retention),
   );
 }

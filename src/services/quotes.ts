@@ -25,21 +25,36 @@ export async function requireQuote(ctx: ServiceContext<"quotes">, id: string): P
   return quote;
 }
 
-export async function createQuote(ctx: ServiceContext<"quotes" | "organizations">, input: QuoteInput): Promise<Quote> {
+export async function createQuote(
+  ctx: ServiceContext<"quotes" | "organizations">,
+  input: QuoteInput,
+): Promise<Quote> {
   const number = await ctx.repos.organizations.takeNextNumber(ctx.orgId, "quote", input.issueDate);
   return ctx.repos.quotes.create(ctx.orgId, { ...input, number });
 }
 
-export async function updateQuote(ctx: ServiceContext<"quotes">, id: string, input: QuoteInput): Promise<Quote> {
+export async function updateQuote(
+  ctx: ServiceContext<"quotes">,
+  id: string,
+  input: QuoteInput,
+): Promise<Quote> {
   const quote = await requireQuote(ctx, id);
   if (!EDITABLE.includes(quote.status)) {
-    throw new BusinessError("Un devis accepté, refusé ou expiré n'est plus modifiable : dupliquez-le.");
+    throw new BusinessError(
+      "Un devis accepté, refusé ou expiré n'est plus modifiable : dupliquez-le.",
+    );
   }
   // Un devis envoyé puis modifié repasse en brouillon pour être renvoyé.
-  return ctx.repos.quotes.update(ctx.orgId, id, { ...input, status: quote.status === "sent" ? "draft" : input.status });
+  return ctx.repos.quotes.update(ctx.orgId, id, {
+    ...input,
+    status: quote.status === "sent" ? "draft" : input.status,
+  });
 }
 
-export async function duplicateQuote(ctx: ServiceContext<"quotes" | "organizations">, id: string): Promise<Quote> {
+export async function duplicateQuote(
+  ctx: ServiceContext<"quotes" | "organizations">,
+  id: string,
+): Promise<Quote> {
   const q = await requireQuote(ctx, id);
   const newId = () => crypto.randomUUID();
   return createQuote(ctx, {
@@ -49,7 +64,11 @@ export async function duplicateQuote(ctx: ServiceContext<"quotes" | "organizatio
     title: `${q.title} (copie)`,
     issueDate: ctx.today,
     validUntil: addDays(ctx.today, ctx.org.settings.defaultQuoteValidityDays),
-    sections: q.sections.map((s) => ({ ...s, id: newId(), lines: s.lines.map((l) => ({ ...l, id: newId() })) })),
+    sections: q.sections.map((s) => ({
+      ...s,
+      id: newId(),
+      lines: s.lines.map((l) => ({ ...l, id: newId() })),
+    })),
     discount: q.discount,
     reverseCharge: q.reverseCharge,
     depositPercent: q.depositPercent,
@@ -58,7 +77,12 @@ export async function duplicateQuote(ctx: ServiceContext<"quotes" | "organizatio
   });
 }
 
-export async function setQuoteStatus(ctx: ServiceContext<"quotes">, id: string, status: QuoteStatus, reason?: string): Promise<Quote> {
+export async function setQuoteStatus(
+  ctx: ServiceContext<"quotes">,
+  id: string,
+  status: QuoteStatus,
+  reason?: string,
+): Promise<Quote> {
   const q = await requireQuote(ctx, id);
   if (!TRANSITIONS[q.status].includes(status)) {
     throw new BusinessError("Ce changement de statut n'est pas possible pour ce devis.");
@@ -76,9 +100,13 @@ export async function setQuoteStatus(ctx: ServiceContext<"quotes">, id: string, 
 }
 
 /** Crée le chantier correspondant à un devis accepté. */
-export async function quoteToWorksite(ctx: ServiceContext<"quotes" | "clients" | "worksites">, id: string) {
+export async function quoteToWorksite(
+  ctx: ServiceContext<"quotes" | "clients" | "worksites">,
+  id: string,
+) {
   const q = await requireQuote(ctx, id);
-  if (q.status !== "accepted") throw new BusinessError("Seul un devis accepté peut devenir un chantier.");
+  if (q.status !== "accepted")
+    throw new BusinessError("Seul un devis accepté peut devenir un chantier.");
   if (q.worksiteId) {
     const existing = await ctx.repos.worksites.get(ctx.orgId, q.worksiteId);
     if (existing) return existing;
@@ -105,15 +133,28 @@ export async function quoteToWorksite(ctx: ServiceContext<"quotes" | "clients" |
 }
 
 /** Brouillon de facture unique ou d'acompte à partir d'un devis accepté. */
-export async function quoteToInvoice(ctx: ServiceContext<"quotes" | "clients" | "worksites" | "invoices">, id: string, kind: "standard" | "deposit") {
+export async function quoteToInvoice(
+  ctx: ServiceContext<"quotes" | "clients" | "worksites" | "invoices">,
+  id: string,
+  kind: "standard" | "deposit",
+) {
   const q = await requireQuote(ctx, id);
-  if (q.status !== "accepted") throw new BusinessError("Acceptez d'abord le devis pour le facturer.");
+  if (q.status !== "accepted")
+    throw new BusinessError("Acceptez d'abord le devis pour le facturer.");
   const client = await ctx.repos.clients.get(ctx.orgId, q.clientId);
   if (!client) throw new BusinessError("Client introuvable.");
   const worksite = q.worksiteId ? await ctx.repos.worksites.get(ctx.orgId, q.worksiteId) : null;
-  const params = { org: ctx.org, client, quote: q, worksite, issueDate: ctx.today, newId: () => crypto.randomUUID() };
+  const params = {
+    org: ctx.org,
+    client,
+    quote: q,
+    worksite,
+    issueDate: ctx.today,
+    newId: () => crypto.randomUUID(),
+  };
   if (kind === "deposit") {
-    const percent = q.depositPercent !== "0.00" ? q.depositPercent : ctx.org.settings.defaultDepositPercent;
+    const percent =
+      q.depositPercent !== "0.00" ? q.depositPercent : ctx.org.settings.defaultDepositPercent;
     return ctx.repos.invoices.create(ctx.orgId, buildDepositInvoice({ ...params, percent }));
   }
   return ctx.repos.invoices.create(ctx.orgId, buildStandardInvoice(params));

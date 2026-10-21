@@ -6,14 +6,25 @@ import { getRequestContext } from "@/composition/request-context";
 
 export const metadata: Metadata = { title: "Nouveau chantier" };
 
-export default async function NewWorksitePage({ searchParams }: { searchParams: Promise<{ client?: string }> }) {
+export default async function NewWorksitePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ client?: string }>;
+}) {
   const { client } = await searchParams;
   const { repos, orgId, org, today } = await getRequestContext();
-  const [clients, worksites] = await Promise.all([repos.clients.list(orgId), repos.worksites.list(orgId)]);
+  const [clients, worksites] = await Promise.all([
+    repos.clients.list(orgId),
+    repos.worksites.list(orgId),
+  ]);
   const reference = `CH-${today.slice(0, 4)}-${String(worksites.length + 1).padStart(3, "0")}`;
   return (
     <>
-      <PageHeader title="Nouveau chantier" backHref={routes.worksites.list()} backLabel="Chantiers" />
+      <PageHeader
+        title="Nouveau chantier"
+        backHref={routes.worksites.list()}
+        backLabel="Chantiers"
+      />
       <WorksiteForm
         worksiteId={null}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))}

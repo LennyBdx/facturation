@@ -6,17 +6,39 @@
  * - une nouvelle facture fournisseur « arrive » une minute après le démarrage.
  */
 import "server-only";
-import { addDays, LIFECYCLE_STATUSES, RECEIVED_INVOICE_ACTIONS, type LifecycleStatus } from "@/domain/lifecycle";
+import {
+  addDays,
+  LIFECYCLE_STATUSES,
+  RECEIVED_INVOICE_ACTIONS,
+  type LifecycleStatus,
+} from "@/domain/lifecycle";
 import { groupByVat, totalsOfBreakdown } from "@/domain/vat";
 import { company } from "@/data/mock/helpers";
 import type { Invoice, LifecycleActor, LifecycleEvent } from "@/data/types";
 import { today } from "@/lib/clock";
-import { EInvoicingError, type EInvoicingProvider, type IncomingInvoice, type PlatformInfo } from "./provider";
+import {
+  EInvoicingError,
+  type EInvoicingProvider,
+  type IncomingInvoice,
+  type PlatformInfo,
+} from "./provider";
 
 const PLATFORMS: PlatformInfo[] = [
-  { id: "pa-alpha", name: "Plateforme Alpha (fictive)", description: "Plateforme généraliste, connecteurs comptables, tarification au volume." },
-  { id: "pa-beta", name: "Plateforme Bêta (fictive)", description: "Spécialisée TPE/PME, interface simple, abonnement mensuel." },
-  { id: "pa-gamma", name: "Plateforme Gamma (fictive)", description: "Orientée grands comptes et acheteurs publics." },
+  {
+    id: "pa-alpha",
+    name: "Plateforme Alpha (fictive)",
+    description: "Plateforme généraliste, connecteurs comptables, tarification au volume.",
+  },
+  {
+    id: "pa-beta",
+    name: "Plateforme Bêta (fictive)",
+    description: "Spécialisée TPE/PME, interface simple, abonnement mensuel.",
+  },
+  {
+    id: "pa-gamma",
+    name: "Plateforme Gamma (fictive)",
+    description: "Orientée grands comptes et acheteurs publics.",
+  },
 ];
 
 /** Délais simulés (secondes après le dépôt). */
@@ -45,7 +67,12 @@ const state = (g.__situaMockPlatform ??= { startedAt: Date.now(), submitted: new
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-function event(status: LifecycleStatus, atMs: number, actor: LifecycleActor, comment?: string): LifecycleEvent {
+function event(
+  status: LifecycleStatus,
+  atMs: number,
+  actor: LifecycleActor,
+  comment?: string,
+): LifecycleEvent {
   return { id: crypto.randomUUID(), status, at: new Date(atMs).toISOString(), actor, comment };
 }
 
@@ -67,7 +94,8 @@ export class MockEInvoicingProvider implements EInvoicingProvider {
       throw new EInvoicingError("Facture incomplète : numéro et parties requis avant dépôt.");
     }
     const platformInvoiceId = `PA-${invoice.number}-${Date.now().toString(36).toUpperCase()}`;
-    const publicWithoutService = invoice.buyer.kind === "public_buyer" && !invoice.buyer.serviceCode;
+    const publicWithoutService =
+      invoice.buyer.kind === "public_buyer" && !invoice.buyer.serviceCode;
     const schedule = publicWithoutService
       ? [
           { status: "deposited" as const, offset: 0, actor: "seller" as const },
@@ -75,7 +103,8 @@ export class MockEInvoicingProvider implements EInvoicingProvider {
             status: "rejected" as const,
             offset: 4,
             actor: "platform" as const,
-            comment: "Code service de l'acheteur public absent : la facture ne peut pas être routée.",
+            comment:
+              "Code service de l'acheteur public absent : la facture ne peut pas être routée.",
           },
         ]
       : NOMINAL_SCHEDULE.map(([status, offset, actor]) => ({ status, offset, actor }));
@@ -94,7 +123,12 @@ export class MockEInvoicingProvider implements EInvoicingProvider {
 
   async reportPayment(platformInvoiceId: string, payment: { date: string; amount: string }) {
     await sleep(300);
-    const e = event("cashed", Date.now(), "seller", `Encaissement déclaré le ${payment.date.split("-").reverse().join("/")}.`);
+    const e = event(
+      "cashed",
+      Date.now(),
+      "seller",
+      `Encaissement déclaré le ${payment.date.split("-").reverse().join("/")}.`,
+    );
     state.submitted.get(platformInvoiceId)?.extra.push(e);
     return e;
   }
@@ -106,7 +140,11 @@ export class MockEInvoicingProvider implements EInvoicingProvider {
     return [newArrival(receptionAddress, state.startedAt + 60_000)];
   }
 
-  async updateReceivedInvoiceStatus(platformInvoiceId: string, action: keyof typeof RECEIVED_INVOICE_ACTIONS, reason?: string) {
+  async updateReceivedInvoiceStatus(
+    platformInvoiceId: string,
+    action: keyof typeof RECEIVED_INVOICE_ACTIONS,
+    reason?: string,
+  ) {
     await sleep(500);
     const status = RECEIVED_INVOICE_ACTIONS[action];
     if (!(status in LIFECYCLE_STATUSES)) throw new EInvoicingError("Action inconnue.");
@@ -117,10 +155,28 @@ export class MockEInvoicingProvider implements EInvoicingProvider {
 
 function newArrival(receptionAddress: string, atMs: number): IncomingInvoice {
   const lines = [
-    { id: "arr-1", description: "Gaines ICTA 20 mm (couronne 100 m)", quantity: "15", unit: "u" as const, unitPrice: "21.40", vatRate: "20.00", net: "321.00" },
-    { id: "arr-2", description: "Boîtes d'encastrement", quantity: "200", unit: "u" as const, unitPrice: "0.85", vatRate: "20.00", net: "170.00" },
+    {
+      id: "arr-1",
+      description: "Gaines ICTA 20 mm (couronne 100 m)",
+      quantity: "15",
+      unit: "u" as const,
+      unitPrice: "21.40",
+      vatRate: "20.00",
+      net: "321.00",
+    },
+    {
+      id: "arr-2",
+      description: "Boîtes d'encastrement",
+      quantity: "200",
+      unit: "u" as const,
+      unitPrice: "0.85",
+      vatRate: "20.00",
+      net: "170.00",
+    },
   ];
-  const vatBreakdown = groupByVat(lines.map((l) => ({ net: l.net, vatRate: l.vatRate, vatCategory: "S" as const })));
+  const vatBreakdown = groupByVat(
+    lines.map((l) => ({ net: l.net, vatRate: l.vatRate, vatCategory: "S" as const })),
+  );
   const totals = totalsOfBreakdown(vatBreakdown);
   const at = new Date(atMs).toISOString();
   const supplierIds = company("82047316");
@@ -129,7 +185,12 @@ function newArrival(receptionAddress: string, atMs: number): IncomingInvoice {
     supplier: {
       name: "Comptoir Lyonnais du Câble",
       ...supplierIds,
-      address: { line1: "8 rue de l'Industrie", postalCode: "69200", city: "Vénissieux", countryCode: "FR" },
+      address: {
+        line1: "8 rue de l'Industrie",
+        postalCode: "69200",
+        city: "Vénissieux",
+        countryCode: "FR",
+      },
     },
     number: "CLC-2026-3401",
     issueDate,

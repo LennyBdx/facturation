@@ -32,12 +32,25 @@ const PAYMENT_METHODS = [
 ];
 
 /** Enregistrement d'un paiement (simulation : aucun flux bancaire réel). */
-export function PaymentDialog({ invoiceId, remaining, today }: { invoiceId: string; remaining: string; today: string }) {
+export function PaymentDialog({
+  invoiceId,
+  remaining,
+  today,
+}: {
+  invoiceId: string;
+  remaining: string;
+  today: string;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const form = useForm<PaymentInput>({
     resolver: zodResolver(paymentSchema),
-    defaultValues: { date: today, amount: remaining.replace(".", ","), method: "transfer", reference: "" },
+    defaultValues: {
+      date: today,
+      amount: remaining.replace(".", ","),
+      method: "transfer",
+      reference: "",
+    },
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -50,7 +63,9 @@ export function PaymentDialog({ invoiceId, remaining, today }: { invoiceId: stri
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Enregistrer un paiement</DialogTitle>
-          <DialogDescription>Le statut « Encaissée » est déclaré à la plateforme dès que la facture est soldée.</DialogDescription>
+          <DialogDescription>
+            Le statut « Encaissée » est déclaré à la plateforme dès que la facture est soldée.
+          </DialogDescription>
         </DialogHeader>
         <form
           noValidate
@@ -64,17 +79,42 @@ export function PaymentDialog({ invoiceId, remaining, today }: { invoiceId: stri
           })}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextField control={form.control} name="amount" label="Montant (€)" inputMode="decimal" required />
-            <TextField control={form.control} name="date" label="Date de réception" type="date" required />
-            <SelectField control={form.control} name="method" label="Moyen de paiement" required options={PAYMENT_METHODS} />
-            <TextField control={form.control} name="reference" label="Référence" placeholder="N° de virement ou de chèque" />
+            <TextField
+              control={form.control}
+              name="amount"
+              label="Montant (€)"
+              inputMode="decimal"
+              required
+            />
+            <TextField
+              control={form.control}
+              name="date"
+              label="Date de réception"
+              type="date"
+              required
+            />
+            <SelectField
+              control={form.control}
+              name="method"
+              label="Moyen de paiement"
+              required
+              options={PAYMENT_METHODS}
+            />
+            <TextField
+              control={form.control}
+              name="reference"
+              label="Référence"
+              placeholder="N° de virement ou de chèque"
+            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? <Loader2 aria-hidden className="animate-spin" /> : null}
+              {form.formState.isSubmitting ? (
+                <Loader2 aria-hidden className="animate-spin" />
+              ) : null}
               Enregistrer
             </Button>
           </DialogFooter>
@@ -103,7 +143,8 @@ export function CreditNoteDialog({ invoiceId, number }: { invoiceId: string; num
         <DialogHeader>
           <DialogTitle>Créer un avoir sur la facture {number}</DialogTitle>
           <DialogDescription>
-            Une facture émise ne se modifie pas. L&apos;avoir annule la totalité de la facture ; vous pourrez ensuite émettre une facture corrigée.
+            Une facture émise ne se modifie pas. L&apos;avoir annule la totalité de la facture ;
+            vous pourrez ensuite émettre une facture corrigée.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-1.5">
@@ -161,7 +202,15 @@ const LIVE_STATUSES = ["deposited", "issued", "received", "made_available", "in_
  * Interroge la plateforme (simulée) toutes les 3 s tant que la facture progresse,
  * et rafraîchit la page à chaque nouvel événement du cycle de vie.
  */
-export function LifecyclePoller({ invoiceId, status, eventCount }: { invoiceId: string; status: string | null; eventCount: number }) {
+export function LifecyclePoller({
+  invoiceId,
+  status,
+  eventCount,
+}: {
+  invoiceId: string;
+  status: string | null;
+  eventCount: number;
+}) {
   const router = useRouter();
   const count = useRef(eventCount);
   const [live, setLive] = useState(status !== null && LIVE_STATUSES.includes(status));

@@ -47,13 +47,17 @@ export interface VatBreakdownLine {
   vat: Money;
 }
 
-const groupKey = (category: VatCategory, rate: Percent) => `${category}|${new Dec(rate).toFixed(2)}`;
+const groupKey = (category: VatCategory, rate: Percent) =>
+  `${category}|${new Dec(rate).toFixed(2)}`;
 
 /**
  * En autoliquidation, toutes les lignes passent en catégorie AE à 0 % :
  * le prestataire ne facture pas de TVA, le preneur l'autoliquide.
  */
-export function applyReverseCharge<T extends TaxableAmount>(lines: readonly T[], reverseCharge: boolean): T[] {
+export function applyReverseCharge<T extends TaxableAmount>(
+  lines: readonly T[],
+  reverseCharge: boolean,
+): T[] {
   if (!reverseCharge) return [...lines];
   return lines.map((l) => ({ ...l, vatCategory: "AE" as const, vatRate: "0.00" }));
 }
@@ -93,7 +97,10 @@ export function vatOn(base: Money, rate: Percent): Money {
  * Applique une réduction de niveau document (remise, déduction d'acompte) répartie
  * entre catégories de TVA au prorata de leur base, puis recalcule la TVA.
  */
-export function reduceBreakdown(breakdown: readonly VatBreakdownLine[], reduction: Money): VatBreakdownLine[] {
+export function reduceBreakdown(
+  breakdown: readonly VatBreakdownLine[],
+  reduction: Money,
+): VatBreakdownLine[] {
   if (new Dec(reduction).isZero()) return breakdown.map((b) => ({ ...b }));
   const shares = allocate(
     reduction,

@@ -26,7 +26,12 @@ export default async function QuotePreviewPage({ params }: { params: Promise<{ i
   return (
     <>
       <div className="no-print">
-        <PageHeader title={`Aperçu — devis ${quote.number}`} backHref={routes.quotes.show(id)} backLabel={quote.number} actions={<PrintButton />} />
+        <PageHeader
+          title={`Aperçu — devis ${quote.number}`}
+          backHref={routes.quotes.show(id)}
+          backLabel={quote.number}
+          actions={<PrintButton />}
+        />
       </div>
       <DocumentSheet
         docLabel="Devis"
@@ -37,8 +42,21 @@ export default async function QuotePreviewPage({ params }: { params: Promise<{ i
         ]}
         seller={{ ...org, email: org.contact.email, phone: org.contact.phone }}
         sellerIdentity={sellerIdentityLine(org, org.apeCode)}
-        buyer={{ name: client.name, address: client.billingAddress, siren: client.siren, vatNumber: client.vatNumber }}
-        worksite={worksite ? { name: worksite.name, address: worksite.address, reference: worksite.marketReference } : null}
+        buyer={{
+          name: client.name,
+          address: client.billingAddress,
+          siren: client.siren,
+          vatNumber: client.vatNumber,
+        }}
+        worksite={
+          worksite
+            ? {
+                name: worksite.name,
+                address: worksite.address,
+                reference: worksite.marketReference,
+              }
+            : null
+        }
         subject={quote.title}
         sections={quote.sections.map((s) => ({
           title: s.title,
@@ -55,9 +73,18 @@ export default async function QuotePreviewPage({ params }: { params: Promise<{ i
             : []),
           { label: "Total HT", value: totals.net },
           { label: "Total TVA", value: totals.vat },
-          { label: quote.reverseCharge ? "Net à payer (HT)" : "Total TTC", value: totals.gross, strong: true },
+          {
+            label: quote.reverseCharge ? "Net à payer (HT)" : "Total TTC",
+            value: totals.gross,
+            strong: true,
+          },
         ]}
-        mentions={quoteMentions({ quote, org, buyerKind: client.kind, depositAmount: totals.depositAmount })}
+        mentions={quoteMentions({
+          quote,
+          org,
+          buyerKind: client.kind,
+          depositAmount: totals.depositAmount,
+        })}
         accentColor={org.settings.branding.accentColor}
         reverseCharge={quote.reverseCharge}
         signature

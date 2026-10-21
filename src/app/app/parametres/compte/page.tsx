@@ -11,13 +11,18 @@ export default async function AccountPage() {
   const ctx = await getRequestContext();
   return (
     <section aria-labelledby="s-title" className="space-y-4">
-      <h2 id="s-title" className="text-xl font-semibold">Mon compte</h2>
+      <h2 id="s-title" className="text-xl font-semibold">
+        Mon compte
+      </h2>
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
             {ctx.user.firstName} {ctx.user.lastName}
           </CardTitle>
-          <CardDescription>Utilisateur de démonstration : la gestion du compte (mot de passe, double authentification) arrivera avec l&apos;authentification réelle.</CardDescription>
+          <CardDescription>
+            Utilisateur de démonstration : la gestion du compte (mot de passe, double
+            authentification) arrivera avec l&apos;authentification réelle.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <DetailList

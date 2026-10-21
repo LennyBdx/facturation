@@ -30,7 +30,11 @@ export function getAppDeps({ readCache }: { readCache: boolean }): AppDeps {
 }
 
 async function buildContext(readCache: boolean): Promise<Context> {
-  const [org, user, membership] = await Promise.all([getCurrentOrganization(), getCurrentUser(), getCurrentMembership()]);
+  const [org, user, membership] = await Promise.all([
+    getCurrentOrganization(),
+    getCurrentUser(),
+    getCurrentMembership(),
+  ]);
   return createContext(getAppDeps({ readCache }), { org, user, membership });
 }
 

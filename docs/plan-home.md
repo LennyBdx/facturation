@@ -28,7 +28,7 @@ Skill ui-ux-pro-max : il est utilisé. Python n'est pas installé, donc ses base
 | Textes | `src/content/home.ts` (typé), y compris la FAQ et les offres. |
 | Pages légales | `/mentions-legales`, `/cgu`, `/confidentialite`, `/contact` : pages minimales `[À RÉDIGER]`. |
 | SEO | `metadata` + Open Graph (image générée), un seul `h1`, JSON-LD `SoftwareApplication` et `FAQPage`, `app/sitemap.ts`, `app/robots.ts` (`/app` exclu de l'indexation). |
-| Captures | Script `pnpm screenshots` (Playwright) : il démarre l'application en production sur un port libre, puis capture le tableau de bord (ordinateur), l'assistant de situation (mobile), l'éditeur de devis, la fiche facture avec frise, la boîte des factures reçues et la fiche chantier. Sortie dans `public/screenshots/*.webp` + aperçus `docs/references/home-v1-*.png` en fin de travail. |
+| Captures | Script `pnpm screenshots` (Playwright) : il démarre l'application en production sur un port libre, puis capture le tableau de bord (ordinateur), l'assistant de situation (mobile), l'éditeur de devis, la fiche facture avec frise, la boîte des factures reçues et la fiche chantier. Sortie dans `public/screenshots/*.jpg` + aperçus `docs/references/home-v1-*.png` en fin de travail. |
 | Interactivité | Composants serveur partout. Code client uniquement pour le tiroir mobile et l'accordéon de la FAQ (`<details>` natif, donc accessible sans JavaScript). |
 
 ## Sections, titres et accroches (propositions)

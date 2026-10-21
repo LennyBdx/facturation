@@ -2,7 +2,7 @@
 
 import { routes } from "@/config/routes";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { startSession } from "@/features/session/actions";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,11 +14,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { forgotPasswordSchema, signInSchema, signUpSchema } from "./schemas";
 
-/** Maquettes : la validation est réelle (Zod), l'authentification est simulée. */
+/** Maquettes : la validation est réelle (Zod) ; la connexion ouvre la session de démonstration. */
 const fakeDelay = () => new Promise((r) => setTimeout(r, 500));
 
-export function SignInForm() {
-  const router = useRouter();
+export function SignInForm({ next }: { next?: string }) {
   const form = useForm<z.input<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: "julien.morel@volta-energies.example", password: "" },
@@ -29,8 +28,7 @@ export function SignInForm() {
       noValidate
       className="space-y-4"
       onSubmit={form.handleSubmit(async () => {
-        await fakeDelay();
-        router.push(routes.dashboard);
+        await startSession(next);
       })}
     >
       <TextField control={form.control} name="email" label="Adresse e-mail" type="email" autoComplete="email" required />
@@ -46,7 +44,6 @@ export function SignInForm() {
 }
 
 export function SignUpForm() {
-  const router = useRouter();
   const form = useForm<z.input<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { firstName: "", lastName: "", email: "", password: "", acceptTerms: false },
@@ -57,8 +54,7 @@ export function SignUpForm() {
       noValidate
       className="space-y-4"
       onSubmit={form.handleSubmit(async () => {
-        await fakeDelay();
-        router.push(routes.onboarding);
+        await startSession(routes.onboarding);
       })}
     >
       <div className="grid gap-4 sm:grid-cols-2">

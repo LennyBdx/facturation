@@ -1,6 +1,6 @@
 // Captures réelles du prototype pour le site vitrine — `pnpm screenshots`.
 // Utilise le serveur indiqué par BASE_URL s'il répond, sinon démarre `next dev`
-// sur un port dédié le temps des captures. Sortie : public/screenshots/*.png
+// sur un port dédié le temps des captures. Sortie : public/screenshots/*.jpg (JPEG q82)
 // (next/image les sert ensuite en AVIF/WebP).
 import { spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
@@ -9,6 +9,8 @@ import { chromium } from "playwright";
 
 const OUT = path.resolve("public/screenshots");
 const PORT = 3210;
+// Doit correspondre à SESSION_COOKIE (src/lib/session-cookie.ts) et DEMO_USER_ID (src/config/app.ts).
+const SESSION = { name: "factobat_session", value: "usr-julien" };
 let base = process.env.BASE_URL ?? `http://localhost:${PORT}`;
 
 async function reachable(url) {
@@ -24,7 +26,7 @@ async function ensureServer() {
   if (await reachable(`${base}/connexion`)) return null;
   base = `http://localhost:${PORT}`;
   console.log(`Démarrage de next dev sur le port ${PORT}…`);
-  const child = spawn("corepack", ["pnpm", "exec", "next", "dev", "--port", String(PORT)], {
+  const child = spawn("npx", ["next", "dev", "--port", String(PORT)], {
     stdio: "ignore",
     shell: process.platform === "win32",
   });
@@ -66,8 +68,8 @@ async function shoot(context, { name, url, find, wait, act }) {
   if (wait) await page.locator(wait).first().waitFor({ timeout: 15000 });
   if (act) await act(page);
   await clean(page);
-  await page.screenshot({ path: path.join(OUT, `${name}.png`) });
-  console.log(`ok  ${name}.png  ←  ${target}`);
+  await page.screenshot({ path: path.join(OUT, `${name}.jpg`), type: "jpeg", quality: 82 });
+  console.log(`ok  ${name}.jpg  ←  ${target}`);
   await page.close();
 }
 
@@ -84,6 +86,7 @@ async function main() {
       hasTouch: true,
       locale: "fr-FR",
     });
+    for (const context of [desktop, mobile]) await context.addCookies([{ ...SESSION, url: base }]);
 
     await shoot(desktop, { name: "dashboard", url: "/app/tableau-de-bord", wait: "h1" });
     await shoot(desktop, {

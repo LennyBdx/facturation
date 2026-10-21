@@ -38,8 +38,8 @@ export const hero = {
     { icon: "smartphone", text: "Utilisable sur chantier, depuis le téléphone" },
   ],
   images: {
-    desktop: { src: "/screenshots/dashboard.png", alt: `Tableau de bord de ${PRODUCT_NAME} : montants à encaisser, factures en retard, retenues de garantie et factures électroniques à traiter.`, width: 2880, height: 1800 },
-    mobile: { src: "/screenshots/situation-mobile.png", alt: "Saisie d'une situation de travaux sur téléphone : avancement de 90 % par lot et montant de la période calculé ligne par ligne.", width: 1170, height: 2532 },
+    desktop: { src: "/screenshots/dashboard.jpg", alt: `Tableau de bord de ${PRODUCT_NAME} : montants à encaisser, factures en retard, retenues de garantie et factures électroniques à traiter.`, width: 2880, height: 1800 },
+    mobile: { src: "/screenshots/situation-mobile.jpg", alt: "Saisie d'une situation de travaux sur téléphone : avancement de 90 % par lot et montant de la période calculé ligne par ligne.", width: 1170, height: 2532 },
   },
 } as const;
 
@@ -91,7 +91,7 @@ export const features = {
       title: "Un devis complet en quelques minutes, même à 80 lignes",
       text: "Lots, sous-totaux, unités du bâtiment, taux de TVA réduits : la saisie se fait au clavier, ligne après ligne, et les totaux se mettent à jour pendant que vous tapez.",
       bullets: ["Touche Entrée pour passer à la ligne suivante", "Remise, acompte et autoliquidation en option", "Aperçu imprimable avec les mentions obligatoires"],
-      image: { src: "/screenshots/quote-editor.png", alt: "Éditeur de devis : lots, lignes avec quantité, unité, prix unitaire et TVA, et totaux HT, TVA et TTC calculés en direct.", width: 2880, height: 1800, device: "desktop" },
+      image: { src: "/screenshots/quote-editor.jpg", alt: "Éditeur de devis : lots, lignes avec quantité, unité, prix unitaire et TVA, et totaux HT, TVA et TTC calculés en direct.", width: 2880, height: 1800, device: "desktop" },
     },
     {
       id: "situations",
@@ -99,7 +99,7 @@ export const features = {
       title: "Saisissez l'avancement, le reste se calcule",
       text: "Indiquez le pourcentage cumulé par ligne ou par lot. Le montant de la période, la déduction d'acompte, la TVA ou l'autoliquidation et la retenue de garantie sont calculés pour vous.",
       bullets: ["Cumul précédent repris automatiquement", "Acompte déduit au fil de l'avancement", "Retenue de garantie paramétrable, 5 % maximum"],
-      image: { src: "/screenshots/situation-mobile.png", alt: "Situation de travaux sur téléphone : avancement saisi par lot et montant de la période par ligne.", width: 1170, height: 2532, device: "mobile" },
+      image: { src: "/screenshots/situation-mobile.jpg", alt: "Situation de travaux sur téléphone : avancement saisi par lot et montant de la période par ligne.", width: 1170, height: 2532, device: "mobile" },
     },
     {
       id: "facture-electronique",
@@ -107,7 +107,7 @@ export const features = {
       title: "Contrôlée avant l'envoi, suivie après",
       text: "Avant l'émission, les mentions obligatoires et les données manquantes sont vérifiées (SIREN du client, adresse, TVA…). Après l'envoi à la plateforme agréée, chaque statut s'affiche sur une frise.",
       bullets: ["Émission bloquée tant qu'une donnée obligatoire manque", "Statuts déposée, approuvée, refusée, encaissée…", "Correction par avoir, comme le prévoit la loi"],
-      image: { src: "/screenshots/invoice-lifecycle.png", alt: "Fiche d'une situation émise : statuts payée et encaissée, et frise du cycle de vie de la facture électronique.", width: 2880, height: 1800, device: "desktop" },
+      image: { src: "/screenshots/invoice-lifecycle.jpg", alt: "Fiche d'une situation émise : statuts payée et encaissée, et frise du cycle de vie de la facture électronique.", width: 2880, height: 1800, device: "desktop" },
     },
     {
       id: "factures-recues",
@@ -115,7 +115,7 @@ export const features = {
       title: "Toutes vos factures fournisseurs au même endroit",
       text: "Grossistes, loueurs de matériel, sous-traitants : leurs factures arrivent par la plateforme agréée. Vous les approuvez, les refusez avec un motif ou signalez un litige, et vous les rattachez à un chantier.",
       bullets: ["Boîte de réception avec filtre « à traiter »", "Motif de refus transmis au fournisseur", "Achats suivis par chantier"],
-      image: { src: "/screenshots/received-inbox.png", alt: "Boîte de réception des factures fournisseurs avec statuts et montants.", width: 2880, height: 1800, device: "desktop" },
+      image: { src: "/screenshots/received-inbox.jpg", alt: "Boîte de réception des factures fournisseurs avec statuts et montants.", width: 2880, height: 1800, device: "desktop" },
     },
     {
       id: "encaissements",
@@ -123,7 +123,7 @@ export const features = {
       title: "Sachez qui vous doit quoi, et quand récupérer vos retenues",
       text: "Par chantier : montant du marché, avancement facturé, reste à encaisser et retenue de garantie, avec sa date de libération un an après la réception.",
       bullets: ["Factures en retard mises en évidence", "Retenues libérables signalées au tableau de bord", "Paiements enregistrés, encaissement déclaré"],
-      image: { src: "/screenshots/worksite.png", alt: "Fiche chantier : montant du marché, avancement facturé, reste à encaisser, retenue de garantie et situations.", width: 2880, height: 1800, device: "desktop" },
+      image: { src: "/screenshots/worksite.jpg", alt: "Fiche chantier : montant du marché, avancement facturé, reste à encaisser, retenue de garantie et situations.", width: 2880, height: 1800, device: "desktop" },
     },
     {
       id: "equipe",

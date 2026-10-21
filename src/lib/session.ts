@@ -1,22 +1,23 @@
 /**
- * Session FICTIVE du prototype : un utilisateur est toujours « connecté ».
- * L'entreprise active est mémorisée dans un cookie.
+ * Session du prototype : le cookie `factobat_session` désigne l'utilisateur de démonstration.
+ * `proxy.ts` fait un contrôle optimiste ; ce module fait la vérification qui fait foi
+ * (redirection vers /connexion si la session est absente ou inconnue).
  *
- * Pour brancher une vraie authentification : réimplémenter ces fonctions à partir
- * de la session (cookie signé / JWT) et rediriger vers /connexion si absente.
- * Toutes les pages passent par ce module.
+ * Pour brancher une vraie authentification : remplacer la lecture du cookie par la
+ * vérification d'un jeton signé. Toutes les pages passent par ce module.
  */
 import "server-only";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { cache } from "react";
-import { DEMO_USER_ID } from "@/config/app";
+import { routes } from "@/config/routes";
 import { getRepositories, type Membership, type Organization, type User } from "@/data";
-
-export const ACTIVE_ORG_COOKIE = "situa_org";
+import { ACTIVE_ORG_COOKIE, SESSION_COOKIE } from "./session-cookie";
 
 export const getCurrentUser = cache(async (): Promise<User> => {
-  const user = await getRepositories().users.get(DEMO_USER_ID);
-  if (!user) throw new Error("Utilisateur de démonstration introuvable.");
+  const userId = (await cookies()).get(SESSION_COOKIE)?.value;
+  const user = userId ? await getRepositories().users.get(userId) : null;
+  if (!user) redirect(routes.signIn);
   return user;
 });
 

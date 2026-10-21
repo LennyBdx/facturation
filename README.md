@@ -32,7 +32,7 @@ Ouvrez ensuite http://localhost:3000 (site vitrine) ; l'application est sous htt
 | `pnpm build` | Build de production |
 | `pnpm lint` | ESLint (inclut les règles d'architecture) |
 | `pnpm test` | Tests Vitest de la logique métier et du jeu de données |
-| `pnpm screenshots` | Refait les captures du prototype pour le site vitrine (`public/screenshots/`) et les aperçus de la page d'accueil (`docs/references/home-v1-*.png`). Utilise `BASE_URL` s'il est défini, sinon lance `next dev` sur le port 3210. |
+| `pnpm screenshots` | Refait les captures du prototype pour le site vitrine (`public/screenshots/*.jpg`, session de démo injectée) et les aperçus de la page d'accueil (`docs/references/home-v1-*.png`). Utilise `BASE_URL` s'il est défini, sinon lance `next dev` sur le port 3210. |
 | `pnpm references` | Refait les captures de référence (Playwright) dans `docs/references/` |
 | `pnpm format` | Prettier |
 

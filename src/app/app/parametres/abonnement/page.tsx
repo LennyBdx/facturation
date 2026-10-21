@@ -77,7 +77,7 @@ export default async function SubscriptionPage() {
           le prototype.
         </p>
       </div>
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-3">
         {PLANS.map((p) => {
           const current = p.id === org.settings.plan;
           return (

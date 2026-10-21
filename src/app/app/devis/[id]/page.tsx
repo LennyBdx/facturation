@@ -197,7 +197,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           {quote.sections.map((s) => (
             <Card key={s.id}>

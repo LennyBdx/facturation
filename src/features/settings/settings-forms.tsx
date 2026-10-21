@@ -141,7 +141,7 @@ export function BillingSettingsForm({
           242 nonies A, annexe II du CGI). Une fois des factures émises, le prochain numéro ne peut
           être que le suivant du dernier émis.
         </p>
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-3">
           {seriesBlock("quote", "Devis", "Numéro attribué à la création.")}
           {seriesBlock("invoice", "Factures", "Acomptes, situations, soldes et factures uniques.")}
           {seriesBlock("creditNote", "Avoirs", "Série distincte, continue elle aussi.")}
@@ -219,7 +219,7 @@ export function DocumentSettingsForm({
         if (applyActionResult(form, await saveDocumentSettingsAction(v))) router.refresh();
       })}
     >
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
         <div className="space-y-6">
           <div className="space-y-2">
             <p className="text-sm font-medium">Logo</p>

@@ -20,18 +20,26 @@ import { PageHeader } from "@/components/app/page-header";
 import { LifecycleStatusBadge, PaymentStatusBadge } from "@/components/status/status-badge";
 import { INVOICE_KIND_LABELS, LIFECYCLE_STATUS } from "@/components/status/status-config";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatDate, formatLongDate, formatPercent } from "@/lib/format";
 import { invoicePaymentStatus } from "@/services/builders";
 import { getRequestContext } from "@/composition/request-context";
-import { getDashboard } from "@/services/dashboard";
+import { ActivityChart } from "@/features/dashboard/activity-chart";
+import { getDashboard, getMonthlyActivity } from "@/services/dashboard";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
 export default async function DashboardPage() {
   const ctx = await getRequestContext();
-  const d = await getDashboard(ctx);
+  const [d, activity] = await Promise.all([getDashboard(ctx), getMonthlyActivity(ctx)]);
   const k = d.kpis;
 
   return (
@@ -155,7 +163,17 @@ export default async function DashboardPage() {
         />
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-lg">Facturé et encaissé</CardTitle>
+          <CardDescription>12 derniers mois · montants TTC, avoirs déduits</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ActivityChart figures={activity} />
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Dernières factures</CardTitle>

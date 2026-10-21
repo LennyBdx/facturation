@@ -163,7 +163,11 @@ export const AREAS: Area[] = [
           },
           { label: "Dernières factures, devis à relancer, chantiers en cours", status: "done" },
           { label: "Retenues de garantie à récupérer", status: "done" },
-          { label: "Graphiques d'évolution (CA, encaissements)", status: "todo" },
+          {
+            label: "Graphique facturé / encaissé sur 12 mois",
+            status: "done",
+            note: "Infobulle au survol et au clavier, tableau des données",
+          },
         ],
       },
     ],

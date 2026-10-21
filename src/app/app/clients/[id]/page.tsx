@@ -148,7 +148,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         </div>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-1">
           <Card className={compareMoney(overdue, ZERO) > 0 ? "border-danger/40" : undefined}>
             <CardContent className="space-y-1">

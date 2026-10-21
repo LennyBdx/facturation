@@ -2,6 +2,7 @@ import "server-only";
 import { kindRules } from "@/domain/invoice-kinds";
 import { daysBetween, LIFECYCLE_NEEDS_ACTION } from "@/domain/lifecycle";
 import { compareMoney, sumMoney, ZERO } from "@/domain/money";
+import { type MonthlyFigure, monthlyBilling } from "@/domain/reporting";
 import type { Invoice, Quote, ReceivedInvoice, Worksite } from "@/data/types";
 import { invoicePaymentStatus, invoiceRemaining, quoteTotals } from "./builders";
 import type { ServiceContext } from "./context";
@@ -142,4 +143,22 @@ export function billedProgress(worksiteId: string, invoices: readonly Invoice[])
     .filter((i) => i.progress)
     .sort((a, b) => b.progress!.index - a.progress!.index)[0];
   return last?.progress?.overallPercent ?? "0.00";
+}
+
+/** Facturé (factures émises moins avoirs) et encaissé, par mois, sur 12 mois. */
+export async function getMonthlyActivity(
+  ctx: ServiceContext<"invoices">,
+): Promise<MonthlyFigure[]> {
+  const invoices = await ctx.repos.invoices.list(ctx.orgId);
+  return monthlyBilling(
+    invoices
+      .filter((i) => i.issuedAt)
+      .map((i) => ({
+        issueDate: i.issueDate,
+        amount: i.totals.netToPay,
+        credit: kindRules(i.kind).sign < 0,
+        payments: i.payments,
+      })),
+    ctx.today,
+  );
 }

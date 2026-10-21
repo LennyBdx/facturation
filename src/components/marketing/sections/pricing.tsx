@@ -11,7 +11,7 @@ export function Pricing() {
   return (
     <Section id={pricing.id} labelledBy="pricing-title">
       <SectionHeading id="pricing-title" title={pricing.title} intro={pricing.intro} />
-      <ul className="grid gap-6 lg:grid-cols-3">
+      <ul className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-3">
         {pricing.plans.map((p) => (
           <li
             key={p.name}

@@ -75,31 +75,38 @@ export const problems = {
   title: "Ce qui fait perdre du temps (et de l'argent) dans le second œuvre",
   intro:
     "Les logiciels de facturation généralistes ne connaissent ni les situations, ni la retenue de garantie, ni l'autoliquidation.",
+  beforeLabel: "Aujourd'hui",
+  afterLabel: "Avec Factobat",
   items: [
     {
       icon: "sheet",
       title: "Situations tenues sur Excel",
       text: "Cumuls recopiés à la main, formules cassées, acomptes oubliés dans le calcul.",
+      fix: "Vous saisissez l'avancement par ligne : cumul, période, acompte déduit et retenue sont calculés à partir de la situation précédente.",
     },
     {
       icon: "shield-off",
       title: "Retenues de garantie oubliées",
       text: "Un an après la réception, personne ne pense à réclamer les 5 % retenus.",
+      fix: "Le tableau de bord liste les retenues à récupérer, chantier par chantier, avec la date à partir de laquelle les réclamer.",
     },
     {
       icon: "percent",
       title: "Erreurs d'autoliquidation",
       text: "TVA facturée à tort en sous-traitance, mention absente, facture à refaire.",
+      fix: "Chantier en sous-traitance : TVA autoliquidée et mention obligatoire appliquées d'office, sur chaque ligne.",
     },
     {
       icon: "phone",
       title: "Relances faites à la main",
       text: "Impossible de savoir d'un coup d'œil qui doit quoi, et depuis quand.",
+      fix: "Factures en retard et solde de chaque client visibles d'un coup d'œil, avec la liste de ce qui reste à encaisser.",
     },
     {
       icon: "inbox",
       title: "Factures fournisseurs éparpillées",
       text: "Entre e-mails, papier et portails : difficile de suivre ce qui est approuvé ou payé.",
+      fix: "Les factures reçues arrivent au même endroit depuis votre plateforme agréée, avec leur statut : à traiter, approuvée, payée.",
     },
   ],
 } as const;

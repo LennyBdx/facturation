@@ -19,7 +19,8 @@ export interface FilterOption {
 
 /**
  * Barre de recherche + filtre, synchronisée avec l'URL (?q=…&filtre=…) : la liste
- * filtrée est partageable et le bouton retour du navigateur fonctionne.
+ * filtrée est partageable et le bouton retour du navigateur fonctionne. Toute nouvelle
+ * recherche ou tout changement de filtre revient à la première page.
  */
 export function ListToolbar({
   searchPlaceholder,
@@ -44,6 +45,7 @@ export function ListToolbar({
     if (query === (params.get("q") ?? "")) return;
     const t = setTimeout(() => {
       const next = new URLSearchParams(params.toString());
+      next.delete("page");
       if (query) next.set("q", query);
       else next.delete("q");
       startTransition(() => router.replace(`${pathname}?${next.toString()}`, { scroll: false }));
@@ -53,6 +55,7 @@ export function ListToolbar({
 
   const setFilter = (value: string) => {
     const next = new URLSearchParams(params.toString());
+    next.delete("page");
     if (value && value !== "tous") next.set(filterParam, value);
     else next.delete(filterParam);
     startTransition(() => router.replace(`${pathname}?${next.toString()}`, { scroll: false }));

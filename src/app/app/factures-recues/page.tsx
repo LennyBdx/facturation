@@ -5,7 +5,9 @@ import { Amount } from "@/components/app/amount";
 import { EmptyState } from "@/components/app/empty-state";
 import { ListToolbar } from "@/components/app/list-toolbar";
 import { PageHeader } from "@/components/app/page-header";
+import { ListPagination } from "@/components/app/list-pagination";
 import { ResponsiveList } from "@/components/app/responsive-list";
+import { paginate } from "@/lib/pagination";
 import { LifecycleStatusBadge, ToneBadge } from "@/components/status/status-badge";
 import { RECEIVED_CATEGORY_LABELS } from "@/components/status/status-config";
 import type { ReceivedInvoice } from "@/data/types";
@@ -35,9 +37,9 @@ const FILTERS: { value: string; label: string; test: (r: ReceivedInvoice) => boo
 export default async function ReceivedInvoicesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; filtre?: string }>;
+  searchParams: Promise<{ q?: string; filtre?: string; page?: string }>;
 }) {
-  const { q, filtre } = await searchParams;
+  const { q, filtre, page } = await searchParams;
   const ctx = await getRequestContext();
   const [all, worksites] = await Promise.all([
     ctx.repos.receivedInvoices.list(ctx.orgId, { search: q }),
@@ -47,6 +49,8 @@ export default async function ReceivedInvoicesPage({
   const filter = FILTERS.find((f) => f.value === filtre);
   const rows = filter ? all.filter(filter.test) : all;
   const connected = ctx.org.settings.eInvoicing.connectionStatus === "connected";
+
+  const paged = paginate(rows, page);
 
   return (
     <>
@@ -83,62 +87,72 @@ export default async function ReceivedInvoicesPage({
           description="Les factures de vos fournisseurs arrivent ici automatiquement depuis la plateforme agréée."
         />
       ) : (
-        <ResponsiveList
-          caption="Factures fournisseurs reçues"
-          rows={rows}
-          getKey={(r) => r.id}
-          href={(r) => routes.received.show(r.id)}
-          columns={[
-            {
-              header: "Fournisseur",
-              cell: (r) => (
-                <span className="block max-w-60">
-                  <span className="block truncate">{r.supplier.name}</span>
-                  <span className="block truncate font-mono text-xs text-muted-foreground">
-                    {r.number}
+        <>
+          <ResponsiveList
+            caption="Factures fournisseurs reçues"
+            rows={paged.items}
+            getKey={(r) => r.id}
+            href={(r) => routes.received.show(r.id)}
+            columns={[
+              {
+                header: "Fournisseur",
+                cell: (r) => (
+                  <span className="block max-w-60">
+                    <span className="block truncate">{r.supplier.name}</span>
+                    <span className="block truncate font-mono text-xs text-muted-foreground">
+                      {r.number}
+                    </span>
                   </span>
-                </span>
-              ),
-            },
-            {
-              header: "Catégorie",
-              cell: (r) => <span className="text-sm">{RECEIVED_CATEGORY_LABELS[r.category]}</span>,
-            },
-            {
-              header: "Chantier",
-              cell: (r) => (
-                <span className="line-clamp-1 text-sm">
-                  {r.worksiteId ? worksiteName.get(r.worksiteId) : "—"}
-                </span>
-              ),
-            },
-            {
-              header: "Échéance",
-              cell: (r) => <span className="num">{formatDate(r.dueDate)}</span>,
-            },
-            {
-              header: "Statut",
-              cell: (r) => (
-                <span className="flex flex-wrap gap-1">
+                ),
+              },
+              {
+                header: "Catégorie",
+                cell: (r) => (
+                  <span className="text-sm">{RECEIVED_CATEGORY_LABELS[r.category]}</span>
+                ),
+              },
+              {
+                header: "Chantier",
+                cell: (r) => (
+                  <span className="line-clamp-1 text-sm">
+                    {r.worksiteId ? worksiteName.get(r.worksiteId) : "—"}
+                  </span>
+                ),
+              },
+              {
+                header: "Échéance",
+                cell: (r) => <span className="num">{formatDate(r.dueDate)}</span>,
+              },
+              {
+                header: "Statut",
+                cell: (r) => (
+                  <span className="flex flex-wrap gap-1">
+                    <LifecycleStatusBadge status={r.status} />
+                    {receivedNeedsAction(r) ? <ToneBadge tone="info">À traiter</ToneBadge> : null}
+                  </span>
+                ),
+              },
+              { header: "TTC", align: "right", cell: (r) => <Amount value={r.gross} /> },
+            ]}
+            mobile={(r) => ({
+              title: r.supplier.name,
+              subtitle: `${r.number} · échéance ${formatDate(r.dueDate)}`,
+              amount: <Amount value={r.gross} />,
+              meta: (
+                <>
                   <LifecycleStatusBadge status={r.status} />
                   {receivedNeedsAction(r) ? <ToneBadge tone="info">À traiter</ToneBadge> : null}
-                </span>
+                </>
               ),
-            },
-            { header: "TTC", align: "right", cell: (r) => <Amount value={r.gross} /> },
-          ]}
-          mobile={(r) => ({
-            title: r.supplier.name,
-            subtitle: `${r.number} · échéance ${formatDate(r.dueDate)}`,
-            amount: <Amount value={r.gross} />,
-            meta: (
-              <>
-                <LifecycleStatusBadge status={r.status} />
-                {receivedNeedsAction(r) ? <ToneBadge tone="info">À traiter</ToneBadge> : null}
-              </>
-            ),
-          })}
-        />
+            })}
+          />
+          <ListPagination
+            pagination={paged}
+            pathname={routes.received.list()}
+            query={{ q, filtre }}
+            label="factures reçues"
+          />
+        </>
       )}
     </>
   );

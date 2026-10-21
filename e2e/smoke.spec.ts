@@ -44,3 +44,21 @@ test("la déconnexion ferme la session", async ({ page, context }) => {
   await page.goto("/app/tableau-de-bord");
   await expect(page).toHaveURL(/\/connexion/);
 });
+
+test("la pagination des listes conserve la recherche et revient en page 1", async ({
+  page,
+  context,
+}) => {
+  await context.addCookies([
+    { name: "factobat_session", value: "usr-julien", url: "http://localhost:3230" },
+  ]);
+  await page.goto("/app/factures");
+  await page.getByRole("link", { name: "Page suivante" }).click();
+  await expect(page).toHaveURL(/page=2/);
+  await expect(
+    page.getByRole("navigation", { name: "Pagination" }).locator("[aria-current=page]"),
+  ).toHaveText(/2/);
+  await page.getByRole("searchbox").fill("FA");
+  await expect(page).toHaveURL(/q=FA/);
+  await expect(page).not.toHaveURL(/page=/);
+});

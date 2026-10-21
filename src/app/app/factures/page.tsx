@@ -7,7 +7,9 @@ import { Amount } from "@/components/app/amount";
 import { EmptyState } from "@/components/app/empty-state";
 import { ListToolbar } from "@/components/app/list-toolbar";
 import { PageHeader } from "@/components/app/page-header";
+import { ListPagination } from "@/components/app/list-pagination";
 import { ResponsiveList } from "@/components/app/responsive-list";
+import { paginate } from "@/lib/pagination";
 import { LifecycleStatusBadge, PaymentStatusBadge } from "@/components/status/status-badge";
 import { INVOICE_KIND_LABELS, PAYMENT_STATUS } from "@/components/status/status-config";
 import { Button } from "@/components/ui/button";
@@ -32,9 +34,9 @@ const FILTERS = [
 export default async function InvoicesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; filtre?: string }>;
+  searchParams: Promise<{ q?: string; filtre?: string; page?: string }>;
 }) {
-  const { q, filtre } = await searchParams;
+  const { q, filtre, page } = await searchParams;
   const { repos, orgId, today } = await getRequestContext();
   const [invoices, clients] = await Promise.all([
     repos.invoices.list(orgId, { search: q }),
@@ -65,6 +67,8 @@ export default async function InvoicesPage({
       ) : null}
     </>
   );
+
+  const paged = paginate(rows, page);
 
   return (
     <>
@@ -102,74 +106,82 @@ export default async function InvoicesPage({
           }
         />
       ) : (
-        <ResponsiveList
-          caption="Liste des factures émises"
-          rows={rows}
-          getKey={(r) => r.invoice.id}
-          href={(r) => routes.invoices.show(r.invoice.id)}
-          columns={[
-            {
-              header: "Numéro",
-              cell: (r) => (
-                <span className="font-mono text-sm">{r.invoice.number ?? "Brouillon"}</span>
-              ),
-            },
-            {
-              header: "Client",
-              cell: (r) => (
-                <span className="block max-w-56">
-                  <span className="block truncate">{clientName.get(r.invoice.clientId)}</span>
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {INVOICE_KIND_LABELS[r.invoice.kind]}
+        <>
+          <ResponsiveList
+            caption="Liste des factures émises"
+            rows={paged.items}
+            getKey={(r) => r.invoice.id}
+            href={(r) => routes.invoices.show(r.invoice.id)}
+            columns={[
+              {
+                header: "Numéro",
+                cell: (r) => (
+                  <span className="font-mono text-sm">{r.invoice.number ?? "Brouillon"}</span>
+                ),
+              },
+              {
+                header: "Client",
+                cell: (r) => (
+                  <span className="block max-w-56">
+                    <span className="block truncate">{clientName.get(r.invoice.clientId)}</span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {INVOICE_KIND_LABELS[r.invoice.kind]}
+                    </span>
                   </span>
-                </span>
-              ),
-            },
-            {
-              header: "Émission",
-              cell: (r) => <span className="num">{formatDate(r.invoice.issueDate)}</span>,
-            },
-            {
-              header: "Échéance",
-              cell: (r) => (
-                <span className="num">
-                  {kindRules(r.invoice.kind).isReceivable ? formatDate(r.invoice.dueDate) : "—"}
-                </span>
-              ),
-            },
-            {
-              header: "Statuts",
-              cell: (r) => <span className="flex flex-wrap gap-1">{badges(r)}</span>,
-            },
-            {
-              header: "Net à payer",
-              align: "right",
-              cell: (r) => (
-                <span className="block">
+                ),
+              },
+              {
+                header: "Émission",
+                cell: (r) => <span className="num">{formatDate(r.invoice.issueDate)}</span>,
+              },
+              {
+                header: "Échéance",
+                cell: (r) => (
+                  <span className="num">
+                    {kindRules(r.invoice.kind).isReceivable ? formatDate(r.invoice.dueDate) : "—"}
+                  </span>
+                ),
+              },
+              {
+                header: "Statuts",
+                cell: (r) => <span className="flex flex-wrap gap-1">{badges(r)}</span>,
+              },
+              {
+                header: "Net à payer",
+                align: "right",
+                cell: (r) => (
+                  <span className="block">
+                    {kindRules(r.invoice.kind).sign < 0 ? "− " : ""}
+                    <Amount value={r.invoice.totals.netToPay} />
+                    {compareMoney(r.remaining, ZERO) > 0 &&
+                    r.remaining !== r.invoice.totals.netToPay ? (
+                      <span className="block text-xs text-muted-foreground">
+                        reste <Amount value={r.remaining} />
+                      </span>
+                    ) : null}
+                  </span>
+                ),
+              },
+            ]}
+            mobile={(r) => ({
+              title: clientName.get(r.invoice.clientId),
+              subtitle: `${r.invoice.number ?? "Brouillon"} · ${INVOICE_KIND_LABELS[r.invoice.kind]} · ${formatDate(r.invoice.issueDate)}`,
+              amount: (
+                <>
                   {kindRules(r.invoice.kind).sign < 0 ? "− " : ""}
                   <Amount value={r.invoice.totals.netToPay} />
-                  {compareMoney(r.remaining, ZERO) > 0 &&
-                  r.remaining !== r.invoice.totals.netToPay ? (
-                    <span className="block text-xs text-muted-foreground">
-                      reste <Amount value={r.remaining} />
-                    </span>
-                  ) : null}
-                </span>
+                </>
               ),
-            },
-          ]}
-          mobile={(r) => ({
-            title: clientName.get(r.invoice.clientId),
-            subtitle: `${r.invoice.number ?? "Brouillon"} · ${INVOICE_KIND_LABELS[r.invoice.kind]} · ${formatDate(r.invoice.issueDate)}`,
-            amount: (
-              <>
-                {kindRules(r.invoice.kind).sign < 0 ? "− " : ""}
-                <Amount value={r.invoice.totals.netToPay} />
-              </>
-            ),
-            meta: badges(r),
-          })}
-        />
+              meta: badges(r),
+            })}
+          />
+          <ListPagination
+            pagination={paged}
+            pathname={routes.invoices.list()}
+            query={{ q, filtre }}
+            label="factures"
+          />
+        </>
       )}
     </>
   );

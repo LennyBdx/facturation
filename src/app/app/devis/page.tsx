@@ -6,7 +6,9 @@ import { Amount } from "@/components/app/amount";
 import { EmptyState } from "@/components/app/empty-state";
 import { ListToolbar } from "@/components/app/list-toolbar";
 import { PageHeader } from "@/components/app/page-header";
+import { ListPagination } from "@/components/app/list-pagination";
 import { ResponsiveList } from "@/components/app/responsive-list";
+import { paginate } from "@/lib/pagination";
 import { QuoteStatusBadge } from "@/components/status/status-badge";
 import { QUOTE_STATUS } from "@/components/status/status-config";
 import { Button } from "@/components/ui/button";
@@ -23,9 +25,9 @@ const STATUSES = Object.keys(QUOTE_STATUS) as QuoteStatus[];
 export default async function QuotesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; filtre?: string }>;
+  searchParams: Promise<{ q?: string; filtre?: string; page?: string }>;
 }) {
-  const { q, filtre } = await searchParams;
+  const { q, filtre, page } = await searchParams;
   const status = STATUSES.includes(filtre as QuoteStatus) ? (filtre as QuoteStatus) : undefined;
   const { repos, orgId, today } = await getRequestContext();
   const [all, clients] = await Promise.all([
@@ -40,6 +42,8 @@ export default async function QuotesPage({
       totals: quoteTotals(quote),
     }))
     .filter((x) => !status || x.status === status);
+
+  const paged = paginate(quotes, page);
 
   return (
     <>
@@ -77,39 +81,50 @@ export default async function QuotesPage({
           }
         />
       ) : (
-        <ResponsiveList
-          caption="Liste des devis"
-          rows={quotes}
-          getKey={(x) => x.quote.id}
-          href={(x) => routes.quotes.show(x.quote.id)}
-          columns={[
-            {
-              header: "Numéro",
-              cell: (x) => <span className="font-mono text-sm">{x.quote.number}</span>,
-            },
-            { header: "Objet", cell: (x) => <span className="line-clamp-1">{x.quote.title}</span> },
-            { header: "Client", cell: (x) => clientName.get(x.quote.clientId) },
-            {
-              header: "Date",
-              cell: (x) => <span className="num">{formatDate(x.quote.issueDate)}</span>,
-            },
-            { header: "Statut", cell: (x) => <QuoteStatusBadge status={x.status} /> },
-            { header: "Total HT", align: "right", cell: (x) => <Amount value={x.totals.net} /> },
-          ]}
-          mobile={(x) => ({
-            title: x.quote.title,
-            subtitle: `${x.quote.number} · ${clientName.get(x.quote.clientId)}`,
-            amount: <Amount value={x.totals.net} />,
-            meta: (
-              <>
-                <QuoteStatusBadge status={x.status} />
-                <span className="num ml-auto text-sm text-muted-foreground">
-                  {formatDate(x.quote.issueDate)}
-                </span>
-              </>
-            ),
-          })}
-        />
+        <>
+          <ResponsiveList
+            caption="Liste des devis"
+            rows={paged.items}
+            getKey={(x) => x.quote.id}
+            href={(x) => routes.quotes.show(x.quote.id)}
+            columns={[
+              {
+                header: "Numéro",
+                cell: (x) => <span className="font-mono text-sm">{x.quote.number}</span>,
+              },
+              {
+                header: "Objet",
+                cell: (x) => <span className="line-clamp-1">{x.quote.title}</span>,
+              },
+              { header: "Client", cell: (x) => clientName.get(x.quote.clientId) },
+              {
+                header: "Date",
+                cell: (x) => <span className="num">{formatDate(x.quote.issueDate)}</span>,
+              },
+              { header: "Statut", cell: (x) => <QuoteStatusBadge status={x.status} /> },
+              { header: "Total HT", align: "right", cell: (x) => <Amount value={x.totals.net} /> },
+            ]}
+            mobile={(x) => ({
+              title: x.quote.title,
+              subtitle: `${x.quote.number} · ${clientName.get(x.quote.clientId)}`,
+              amount: <Amount value={x.totals.net} />,
+              meta: (
+                <>
+                  <QuoteStatusBadge status={x.status} />
+                  <span className="num ml-auto text-sm text-muted-foreground">
+                    {formatDate(x.quote.issueDate)}
+                  </span>
+                </>
+              ),
+            })}
+          />
+          <ListPagination
+            pagination={paged}
+            pathname={routes.quotes.list()}
+            query={{ q, filtre }}
+            label="devis"
+          />
+        </>
       )}
     </>
   );

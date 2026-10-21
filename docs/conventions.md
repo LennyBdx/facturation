@@ -4,20 +4,24 @@
 
 ```
 app/ (pages : (marketing) = site, app/ = application, (auth))  ← rendu serveur
-  └─ features/<domaine>/          ← formulaires (client), Server Actions, schémas Zod
-       └─ services/               ← cas d'usage : orchestration repositories + domaine + intégration
-            ├─ domain/            ← fonctions PURES (calculs, validations, statuts), testées
-            ├─ data/              ← types + interfaces de repositories + implémentation
-            └─ integrations/      ← plateforme agréée (EInvoicingProvider)
+  └─ features/<domaine>/          ← formulaires (client), actions.ts, schemas.ts
+       └─ composition/            ← racine de composition : contexte, runAction
+            └─ services/          ← cas d'usage : orchestration repositories + domaine + intégration
+                 ├─ domain/       ← fonctions PURES (calculs, validations, statuts), testées
+                 ├─ data/         ← ports (repositories, unité de travail) + adaptateurs
+                 └─ integrations/ ← plateforme agréée (EInvoicingProvider)
 components/                      ← composants d'interface réutilisables (ui = shadcn)
-lib/                             ← session, formats, validation, utilitaires
+lib/                             ← session, formats, validation, journal, utilitaires
 ```
 
 Règles :
 
-- **`src/domain/` n'importe rien d'autre que `decimal.js` et lui-même.** C'est le code réutilisé tel quel en production.
+- **`src/domain/` n'importe rien d'autre que `decimal.js` et lui-même** (règle ESLint). C'est le code réutilisé tel quel en production.
+- `services/`, `data/`, `integrations/` et `composition/` n'importent jamais `app/`, `components/` ni `features/` (règle ESLint).
+- Le code serveur (`data`, `services`, `composition`, `lib/session`) importe `server-only`.
 - Les pages et composants **n'importent jamais** `@/data/mock`, `@/data/memory` ni un fichier interne de `@/integrations/e-invoicing/*`. Une règle ESLint (`no-restricted-imports`) l'interdit. Les points d'entrée autorisés sont `@/data` (`getRepositories()`) et `@/integrations/e-invoicing` (`getEInvoicingProvider()`).
-- Toute page récupère l'entreprise et l'utilisateur via `getContext()` (`src/services/context.ts`), qui s'appuie sur `src/lib/session.ts`.
+- Toute page récupère son contexte (entreprise, utilisateur, rôle, dépendances) via `getRequestContext()` (`src/composition/request-context.ts`), qui s'appuie sur `src/lib/session.ts`. Les services reçoivent ce contexte, réduit à ce qu'ils utilisent (`ServiceContext<R, P>`).
+- Seule la racine de composition choisit les implémentations concrètes.
 - Toute lecture et toute écriture est filtrée par `organizationId` : isolation multi-entreprise dès le prototype.
 
 ## Données
@@ -45,10 +49,14 @@ Règles :
 ## Mutations
 
 - Les mutations passent par des **Server Actions** (`features/*/actions.ts`, `"use server"`). Un fichier `"use server"` n'exporte que des fonctions `async` : les schémas sont dans `schemas.ts`.
-- Une Server Action :
+- Une Server Action passe par `runAction` (`src/composition/action.ts`), qui :
+  - construit le contexte sans cache (l'action lit ses propres écritures) ;
+  - vérifie la permission du rôle (`src/domain/permissions.ts`) ;
   - valide l'entrée avec Zod ;
-  - appelle un service ;
-  - renvoie un `ActionResult` (`{ ok, message } | { ok: false, error, fieldErrors }`).
+  - appelle un service, puis invalide le cache de l'entreprise (`updateTag`) ;
+  - renvoie un `ActionResult` (`{ ok: true, data?, message? } | { ok: false, error, fieldErrors? }`).
+- Les écritures liées (numéro, données figées, lien d'avoir) passent par l'unité de travail (`ctx.uow.run`).
+- Le rendu d'une page ne fait **jamais** d'écriture.
 - Les erreurs métier sont des `BusinessError` (ou `ProgressBillingError`), converties en message français.
 - Côté client, `applyActionResult` reporte les erreurs serveur sous chaque champ et affiche un toast. `ActionButton` gère le chargement, la confirmation et le rafraîchissement.
 
@@ -65,10 +73,14 @@ Règles :
 - Vitest est la référence : `pnpm test`.
 - Fichiers de tests :
   - `src/domain/*.test.ts` : calculs et règles ;
+  - `src/services/*.test.ts` : cas d'usage sur données en mémoire et plateforme factice ;
+  - `src/data/memory/repositories.test.ts` : suite de contrat (`src/data/contract/`), à réutiliser pour toute nouvelle implémentation ;
+  - `src/features/quotes/editor/quote-draft.test.ts` : opérations de l'éditeur de devis ;
   - `src/data/mock/seed.test.ts` : cohérence du jeu de données (numérotation continue, couverture des statuts).
+- Playwright (`e2e/`, `pnpm test:e2e`) : parcours sur le build de production.
 - Toute nouvelle règle de calcul doit d'abord être ajoutée dans `src/domain/` avec son test.
 
 ## Nommage
 
 - Le code (identifiants, types) est en anglais ; l'interface, les messages et les commentaires sont en français.
-- Les routes sont en français (`/factures-recues`, `/chantiers/[id]`).
+- Les routes sont en français (`/factures-recues`, `/chantiers/[id]`) et ne sont jamais écrites en dur : `routes` (`src/config/routes.ts`).

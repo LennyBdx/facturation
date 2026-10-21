@@ -26,17 +26,20 @@ pnpm install
 pnpm dev
 ```
 
-Ouvrez ensuite http://localhost:3000 (site vitrine) ; l'application est sous http://localhost:3000/app. Aucune variable d'environnement n'est nécessaire.
+Ouvrez ensuite http://localhost:3000 (site vitrine) ; l'application est sous http://localhost:3000/app (connexion simulée : n'importe quel mot de passe). Aucune variable d'environnement n'est nécessaire ; `NEXT_PUBLIC_SITE_URL` et `ENABLE_DEBUG_PAGES` sont optionnelles (validées dans `src/config/env.ts`).
 
-| Script             | Rôle                                                                                                                                                                                                                                                             |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`         | Serveur de développement                                                                                                                                                                                                                                         |
-| `pnpm build`       | Build de production                                                                                                                                                                                                                                              |
-| `pnpm lint`        | ESLint (inclut les règles d'architecture)                                                                                                                                                                                                                        |
-| `pnpm test`        | Tests Vitest de la logique métier et du jeu de données                                                                                                                                                                                                           |
-| `pnpm screenshots` | Refait les captures du prototype pour le site vitrine (`public/screenshots/*.jpg`, session de démo injectée) et les aperçus de la page d'accueil (`docs/references/home-v1-*.png`). Utilise `BASE_URL` s'il est défini, sinon lance `next dev` sur le port 3210. |
-| `pnpm references`  | Refait les captures de référence (Playwright) dans `docs/references/`                                                                                                                                                                                            |
-| `pnpm format`      | Prettier                                                                                                                                                                                                                                                         |
+| Script                              | Rôle                                                                                                                                                                                                                                                             |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                          | Serveur de développement                                                                                                                                                                                                                                         |
+| `pnpm build`                        | Build de production                                                                                                                                                                                                                                              |
+| `pnpm lint`                         | ESLint (inclut les règles d'architecture)                                                                                                                                                                                                                        |
+| `pnpm typecheck`                    | Génère les types de routes puis vérifie TypeScript                                                                                                                                                                                                               |
+| `pnpm test`                         | Tests Vitest : domaine, services, contrat des repositories, jeu de données                                                                                                                                                                                       |
+| `pnpm test:e2e`                     | Parcours Playwright sur le build de production (lancer `pnpm build` avant)                                                                                                                                                                                       |
+| `pnpm check`                        | format:check + lint + typecheck + test (identique à la CI)                                                                                                                                                                                                       |
+| `pnpm screenshots`                  | Refait les captures du prototype pour le site vitrine (`public/screenshots/*.jpg`, session de démo injectée) et les aperçus de la page d'accueil (`docs/references/home-v1-*.png`). Utilise `BASE_URL` s'il est défini, sinon lance `next dev` sur le port 3210. |
+| `pnpm references`                   | Refait les captures de référence (Playwright) dans `docs/references/`                                                                                                                                                                                            |
+| `pnpm format` / `pnpm format:check` | Prettier (écriture / vérification)                                                                                                                                                                                                                               |
 
 Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec playwright install chromium`.
 
@@ -68,7 +71,7 @@ Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec pl
 
 La page **`/debug/app`** liste toutes les fonctionnalités par page, avec leur état : « Fait », « Simulé » (présent mais sans back-end ni service réel) ou « À faire ». Elle donne aussi des barres d'avancement par zone et au global. L'inventaire est dans `src/content/debug-features.ts` et se met à jour à chaque évolution. La page n'est pas indexée.
 
-La page **`/debug/tech`** décrit la technique : stack, architecture en couches (ports et adaptateurs), application des principes SOLID (aujourd'hui et après correction), patterns de code, et une liste de bonnes pratiques Next.js marquées « Appliqué », « Partiel » ou « À faire ». Contenu : `src/content/debug-tech.ts`.
+La page **`/debug/tech`** est la fiche technique : stack, découpage du code, couches et sens des dépendances, flux de lecture et d'écriture, SOLID tel qu'appliqué, patterns, rendu et cache, sécurité, qualité, conventions et points de branchement. Contenu : `src/content/debug-tech.ts`. Les pages `/debug` sont désactivées en production (sauf `ENABLE_DEBUG_PAGES=true`).
 
 ## Structure
 
@@ -79,16 +82,21 @@ docs/
   conventions.md      couches, montants, organisation du code
   domaine-btp.md      règles de calcul et statuts de facture électronique (avec sources)
   plan-v1.md          plan validé
-scripts/capture-references.mjs
+e2e/                  parcours Playwright
+scripts/              captures (références, site vitrine)
 src/
-  app/                routes (App Router) : (marketing) = site vitrine, app/ = application sous /app, (auth), onboarding
-  components/         ui (shadcn), app (listes, en-têtes, frise), status, forms, documents, app-shell
-  features/           par domaine : formulaires client, Server Actions, schémas Zod
+  proxy.ts            redirection vers /connexion sans cookie de session
+  app/                routes (App Router) : (marketing) = site vitrine, app/ = application sous /app, (auth), onboarding, debug
+  components/         ui (shadcn), app (listes, en-têtes, frise), app-shell, status, forms, documents, marketing
+  features/           par domaine : formulaires et widgets, actions.ts (Server Actions), schemas.ts (Zod)
+  composition/        racine de composition : contexte de requête / d'action, fabrique runAction
   services/           cas d'usage (devis, factures, factures reçues, tableau de bord, mentions légales)
   domain/             logique métier pure + tests  ← réutilisée telle quelle en production
-  data/               types, interfaces de repositories, implémentation en mémoire, données fictives
-  integrations/e-invoicing/   interface EInvoicingProvider + plateforme simulée
-  lib/                session fictive, formats français, validation, horloge simulée
+  data/               types, ports (repositories, unité de travail), adaptateur mémoire, cache des lectures, suite de contrat
+  integrations/e-invoicing/   port EInvoicingProvider + plateforme simulée
+  config/             env (Zod), routes typées, nom du produit
+  content/            textes du site vitrine et des pages /debug
+  lib/                session, formats français, validation, journal, horloge simulée
 ```
 
 ## Brancher le back-end
@@ -100,20 +108,20 @@ L'architecture isole tout ce qui est simulé. **Les pages, les composants et `sr
 | Remplacer / ajouter                      | Détail                                                                                                                                                                                                                                                                                                                                                                                       |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/data/postgres/` (nouveau)           | Implémentation de chaque interface de `src/data/repositories.ts` : `OrganizationRepository`, `ClientRepository`, `QuoteRepository`, `InvoiceRepository`, `ReceivedInvoiceRepository`… Le schéma découle de `src/data/types.ts`. Les lots, lignes, paiements et événements deviennent des tables filles ; les instantanés `seller`, `buyer` et `progress.cumulative` peuvent rester en JSONB. |
-| `src/data/index.ts`                      | `getRepositories()` renvoie l'implémentation PostgreSQL au lieu de `createMemoryRepositories(...)`.                                                                                                                                                                                                                                                                                          |
+| `src/data/index.ts`                      | `getRepositories()` / `getUnitOfWork()` renvoient l'implémentation PostgreSQL (transaction SQL pour l'unité de travail). La suite `src/data/contract/repository-contract.ts` doit passer telle quelle ; le décorateur de cache (`cached-repositories.ts`) s'applique sans changement.                                                                                                        |
 | `OrganizationRepository.takeNextNumber`  | À implémenter de façon **atomique** (`UPDATE … SET next_value = next_value + 1 RETURNING`) dans la même transaction que l'émission de la facture (`src/services/invoices.ts › issueInvoice`).                                                                                                                                                                                                |
 | `src/data/mock/`                         | Ne sert plus qu'au peuplement d'une base de démonstration (`buildSeed()`).                                                                                                                                                                                                                                                                                                                   |
 | `src/config/app.ts` + `src/lib/clock.ts` | Supprimer `DEMO_TODAY` : `today()` renvoie la vraie date (fuseau Europe/Paris).                                                                                                                                                                                                                                                                                                              |
 
 ### 2. Authentification
 
-| Remplacer / ajouter                                                    | Détail                                                                                                                                                                                                            |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/session.ts`                                                   | Réimplémenter `getCurrentUser()`, `getCurrentOrganization()` et `getCurrentMembership()` à partir de la vraie session (cookie signé, JWT ou fournisseur d'identité). Toutes les pages passent déjà par ce module. |
-| `src/proxy.ts` (nouveau ; c'est l'ancien « middleware » de Next.js 16) | Rediriger vers `/connexion` sans session sur `/app`.                                                                                                                                                              |
-| `src/features/auth/auth-forms.tsx`                                     | Remplacer les `router.push` simulés par l'appel au fournisseur d'authentification. Les schémas Zod restent.                                                                                                       |
-| `src/features/session/actions.ts`                                      | `signOut()` : détruire la session.                                                                                                                                                                                |
-| `src/features/organization/onboarding-wizard.tsx`                      | `finish()` : créer l'entreprise et le membership « propriétaire » via une Server Action.                                                                                                                          |
+| Remplacer / ajouter                                 | Détail                                                                                                                                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/session.ts`                                | Remplacer la lecture du cookie de démonstration par la vérification d'un jeton signé (ou d'un fournisseur d'identité). Toutes les pages et actions passent déjà par ce module. |
+| `src/proxy.ts`                                      | Déjà en place (contrôle optimiste du cookie sur `/app` et `/onboarding`) ; seul le nom du cookie peut changer.                                                                 |
+| `src/features/auth/auth-forms.tsx` + `startSession` | Vérifier les identifiants avant de poser la session. Les schémas Zod restent.                                                                                                  |
+| `src/features/session/actions.ts`                   | `signOut()` supprime déjà les cookies ; invalider aussi la session côté serveur.                                                                                               |
+| `src/features/organization/onboarding-wizard.tsx`   | `finish()` : créer l'entreprise et le membership « propriétaire » via une Server Action.                                                                                       |
 
 ### 3. Stripe (abonnements)
 
@@ -139,8 +147,9 @@ Les options les plus simples et standard ont été retenues quand le cahier des 
 
 - **Dossier** : le projet est dans `facturation-btp/`, car la racine contient déjà un autre projet. Le dépôt git est propre à ce dossier.
 - **Next.js 16.4** (dernière version stable) :
-  - Cache Components est **désactivé**, car toutes les pages dépendent de la session et de données mutables ; le rendu dynamique classique est plus simple ;
-  - le dossier `src/app/app` (`/app`) est en `force-dynamic`.
+  - Cache Components et le prérendu partiel sont **activés** : site vitrine statique, coquille de l'application prérendue, session et données en streaming sous `Suspense` ;
+  - les lectures du rendu passent par `"use cache"` avec l'étiquette `org:<id>`, invalidée par `updateTag` après chaque Server Action réussie ; les actions lisent sans cache ;
+  - aucune écriture pendant le rendu (statuts plateforme et factures reçues : via des actions déclenchées côté client).
 - **shadcn/ui** : style « radix-nova ».
   - Les hauteurs des contrôles sont agrandies (44 px sur mobile, 40 px sur ordinateur) et les cartes aplaties (bordure, rayon de 8 px), conformément au design system.
   - Les jetons sont en hexadécimal, pas en OKLCH, pour garder le lien avec les rapports de contraste documentés.

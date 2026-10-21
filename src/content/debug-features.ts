@@ -82,6 +82,12 @@ export const AREAS: Area[] = [
         route: "/connexion",
         features: [
           { label: "Formulaire validé (Zod), affichage du mot de passe", status: "done" },
+          {
+            label: "Session de démonstration (cookie), retour à la page demandée",
+            status: "mock",
+            note: "Tout mot de passe accepté",
+          },
+          { label: "Espace connecté protégé (proxy + vérification serveur)", status: "done" },
           { label: "Authentification réelle", status: "todo" },
         ],
       },
@@ -130,9 +136,8 @@ export const AREAS: Area[] = [
           { label: "Sélecteur d'entreprise (2 entreprises fictives)", status: "done" },
           { label: "Menu utilisateur, thème sombre", status: "done" },
           {
-            label: "Déconnexion",
-            status: "mock",
-            note: "Redirige vers /connexion sans session réelle",
+            label: "Déconnexion (suppression du cookie de session)",
+            status: "done",
           },
           { label: "Squelettes de chargement, page d'erreur, page introuvable", status: "done" },
         ],
@@ -411,8 +416,8 @@ export const AREAS: Area[] = [
           },
           {
             label: "Droits appliqués par rôle sur chaque action",
-            status: "todo",
-            note: "Seuls équipe et paramètres sont restreints",
+            status: "done",
+            note: "Un membre ne peut ni émettre, ni encaisser, ni établir d'avoir",
           },
         ],
       },
@@ -490,7 +495,9 @@ export const AREAS: Area[] = [
         page: "Transverse",
         route: "—",
         features: [
-          { label: "Logique métier testée (61 tests Vitest)", status: "done" },
+          { label: "Logique métier et services testés (Vitest)", status: "done" },
+          { label: "Parcours de bout en bout (Playwright) et CI", status: "done" },
+          { label: "Prérendu partiel et cache des lectures (Cache Components)", status: "done" },
           { label: "Isolation des données par entreprise", status: "done" },
           { label: "Responsive mobile, accessibilité, thème sombre", status: "done" },
           { label: "Données fictives cohérentes (2 entreprises)", status: "done" },

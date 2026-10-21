@@ -1,420 +1,653 @@
 /**
- * Contenu de /debug/tech : bonnes pratiques Next.js et SOLID, architecture et
- * patterns du projet. L'état « done / todo » reflète l'audit du code au moment
- * de l'écriture : à mettre à jour quand une pratique est appliquée.
+ * Contenu de /debug/tech : fiche technique du projet (stack, découpage, couches,
+ * flux, SOLID, patterns, rendu et cache, sécurité, qualité, conventions).
+ * Décrit le code tel qu'il est : à tenir à jour avec l'architecture.
  */
-export type PracticeStatus = "done" | "partial" | "todo";
 
-export interface Practice {
-  title: string;
-  status: PracticeStatus;
-  why: string;
-  how: string;
-  /** Fichiers concernés. */
-  where?: string;
+export interface StackItem {
+  name: string;
+  version: string;
+  role: string;
 }
 
-export interface PracticeGroup {
-  id: string;
+export interface StackGroup {
   title: string;
-  items: Practice[];
+  items: StackItem[];
 }
 
-export const STACK = [
+export const STACK: StackGroup[] = [
   {
-    name: "Next.js 16 (App Router, Turbopack)",
-    role: "Pages rendues côté serveur, Server Actions pour les mutations.",
+    title: "Socle",
+    items: [
+      {
+        name: "Next.js",
+        version: "16.4 · App Router · Turbopack",
+        role: "Rendu serveur, Server Actions, Cache Components et prérendu partiel, proxy.ts.",
+      },
+      {
+        name: "React",
+        version: "19.3",
+        role: "Composants serveur par défaut ; composants client uniquement pour l'interactivité.",
+      },
+      {
+        name: "TypeScript",
+        version: "5 · strict",
+        role: "Types de routes générés (next typegen), aucun any implicite.",
+      },
+    ],
   },
   {
-    name: "React 19 + TypeScript strict",
-    role: "Composants serveur par défaut, composants client seulement pour l'interactivité.",
+    title: "Interface",
+    items: [
+      {
+        name: "Tailwind CSS",
+        version: "4",
+        role: "Jetons de design en variables CSS (clair / sombre), classes triées par Prettier.",
+      },
+      {
+        name: "shadcn/ui + Radix",
+        version: "radix-ui 1.8",
+        role: "Primitives accessibles (dialogues, menus, sélecteurs) copiées dans components/ui.",
+      },
+      {
+        name: "lucide-react · sonner · next-themes",
+        version: "",
+        role: "Icônes SVG, notifications, thème clair / sombre / système.",
+      },
+    ],
   },
   {
-    name: "Tailwind CSS v4 + shadcn/ui (Radix)",
-    role: "Jetons de design en variables CSS, composants accessibles.",
+    title: "Formulaires et calculs",
+    items: [
+      {
+        name: "Zod",
+        version: "4",
+        role: "Schémas partagés : validation du formulaire ET de la Server Action, variables d'environnement.",
+      },
+      {
+        name: "React Hook Form",
+        version: "7",
+        role: "État des formulaires, branché sur Zod via zodResolver.",
+      },
+      {
+        name: "decimal.js",
+        version: "10",
+        role: "Tous les montants en chaînes décimales, arrondi commercial (ROUND_HALF_UP).",
+      },
+    ],
   },
   {
-    name: "Zod + React Hook Form",
-    role: "Mêmes schémas de validation côté client et côté serveur.",
-  },
-  { name: "decimal.js", role: "Tous les montants : jamais de nombre flottant pour de l'argent." },
-  {
-    name: "Vitest",
-    role: "Tests de la logique métier (calculs, identifiants, conformité, numérotation).",
-  },
-  {
-    name: "Playwright",
-    role: "Scripts de captures (références et site vitrine), pas encore de tests de bout en bout.",
-  },
-  {
-    name: "ESLint + Prettier",
-    role: "Qualité et règles d'architecture (imports interdits entre couches).",
+    title: "Qualité",
+    items: [
+      {
+        name: "Vitest",
+        version: "5",
+        role: "Domaine, services, opérations de l'éditeur, contrat des repositories.",
+      },
+      {
+        name: "Playwright",
+        version: "1.64",
+        role: "Parcours de bout en bout sur le build de production, scripts de captures.",
+      },
+      {
+        name: "ESLint + Prettier",
+        version: "9 · 3",
+        role: "Règles Next.js, règles d'architecture entre couches, formatage vérifié en CI.",
+      },
+      {
+        name: "pnpm + GitHub Actions",
+        version: "",
+        role: "Installation figée ; CI : format, lint, typage, tests, build, puis e2e.",
+      },
+    ],
   },
 ];
 
-/** Couches, de l'extérieur (interface) vers le cœur (domaine). */
-export const LAYERS = [
+export interface TreeNode {
+  path: string;
+  role: string;
+  children?: TreeNode[];
+}
+
+/** Arborescence de `src/`, de l'extérieur vers le cœur. */
+export const TREE: TreeNode[] = [
+  {
+    path: "proxy.ts",
+    role: "Contrôle optimiste de session : /app et /onboarding sans cookie → /connexion?next=.",
+  },
+  { path: "instrumentation.ts", role: "Journalise les erreurs serveur (onRequestError)." },
+  {
+    path: "app/",
+    role: "Routes uniquement : chaque page lit le contexte, appelle les services et assemble des composants.",
+    children: [
+      {
+        path: "(marketing)/",
+        role: "Site vitrine statique : accueil, mentions légales, CGU, contact.",
+      },
+      { path: "(auth)/", role: "Connexion, inscription, mot de passe oublié (pages statiques)." },
+      {
+        path: "app/",
+        role: "Espace connecté : tableau de bord, clients, chantiers, devis, factures, équipe, paramètres.",
+      },
+      { path: "onboarding/", role: "Assistant de création de l'entreprise." },
+      {
+        path: "debug/",
+        role: "Pages internes (inventaire, fiche technique), désactivées en production.",
+      },
+    ],
+  },
+  {
+    path: "features/<domaine>/",
+    role: "Tout ce qui est propre à une fonctionnalité : formulaires, widgets, actions.ts (Server Actions), schemas.ts (Zod).",
+    children: [
+      {
+        path: "quotes/editor/",
+        role: "Éditeur de devis : hook d'état, opérations pures testées, sous-composants.",
+      },
+      {
+        path: "invoices/detail/",
+        role: "Blocs de la fiche facture : récapitulatif, conformité, lignes, paiements, cycle de vie.",
+      },
+    ],
+  },
+  {
+    path: "components/",
+    role: "Composants partagés sans logique métier.",
+    children: [
+      { path: "ui/", role: "Primitives shadcn/ui (non modifiées)." },
+      {
+        path: "app/ · app-shell/ · forms/ · status/",
+        role: "Briques de l'application : montants, listes, coquille, champs, badges.",
+      },
+      {
+        path: "marketing/ · documents/",
+        role: "Sections du site vitrine, rendu imprimable des devis et factures.",
+      },
+    ],
+  },
+  {
+    path: "composition/",
+    role: "Racine de composition : contexte de requête, contexte d'action, fabrique runAction.",
+  },
+  {
+    path: "services/",
+    role: "Cas d'usage : émettre, encaisser, convertir un devis… Reçoivent leurs dépendances en paramètre.",
+  },
+  {
+    path: "domain/",
+    role: "Règles métier pures : montants, TVA, situations, conformité, numérotation, permissions.",
+  },
+  {
+    path: "data/",
+    role: "Accès aux données derrière des interfaces.",
+    children: [
+      {
+        path: "repositories.ts · types.ts",
+        role: "Ports : contrats des repositories et de l'unité de travail, types des entités.",
+      },
+      { path: "memory/ · mock/", role: "Adaptateur en mémoire et jeu de démonstration." },
+      {
+        path: "cached-repositories.ts",
+        role: "Décorateur de cache des lectures (use cache + étiquette par entreprise).",
+      },
+      { path: "contract/", role: "Suite de tests que toute implémentation doit passer." },
+    ],
+  },
+  {
+    path: "integrations/e-invoicing/",
+    role: "Port de la plateforme agréée et son adaptateur simulé.",
+  },
+  {
+    path: "config/",
+    role: "Variables d'environnement validées, routes typées, nom du produit, constantes.",
+  },
+  { path: "content/", role: "Textes du site vitrine et des pages internes, séparés du code." },
+  {
+    path: "lib/",
+    role: "Utilitaires techniques : session, formatage, journal, résultat d'action, validation.",
+  },
+];
+
+export interface Layer {
+  name: string;
+  path: string;
+  role: string;
+  rule: string;
+}
+
+/** Couches, de l'extérieur vers le cœur. Les dépendances pointent toujours vers le bas. */
+export const LAYERS: Layer[] = [
   {
     name: "Interface",
-    path: "src/app, src/components, src/features/*/(*.tsx)",
-    role: "Pages (composants serveur), formulaires et widgets (composants client). Aucune règle métier : elles affichent et déclenchent.",
+    path: "app/ · components/ · features/*.tsx",
+    role: "Affiche et déclenche. Pages en composants serveur, formulaires et widgets en composants client.",
+    rule: "N'importe jamais les implémentations de données ou de plateforme (règle ESLint).",
   },
   {
     name: "Actions",
-    path: "src/features/*/actions.ts",
-    role: "Point d'entrée des mutations : validation Zod, appel d'un service, réponse ActionResult typée.",
+    path: "features/*/actions.ts → composition/action.ts",
+    role: "Porte d'entrée des mutations : session, permission, validation Zod, appel du service, invalidation du cache.",
+    rule: "Une action = un appel de service ; retour ActionResult typé.",
   },
   {
-    name: "Services (cas d'usage)",
-    path: "src/services",
-    role: "Orchestration : « émettre une facture » = contrôler, numéroter, figer, déposer. Dépendent d'interfaces, jamais d'implémentations.",
+    name: "Services",
+    path: "services/",
+    role: "Orchestrent un cas d'usage : lisent, appliquent le domaine, écrivent dans une transaction, appellent la plateforme.",
+    rule: "Ne connaissent ni l'interface ni Next.js ; dépendances reçues par ServiceContext (règle ESLint).",
   },
   {
     name: "Domaine",
-    path: "src/domain",
-    role: "Fonctions pures et testées : montants, TVA, situations, identifiants, numérotation, conformité, statuts. Aucune dépendance au framework.",
+    path: "domain/",
+    role: "Fonctions pures et déterministes : calculs, contrôles, transitions de statut.",
+    rule: "Aucun import hors du domaine, ni React ni Next.js (règle ESLint).",
   },
   {
-    name: "Ports (interfaces)",
-    path: "src/data/repositories.ts, src/integrations/e-invoicing/provider.ts",
-    role: "Contrats attendus de la persistance et de la plateforme agréée.",
+    name: "Ports",
+    path: "data/repositories.ts · integrations/e-invoicing/provider.ts",
+    role: "Interfaces dont dépendent les services : repositories, unité de travail, plateforme agréée.",
+    rule: "Décrivent le besoin, pas la technologie.",
   },
   {
     name: "Adaptateurs",
-    path: "src/data/memory, src/integrations/e-invoicing/mock-provider.ts",
-    role: "Implémentations actuelles (mémoire, plateforme simulée), remplaçables par PostgreSQL et l'API réelle sans toucher aux couches au-dessus.",
-  },
-  {
-    name: "Racine de composition",
-    path: "src/data/index.ts, src/integrations/e-invoicing/index.ts, src/services/context.ts",
-    role: "Seul endroit qui choisit les implémentations concrètes et les assemble.",
+    path: "data/memory · data/cached-repositories · integrations/e-invoicing/mock-provider",
+    role: "Implémentations interchangeables des ports (mémoire aujourd'hui, PostgreSQL et plateforme réelle ensuite).",
+    rule: "Choisis à un seul endroit : la racine de composition.",
   },
 ];
 
-export const SOLID = [
+export interface FlowStep {
+  label: string;
+  detail: string;
+  where: string;
+}
+
+export const READ_FLOW: FlowStep[] = [
+  {
+    label: "Proxy",
+    detail: "Pas de cookie de session → redirection vers la connexion.",
+    where: "src/proxy.ts",
+  },
+  {
+    label: "Coquille statique",
+    detail: "Le squelette de l'application est prérendu et s'affiche immédiatement.",
+    where: "app/app/layout.tsx",
+  },
+  {
+    label: "Contexte",
+    detail: "Session vérifiée, entreprise active, rôle, horloge, dépendances.",
+    where: "getRequestContext()",
+  },
+  {
+    label: "Lecture",
+    detail: "Repositories en cache, étiquetés par entreprise ; services de lecture.",
+    where: "data/cached-repositories.ts",
+  },
+  {
+    label: "Rendu",
+    detail: "La page assemble les composants ; le contenu arrive en streaming.",
+    where: "app/app/**/page.tsx",
+  },
+];
+
+export const WRITE_FLOW: FlowStep[] = [
+  {
+    label: "Formulaire",
+    detail: "React Hook Form + schéma Zod : erreurs affichées sous chaque champ.",
+    where: "features/*/…-form.tsx",
+  },
+  {
+    label: "Server Action",
+    detail: "Appel typé, sans route d'API à maintenir.",
+    where: "features/*/actions.ts",
+  },
+  {
+    label: "runAction",
+    detail: "Contexte sans cache, permission du rôle, revalidation Zod côté serveur.",
+    where: "composition/action.ts",
+  },
+  {
+    label: "Service",
+    detail: "Règles métier, transaction (unité de travail), puis appel de la plateforme.",
+    where: "services/*.ts",
+  },
+  {
+    label: "Résultat",
+    detail:
+      "ActionResult { ok, data | error, fieldErrors } ; cache de l'entreprise invalidé (updateTag).",
+    where: "lib/action-result.ts",
+  },
+];
+
+export interface SolidItem {
+  letter: string;
+  name: string;
+  principle: string;
+  inProject: string;
+  where: string;
+}
+
+export const SOLID: SolidItem[] = [
   {
     letter: "S",
     name: "Responsabilité unique",
-    now: "Chaque couche a un rôle : le domaine calcule, les services orchestrent, les actions valident, les pages affichent. Les mentions légales, les constructeurs de documents et le tableau de bord ont chacun leur module.",
-    target:
-      "Découper les gros fichiers qui cumulent plusieurs rôles : l'éditeur de devis (état, raccourcis clavier, rendu des lignes, totaux) et la fiche facture (calculs d'affichage + rendu).",
+    principle: "Un module n'a qu'une raison de changer.",
+    inProject:
+      "Pages = assemblage, actions = entrée (contrôles), services = cas d'usage, domaine = règles. L'éditeur de devis sépare état (hook), opérations pures et rendu ; la fiche facture est découpée en blocs.",
+    where: "features/quotes/editor/ · features/invoices/detail/",
   },
   {
     letter: "O",
     name: "Ouvert / fermé",
-    now: "Les statuts sont décrits par des tables de correspondance (status-config.ts) : un nouveau statut s'ajoute sans modifier les composants. Une nouvelle plateforme agréée = une nouvelle classe qui implémente EInvoicingProvider.",
-    target:
-      "Faire de même pour les types de facture (acompte, situation, solde, avoir) : une stratégie par type plutôt que des conditions réparties dans les services et les pages.",
+    principle: "On étend sans modifier le code existant.",
+    inProject:
+      "Les variantes de facture (standard, acompte, situation, avoir) sont décrites par une table de règles : un nouveau type s'ajoute dans la table, pas dans des conditions dispersées. Le cache est un décorateur ajouté sans toucher aux repositories.",
+    where: "domain/invoice-kinds.ts · data/cached-repositories.ts",
   },
   {
     letter: "L",
     name: "Substitution de Liskov",
-    now: "Les repositories en mémoire et la plateforme simulée respectent exactement leurs interfaces : les services fonctionnent à l'identique avec n'importe quelle implémentation.",
-    target:
-      "Ajouter une suite de tests de contrat commune, exécutée sur chaque implémentation (mémoire aujourd'hui, PostgreSQL demain).",
+    principle: "Toute implémentation d'un contrat est interchangeable.",
+    inProject:
+      "Repositories en mémoire, en cache ou demain PostgreSQL respectent le même contrat, vérifié par une suite de tests commune ; la plateforme simulée et la plateforme réelle implémentent le même port.",
+    where: "data/contract/repository-contract.ts",
   },
   {
     letter: "I",
     name: "Ségrégation des interfaces",
-    now: "Un repository par entité, avec seulement les méthodes utiles.",
-    target:
-      "Les services reçoivent aujourd'hui tout le contexte (tous les repositories). Leur passer uniquement ce dont ils ont besoin (ex. { invoices, organizations, provider }).",
+    principle: "Ne dépendre que de ce qu'on utilise.",
+    inProject:
+      'Chaque service déclare les seuls repositories et méthodes de plateforme qu\'il utilise : ServiceContext<"invoices" | "clients", "submitInvoice">. Un test fournit uniquement ces dépendances.',
+    where: "services/context.ts",
   },
   {
     letter: "D",
     name: "Inversion des dépendances",
-    now: "Services et pages dépendent des interfaces (Repositories, EInvoicingProvider). Les implémentations sont choisies dans la racine de composition. ESLint interdit d'importer les implémentations depuis l'interface.",
-    target:
-      "getContext() fait office de localisateur de services : le remplacer par une injection explicite (fabrique createServices(deps)), ce qui rend chaque service testable avec des doublures.",
+    principle: "Le cœur dépend d'abstractions, pas d'implémentations.",
+    inProject:
+      "Les services reçoivent repositories, unité de travail, plateforme et horloge en paramètre. Seule la racine de composition choisit les implémentations ; ESLint interdit aux couches internes d'importer l'interface.",
+    where: "composition/request-context.ts · eslint.config.mjs",
   },
 ];
 
-export const PATTERNS = [
+export interface PatternItem {
+  name: string;
+  where: string;
+  what: string;
+}
+
+export const PATTERNS: PatternItem[] = [
   {
-    name: "Ports et adaptateurs (hexagonal)",
-    where: "data/repositories.ts, integrations/e-invoicing",
-    what: "Le cœur ne connaît que des interfaces ; la base et la plateforme sont branchées de l'extérieur.",
+    name: "Ports et adaptateurs",
+    where: "data/ · integrations/",
+    what: "Le métier ne connaît que des interfaces ; la technique se branche autour.",
+  },
+  {
+    name: "Racine de composition",
+    where: "composition/",
+    what: "Un seul endroit assemble les implémentations concrètes.",
   },
   {
     name: "Repository",
-    where: "src/data",
-    what: "Accès aux données par entité, filtré par entreprise, avec copies défensives.",
+    where: "data/repositories.ts",
+    what: "Accès aux données par entité, toujours filtré par entreprise.",
   },
   {
-    name: "Service applicatif",
-    where: "src/services",
-    what: "Un cas d'usage = une fonction (émettre, enregistrer un paiement, créer une situation).",
+    name: "Unité de travail",
+    where: "data/memory/repositories.ts",
+    what: "Numérotation + données figées + lien d'avoir : tout ou rien.",
   },
   {
-    name: "Cœur fonctionnel, coquille impérative",
-    where: "src/domain",
-    what: "Calculs purs et déterministes ; les effets (base, plateforme) restent dans les services.",
+    name: "Décorateur",
+    where: "data/cached-repositories.ts",
+    what: "Ajoute le cache aux lectures sans modifier les repositories.",
   },
   {
     name: "Adaptateur",
-    where: "MockEInvoicingProvider",
-    what: "Traduit le contrat EInvoicingProvider vers une plateforme (simulée ici).",
+    where: "integrations/e-invoicing/",
+    what: "La plateforme agréée simulée derrière le port EInvoicingProvider.",
+  },
+  {
+    name: "Service applicatif",
+    where: "services/",
+    what: "Un cas d'usage par fonction, dépendances injectées.",
+  },
+  {
+    name: "Cœur fonctionnel, coquille impérative",
+    where: "domain/ · services/",
+    what: "Calculs purs testés ; les effets restent dans les services.",
+  },
+  {
+    name: "Fabrique d'actions",
+    where: "composition/action.ts",
+    what: "Contrôles communs à toutes les Server Actions, écrits une seule fois.",
+  },
+  {
+    name: "Résultat typé",
+    where: "lib/action-result.ts",
+    what: "Les erreurs attendues sont des valeurs, pas des exceptions.",
+  },
+  {
+    name: "Table de stratégies",
+    where: "domain/invoice-kinds.ts",
+    what: "Comportement par type de facture : série, code EN 16931, signe, paiements.",
+  },
+  {
+    name: "Matrice de permissions",
+    where: "domain/permissions.ts",
+    what: "Rôle → permissions, vérifiée côté serveur et reflétée dans l'interface.",
   },
   {
     name: "Builder",
     where: "services/builders.ts",
-    what: "Construction des factures (acompte, situation, avoir) à partir d'un devis.",
+    what: "Construction des factures à partir d'un devis, d'une situation ou d'un avoir.",
   },
   {
     name: "Snapshot",
-    where: "Invoice.seller / Invoice.buyer",
-    what: "Données figées à l'émission : une facture ne change plus si la fiche client change.",
+    where: "services/builders.ts",
+    what: "Vendeur et acheteur figés à l'émission : la facture ne change plus.",
   },
   {
     name: "État dérivé",
-    where: "invoicePaymentStatus",
-    what: "Le statut de paiement est recalculé, jamais stocké : pas d'incohérence possible.",
+    where: "services/builders.ts",
+    what: "Statut de paiement calculé (payée, en retard…) plutôt que stocké.",
   },
   {
-    name: "Objet valeur",
-    where: "Money, Percent (chaînes décimales)",
-    what: "Montants manipulés uniquement via domain/money.ts.",
-  },
-  {
-    name: "Résultat typé",
-    where: "ActionResult",
-    what: "Les actions renvoient { ok, data } ou { ok: false, error, fieldErrors }, sans exception vers le client.",
-  },
-  {
-    name: "Table de correspondance",
-    where: "status-config.ts",
-    what: "Libellé, ton et icône de chaque statut au même endroit.",
+    name: "Hook + opérations pures",
+    where: "features/quotes/editor/",
+    what: "État de formulaire complexe testé sans navigateur.",
   },
   {
     name: "Contenu séparé du code",
-    where: "src/content",
-    what: "Textes du site vitrine et des pages de suivi modifiables sans toucher aux composants.",
+    where: "content/",
+    what: "Textes modifiables sans toucher aux composants.",
   },
 ];
 
-export const PRACTICES: PracticeGroup[] = [
+export interface RenderZone {
+  zone: string;
+  mode: string;
+  detail: string;
+}
+
+export const RENDERING: RenderZone[] = [
   {
-    id: "rendu",
-    title: "Rendu et composants",
-    items: [
-      {
-        title: "Composants serveur par défaut",
-        status: "done",
-        why: "Moins de JavaScript envoyé, données lues au plus près.",
-        how: "« use client » uniquement pour les formulaires, menus et widgets interactifs (25 fichiers).",
-      },
-      {
-        title: "Requêtes en parallèle",
-        status: "done",
-        why: "Éviter les cascades d'attente.",
-        how: "Promise.all dans les pages qui lisent plusieurs repositories.",
-      },
-      {
-        title: "Mémoïsation par requête de la session",
-        status: "done",
-        why: "Ne pas relire l'utilisateur et l'entreprise plusieurs fois par rendu.",
-        how: "React.cache dans lib/session.ts.",
-      },
-      {
-        title: "Streaming avec Suspense",
-        status: "todo",
-        why: "Afficher la page sans attendre les blocs lents quand une vraie base sera branchée.",
-        how: "Envelopper les blocs secondaires (listes du tableau de bord, frise) dans <Suspense> avec un squelette.",
-        where: "app/app/tableau-de-bord, app/app/factures/[id]",
-      },
-      {
-        title: "Découper les gros composants client",
-        status: "todo",
-        why: "Lisibilité, tests, re-rendus ciblés.",
-        how: "Extraire de l'éditeur de devis : un hook useQuoteEditor (état et actions), un composant de ligne et un composant de totaux.",
-        where: "features/quotes/quote-editor.tsx (644 lignes)",
-      },
-    ],
+    zone: "Site vitrine, connexion, inscription",
+    mode: "Statique",
+    detail:
+      "Prérendu au build ; aucune donnée de requête. L'année du pied de page est mise en cache (use cache).",
   },
   {
-    id: "donnees",
-    title: "Données, cache et mutations",
-    items: [
-      {
-        title: "Mutations par Server Actions validées avec Zod",
-        status: "done",
-        why: "Ne jamais faire confiance aux données du client.",
-        how: "Chaque action revalide côté serveur avec le même schéma que le formulaire.",
-      },
-      {
-        title: "Revalidation ciblée après mutation",
-        status: "done",
-        why: "Rafraîchir uniquement les pages concernées.",
-        how: "revalidatePath sur la liste et la fiche modifiées.",
-      },
-      {
-        title: "Protéger le code serveur",
-        status: "todo",
-        why: "Empêcher qu'un module serveur soit importé par erreur côté client (fuite de secrets).",
-        how: 'Ajouter import "server-only" en tête de services/, data/ et lib/session.ts.',
-        where: "src/services, src/data, src/lib/session.ts",
-      },
-      {
-        title: "Fabrique d'actions commune",
-        status: "todo",
-        why: "La gestion des erreurs métier est recopiée dans plusieurs fichiers d'actions.",
-        how: "Créer createAction(schema, handler) : validation, contexte, autorisation, conversion des erreurs en ActionResult.",
-        where: "features/*/actions.ts",
-      },
-      {
-        title: "Stratégie de cache avec la vraie base",
-        status: "todo",
-        why: "Aujourd'hui tout est dynamique (force-dynamic), ce qui convient au prototype en mémoire.",
-        how: "Réactiver Cache Components, mettre « use cache » + cacheTag sur les lectures et revalidateTag dans les actions.",
-      },
-      {
-        title: "Transactions pour l'émission",
-        status: "todo",
-        why: "Numéro attribué et facture émise doivent réussir ou échouer ensemble.",
-        how: "Transaction PostgreSQL autour de takeNextNumber et de la mise à jour de la facture.",
-        where: "services/invoices.ts › issueInvoice",
-      },
-    ],
+    zone: "Espace connecté",
+    mode: "Prérendu partiel",
+    detail: "Coquille statique immédiate ; session et données en streaming sous Suspense.",
   },
   {
-    id: "securite",
-    title: "Sécurité",
-    items: [
-      {
-        title: "Isolation par entreprise",
-        status: "done",
-        why: "Une entreprise ne doit jamais voir les données d'une autre.",
-        how: "Toutes les méthodes des repositories filtrent par organizationId.",
-      },
-      {
-        title: "Autorisation dans chaque action",
-        status: "partial",
-        why: "Une action serveur est un point d'accès public : le rôle doit être vérifié côté serveur.",
-        how: "Contrôlé pour l'équipe et les paramètres ; à généraliser (ex. un membre ne peut pas émettre) via la fabrique d'actions.",
-        where: "features/*/actions.ts",
-      },
-      {
-        title: "Protection des routes par session",
-        status: "todo",
-        why: "Rediriger vers /connexion sans session.",
-        how: "src/proxy.ts (ancien middleware) sur /app et /debug, puis contrôle de session dans lib/session.ts.",
-      },
-      {
-        title: "En-têtes de sécurité (CSP, HSTS…)",
-        status: "todo",
-        why: "Limiter les injections et le détournement de clics.",
-        how: "headers() dans next.config.ts ou dans le proxy.",
-        where: "next.config.ts",
-      },
-      {
-        title: "Pages /debug fermées en production",
-        status: "todo",
-        why: "Elles exposent l'état interne du projet.",
-        how: 'notFound() si NODE_ENV === "production" sans variable d\'activation, ou accès réservé aux administrateurs.',
-        where: "app/debug",
-      },
-      {
-        title: "Validation des variables d'environnement",
-        status: "todo",
-        why: "Échouer au démarrage plutôt qu'en production quand une clé manque.",
-        how: "Schéma Zod des variables (base de données, plateforme, Stripe) au branchement du back-end.",
-      },
-    ],
+    zone: "Lectures de données",
+    mode: "use cache + cacheTag",
+    detail:
+      "Étiquette org:<id> ; durée « hours » ; invalidées par updateTag après chaque action réussie.",
   },
   {
-    id: "robustesse",
-    title: "Erreurs et observabilité",
-    items: [
-      {
-        title: "error.tsx, not-found.tsx, loading.tsx",
-        status: "done",
-        why: "États d'erreur, d'absence et de chargement soignés.",
-        how: "Présents dans l'application (/app).",
-      },
-      {
-        title: "global-error.tsx",
-        status: "todo",
-        why: "Dernier filet si la mise en page racine plante.",
-        how: "Ajouter src/app/global-error.tsx avec son propre <html>.",
-      },
-      {
-        title: "Journalisation et suivi des erreurs",
-        status: "todo",
-        why: "Savoir ce qui casse en production.",
-        how: "src/instrumentation.ts + un service de suivi (Sentry ou équivalent) au moment du déploiement.",
-      },
-    ],
+    zone: "Server Actions",
+    mode: "Sans cache",
+    detail: "Lisent directement la source : une action voit toujours ses propres écritures.",
   },
   {
-    id: "qualite",
-    title: "Qualité et outillage",
-    items: [
-      {
-        title: "TypeScript strict",
-        status: "done",
-        why: "Erreurs détectées à la compilation.",
-        how: "strict: true, aucune erreur de typage.",
-      },
-      {
-        title: "Règles d'architecture dans ESLint",
-        status: "done",
-        why: "Empêcher le contournement des couches.",
-        how: "no-restricted-imports : l'interface ne peut pas importer les implémentations de données.",
-      },
-      {
-        title: "Tests du domaine",
-        status: "done",
-        why: "Les calculs d'argent doivent être prouvés.",
-        how: "61 tests Vitest (devis, situations, identifiants, numérotation, conformité, données fictives).",
-      },
-      {
-        title: "Tests des services et de bout en bout",
-        status: "todo",
-        why: "Vérifier les parcours complets (émettre, payer, redéposer).",
-        how: "Tests Vitest des services avec repositories en mémoire ; tests Playwright des parcours clés.",
-      },
-      {
-        title: "Routes typées",
-        status: "todo",
-        why: "99 liens « /app/… » écrits à la main : une faute de frappe n'est pas détectée.",
-        how: "Activer typedRoutes dans next.config.ts, ou des fonctions de route (routes.invoice(id)) dans config/routes.ts.",
-      },
-      {
-        title: "Intégration continue",
-        status: "todo",
-        why: "Lint, typage, tests et build à chaque push.",
-        how: "GitHub Actions : pnpm install, lint, tsc --noEmit, test, build ; script « typecheck » à ajouter.",
-      },
-    ],
+    zone: "Cycle de vie e-facture",
+    mode: "Client",
+    detail:
+      "LifecyclePoller interroge la plateforme via une action ; le rendu ne fait jamais d'écriture.",
+  },
+];
+
+export interface Fact {
+  title: string;
+  detail: string;
+  where: string;
+}
+
+export const SECURITY: Fact[] = [
+  {
+    title: "Session en deux temps",
+    detail:
+      "proxy.ts redirige sans cookie ; lib/session.ts vérifie l'utilisateur au plus près des données.",
+    where: "proxy.ts · lib/session.ts",
   },
   {
-    id: "perf",
-    title: "Performance, accessibilité, SEO",
-    items: [
-      {
-        title: "next/image et next/font",
-        status: "done",
-        why: "Images optimisées (AVIF/WebP), polices sans décalage.",
-        how: "Captures du site vitrine et IBM Plex via next/font.",
-      },
-      {
-        title: "Métadonnées, Open Graph, sitemap, robots",
-        status: "done",
-        why: "Référencement et partage.",
-        how: "Site vitrine indexé ; /app, /onboarding et /debug exclus.",
-      },
-      {
-        title: "Accessibilité",
-        status: "done",
-        why: "Utilisable au clavier et au lecteur d'écran, lisible sur chantier.",
-        how: "Libellés, focus visible, contrastes vérifiés, erreurs annoncées, animations réduites.",
-      },
-      {
-        title: "Images des captures plus légères",
-        status: "todo",
-        why: "Les PNG sources pèsent 200 à 450 ko.",
-        how: "Les convertir en WebP à la génération (next/image les optimise déjà à l'affichage).",
-      },
-    ],
+    title: "Permissions côté serveur",
+    detail:
+      "Chaque action déclare sa permission ; un membre ne peut ni émettre, ni encaisser, ni gérer l'équipe.",
+    where: "domain/permissions.ts",
+  },
+  {
+    title: "Isolation multi-entreprise",
+    detail:
+      "Toutes les méthodes de repository prennent l'identifiant d'entreprise ; testé par le contrat.",
+    where: "data/repositories.ts",
+  },
+  {
+    title: "Code serveur protégé",
+    detail:
+      "server-only sur les données, services et session : un import côté client casse le build.",
+    where: "server-only",
+  },
+  {
+    title: "Validation des entrées",
+    detail:
+      "Zod dans le formulaire et de nouveau dans l'action ; variables d'environnement validées au démarrage.",
+    where: "features/*/schemas.ts · config/env.ts",
+  },
+  {
+    title: "En-têtes HTTP",
+    detail:
+      "CSP, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy, HSTS en production, sans X-Powered-By.",
+    where: "next.config.ts",
+  },
+  {
+    title: "Redirections sûres",
+    detail: "Le paramètre next n'accepte qu'un chemin interne (pas de //domaine).",
+    where: "lib/session-cookie.ts",
+  },
+  {
+    title: "Cookies",
+    detail: "httpOnly, SameSite=Lax, Secure en production ; aucun cookie de suivi.",
+    where: "lib/session-cookie.ts",
+  },
+];
+
+export const QUALITY: Fact[] = [
+  {
+    title: "Tests du domaine",
+    detail:
+      "Montants, TVA, situations cumulées, identifiants (SIREN, TVA), conformité, numérotation, permissions.",
+    where: "domain/*.test.ts",
+  },
+  {
+    title: "Tests des services",
+    detail:
+      "Émission, numérotation sans trou, émission bloquée, encaissement 212, avoir, rollback.",
+    where: "services/invoices.test.ts",
+  },
+  {
+    title: "Contrat des repositories",
+    detail: "Isolation, copies défensives, création, recherche, numéros croissants, atomicité.",
+    where: "data/contract/",
+  },
+  {
+    title: "Parcours e2e",
+    detail:
+      "Accueil, redirection de connexion puis retour, création d'un client visible aussitôt, déconnexion.",
+    where: "e2e/",
+  },
+  {
+    title: "Intégration continue",
+    detail: "format:check → lint → typecheck → test → build, puis Playwright sur le build.",
+    where: ".github/workflows/ci.yml",
+  },
+  {
+    title: "Erreurs et journal",
+    detail:
+      "error.tsx par zone, global-error.tsx, journal structuré, erreurs serveur remontées par instrumentation.",
+    where: "lib/logger.ts",
+  },
+];
+
+export const CONVENTIONS: Fact[] = [
+  {
+    title: "Argent",
+    detail: 'Chaînes décimales ("1234.50"), jamais de number ; calculs via domain/money.ts.',
+    where: "domain/money.ts",
+  },
+  {
+    title: "Dates",
+    detail: "Chaînes ISO (AAAA-MM-JJ) ; la date du jour vient de l'horloge injectée.",
+    where: "lib/clock.ts",
+  },
+  {
+    title: "Routes",
+    detail: "Aucun chemin en dur : routes.invoices.show(id), routes.quotes.new({ client }).",
+    where: "config/routes.ts",
+  },
+  {
+    title: "Fichiers",
+    detail:
+      "kebab-case ; un dossier par fonctionnalité ; actions.ts et schemas.ts séparés (use server n'exporte que des fonctions).",
+    where: "features/",
+  },
+  {
+    title: "Interface en français",
+    detail: "Libellés métier BTP, statuts e-facture avec leur code (200 à 213).",
+    where: "components/status/",
+  },
+  {
+    title: "Accessibilité",
+    detail:
+      "Libellés visibles, erreurs reliées aux champs, cibles de 44 px sur mobile, focus visible, lien d'évitement.",
+    where: "components/forms/",
+  },
+];
+
+export interface SwapPoint {
+  what: string;
+  how: string;
+}
+
+/** Points de branchement prévus pour passer du prototype à la production. */
+export const SWAP_POINTS: SwapPoint[] = [
+  {
+    what: "Base de données",
+    how: "Implémenter Repositories et UnitOfWork (PostgreSQL), faire passer la suite de contrat, l'assembler dans composition/request-context.ts.",
+  },
+  {
+    what: "Authentification",
+    how: "Remplacer le cookie de démonstration par un jeton signé dans lib/session.ts et startSession ; proxy.ts reste inchangé.",
+  },
+  {
+    what: "Plateforme agréée",
+    how: "Écrire l'adaptateur du port EInvoicingProvider et le retourner depuis integrations/e-invoicing/index.ts.",
+  },
+  {
+    what: "Horloge",
+    how: "Remplacer l'horloge de démonstration par l'horloge système dans getAppDeps().",
   },
 ];

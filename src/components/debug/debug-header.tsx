@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 const LINKS = [
   { href: routes.debug.features, label: "Fonctionnalités" },
-  { href: routes.debug.tech, label: "Technique" },
+  { href: routes.debug.tech, label: "Fiche technique" },
   { href: routes.home, label: "Site vitrine" },
   { href: routes.app, label: "Application" },
 ];

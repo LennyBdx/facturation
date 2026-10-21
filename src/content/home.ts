@@ -315,32 +315,96 @@ export const steps = {
 
 export const trades = {
   title: "Pour les entreprises du second œuvre",
-  intro: "De 5 à 50 salariés, en direct ou en sous-traitance.",
+  intro:
+    "De 5 à 50 salariés, en direct ou en sous-traitance. Choisissez votre métier : voici un extrait de devis tel que vous le ferez.",
+  exampleLabel: "Extrait de devis",
   items: [
     {
       icon: "zap",
       name: "Électricité",
       text: "Situations par lot sur un programme de logements, autoliquidation en sous-traitance d'une entreprise générale.",
+      lines: [
+        {
+          label: "Tableau de répartition logement T3",
+          quantity: "24",
+          unit: "u",
+          vat: "Autoliquidation",
+        },
+        {
+          label: "Colonne montante en gaine palière",
+          quantity: "48",
+          unit: "ml",
+          vat: "Autoliquidation",
+        },
+        {
+          label: "Éclairage des parties communes",
+          quantity: "1",
+          unit: "forfait",
+          vat: "Autoliquidation",
+        },
+      ],
+      handles: [
+        "Situations par lot",
+        "Autoliquidation en sous-traitance",
+        "Retenue de garantie de 5 %",
+      ],
     },
     {
       icon: "droplets",
       name: "Plomberie-chauffage",
       text: "Devis avec fourniture et pose à des taux de TVA différents, acompte à la commande.",
+      lines: [
+        { label: "Pompe à chaleur air/eau 8 kW", quantity: "1", unit: "u", vat: "5,5 %" },
+        { label: "Pose et mise en service", quantity: "1", unit: "forfait", vat: "5,5 %" },
+        { label: "Remplacement du ballon d'eau chaude", quantity: "1", unit: "u", vat: "10 %" },
+      ],
+      handles: [
+        "Plusieurs taux de TVA sur un même devis",
+        "Fourniture et pose distinctes",
+        "Acompte à la commande",
+      ],
     },
     {
       icon: "hammer",
       name: "Menuiserie-agencement",
       text: "Agencement sur mesure facturé à l'avancement de l'atelier et de la pose.",
+      lines: [
+        {
+          label: "Fabrication en atelier, cuisine sur mesure",
+          quantity: "1",
+          unit: "forfait",
+          vat: "10 %",
+        },
+        { label: "Plan de travail stratifié", quantity: "4,2", unit: "ml", vat: "10 %" },
+        { label: "Pose sur site", quantity: "3", unit: "jours", vat: "10 %" },
+      ],
+      handles: ["Facturation à l'avancement", "Atelier puis pose", "Acompte à la commande"],
     },
     {
       icon: "paintbrush",
       name: "Peinture",
       text: "Métrés au m² sur plusieurs logements, situations mensuelles et retenue de garantie.",
+      lines: [
+        { label: "Préparation des supports et enduit", quantity: "1 240", unit: "m²", vat: "10 %" },
+        { label: "Peinture des murs, deux couches", quantity: "1 240", unit: "m²", vat: "10 %" },
+        { label: "Peinture des plafonds", quantity: "410", unit: "m²", vat: "10 %" },
+      ],
+      handles: ["Métrés au m²", "Situations mensuelles", "Retenue de garantie"],
     },
     {
       icon: "layers",
       name: "Plâtrerie",
       text: "Lots cloisons, doublages et faux plafonds, suivis chantier par chantier.",
+      lines: [
+        { label: "Cloisons de distribution 72/48", quantity: "860", unit: "m²", vat: "20 %" },
+        { label: "Doublage isolant des murs extérieurs", quantity: "640", unit: "m²", vat: "20 %" },
+        { label: "Faux plafonds en plaques", quantity: "320", unit: "m²", vat: "20 %" },
+      ],
+      handles: [
+        "Lots cloisons, doublages, plafonds",
+        "Situations par lot",
+        "Suivi chantier par chantier",
+      ],
     },
   ],
 } as const;

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { APP_NAME, E_INVOICING_READY_LABEL } from "@/config/app";
 import { signOut, switchOrganization } from "@/features/session/actions";
+import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -96,34 +97,42 @@ export function AppSidebar({
             <SidebarMenu>
               {NAV_ITEMS.map((item) => {
                 const count = item.badgeKey ? badges[item.badgeKey] : 0;
+                const urgent = item.badgeKey === "rejected";
+                const countLabel =
+                  count > 0 ? `${count} ${urgent ? "à corriger" : "à traiter"}` : null;
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       asChild
                       isActive={isActive(pathname, item.href)}
-                      tooltip={item.label}
+                      tooltip={countLabel ? `${item.label} · ${countLabel}` : item.label}
                       className="h-11 md:h-9"
                     >
                       <Link href={item.href} onClick={() => setOpenMobile(false)}>
                         <item.icon aria-hidden />
                         <span>{item.label}</span>
+                        {countLabel ? <span className="sr-only">, {countLabel}</span> : null}
                       </Link>
                     </SidebarMenuButton>
                     {count > 0 ? (
-                      <SidebarMenuBadge
-                        className={
-                          item.badgeKey === "rejected"
-                            ? "bg-danger-soft text-danger"
-                            : "bg-info-soft text-info"
-                        }
-                        aria-label={
-                          item.badgeKey === "rejected"
-                            ? `${count} factures à corriger`
-                            : `${count} factures à traiter`
-                        }
-                      >
-                        {count}
-                      </SidebarMenuBadge>
+                      <>
+                        <SidebarMenuBadge
+                          aria-hidden
+                          className={
+                            urgent ? "bg-danger-soft text-danger" : "bg-info-soft text-info"
+                          }
+                        >
+                          {count}
+                        </SidebarMenuBadge>
+                        {/* Menu replié : le compteur devient une pastille sur l'icône. */}
+                        <span
+                          aria-hidden
+                          className={cn(
+                            "pointer-events-none absolute top-1 right-1 hidden size-2.5 rounded-full ring-2 ring-sidebar group-data-[collapsible=icon]:block",
+                            urgent ? "bg-danger" : "bg-info",
+                          )}
+                        />
+                      </>
                     ) : null}
                   </SidebarMenuItem>
                 );

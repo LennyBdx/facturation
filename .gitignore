@@ -18,3 +18,6 @@ docs/references/*.png
 docs/references/*.jpg
 docs/references/*.webp
 !docs/references/home-v1-*.png
+
+# Images sources haute définition (versions optimisées dans public/images)
+assets-src/

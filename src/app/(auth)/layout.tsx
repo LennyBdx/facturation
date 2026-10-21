@@ -1,10 +1,14 @@
 import { ShieldCheck } from "lucide-react";
 import { APP_NAME, APP_TAGLINE, E_INVOICING_READY_LABEL } from "@/config/app";
+import { AuthVisual } from "@/features/auth/auth-visual";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1fr_minmax(0,32rem)]">
-      <aside className="hidden flex-col justify-between bg-primary p-10 text-primary-foreground lg:flex">
+      <aside className="relative isolate hidden flex-col justify-between overflow-hidden bg-primary p-10 text-primary-foreground lg:flex">
+        <div aria-hidden className="absolute inset-0 -z-10">
+          <AuthVisual />
+        </div>
         <div className="flex items-center gap-2 text-lg font-semibold">
           <span
             aria-hidden

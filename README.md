@@ -62,6 +62,10 @@ Pour les captures, installez d'abord le navigateur de Playwright : `pnpm exec pl
 - SEO : `opengraph-image.tsx`, JSON-LD (`components/marketing/json-ld.tsx`), `app/sitemap.ts`, `app/robots.ts`.
 - Plan et contenus à compléter : [docs/plan-home.md](docs/plan-home.md). Les marqueurs `[À DÉFINIR]`, `[À CONFIRMER]` et `[À RÉDIGER]` signalent ce qui reste à décider.
 
+## Suivi de l'avancement
+
+La page **`/debug/app`** liste toutes les fonctionnalités par page, avec leur état : « Fait », « Simulé » (présent mais sans back-end ni service réel) ou « À faire ». Elle donne aussi des barres d'avancement par zone et au global. L'inventaire est dans `src/content/debug-features.ts` et se met à jour à chaque évolution. La page n'est pas indexée.
+
 ## Structure
 
 ```

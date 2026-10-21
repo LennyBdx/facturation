@@ -112,6 +112,30 @@ async function main() {
       },
     });
     await shoot(mobile, { name: "dashboard-mobile", url: "/app/tableau-de-bord", wait: "h1" });
+
+    // Page d'accueil complète (contrôle visuel) : docs/references/home-v1-*.png
+    for (const [label, opts] of [
+      ["desktop", { viewport: { width: 1440, height: 900 } }],
+      ["mobile", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }],
+    ]) {
+      const ctx = await browser.newContext({ ...opts, locale: "fr-FR", reducedMotion: "reduce" });
+      const page = await ctx.newPage();
+      await prepare(page);
+      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.body.scrollHeight; y += 700) {
+          window.scrollTo(0, y);
+          await new Promise((r) => setTimeout(r, 120));
+        }
+        window.scrollTo(0, 0);
+      });
+      await page.waitForLoadState("networkidle");
+      await clean(page);
+      const file = path.resolve(`docs/references/home-v1-${label}.png`);
+      await page.screenshot({ path: file, fullPage: true });
+      console.log(`ok  ${path.basename(file)}`);
+      await ctx.close();
+    }
   } finally {
     await browser.close();
     if (server) server.kill();

@@ -17,3 +17,4 @@ CLAUDE.md
 docs/references/*.png
 docs/references/*.jpg
 docs/references/*.webp
+!docs/references/home-v1-*.png

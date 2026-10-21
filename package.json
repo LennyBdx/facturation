@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
-    "references": "node scripts/capture-references.mjs"
+    "references": "node scripts/capture-references.mjs",
+    "screenshots": "node scripts/capture-app.mjs"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
